@@ -351,8 +351,10 @@ h1, h2, h3, p {
 
 /* ── Page Layouts ──────────────────────────────────────────────── */
 .dashboard-page {
+  max-width: 840px;
+  margin: 0 auto;
   display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.75fr);
+  grid-template-columns: 1fr;
   gap: 20px;
   align-items: start;
 }

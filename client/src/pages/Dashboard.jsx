@@ -24,23 +24,12 @@ function Dashboard() {
 
       <SearchForm onSubmit={handleSubmit} loading={state.loading} />
 
-      <aside className="panel operations-panel">
-        <p className="eyebrow">Workflow</p>
-        <h2>Analysis pipeline</h2>
-        <ol className="pipeline-list">
-          <li>Validate request</li>
-          <li>Discover nearby competitors</li>
-          <li>Enrich place details</li>
-          <li>Resolve audience profile (cache or AI)</li>
-          <li>Gather demand signals via Google Places</li>
-          <li>Calculate demand, supply &amp; opportunity scores</li>
-          <li>Generate AI interpretation</li>
-          <li>Save &amp; return analysis</li>
-        </ol>
-
-        {state.loading && <LoadingSpinner label="Running market analysis" />}
-        {state.error && <div className="error-banner">{state.error}</div>}
-      </aside>
+      {state.loading && (
+        <div className="panel fade-in">
+          <LoadingSpinner label="Running market analysis" />
+        </div>
+      )}
+      {state.error && <div className="error-banner">{state.error}</div>}
     </div>
   );
 }
