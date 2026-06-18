@@ -1,0 +1,2946 @@
+================================================================================
+ MARKETSITE ANALYST — AUDIENCE QUALITY ENGINE VALIDATION SUITE
+ Engine Version: v4 (Quality-Weighted, Distance-Decayed, Hyperbolic Normalization)
+ Test Date: 2026-06-15 18:27:57 IST
+ Endpoint: http://localhost:5001/api/debug/demand
+================================================================================
+
+ DESIGN:
+   score = audienceStrength / (audienceStrength + K) * 100  [K=100]
+   audienceStrength = Σ (categoryWeight × distanceDecayFactor) per valid institution
+   Places filtered: sub-unit name patterns + institution clustering + minReviews
+================================================================================
+
+================================================================================
+TEST 1 — DENSE CITY: Austin, TX
+================================================================================
+
+Full Response:
+{
+    "success": true,
+    "data": {
+        "input": {
+            "location": "Austin, TX",
+            "businessType": "Coffee Shop",
+            "niche": "study cafe",
+            "radius": 5000
+        },
+        "geocoded": {
+            "formattedAddress": "Austin, TX, USA",
+            "coordinates": {
+                "lat": 30.267153,
+                "lng": -97.7430608
+            }
+        },
+        "audienceCategories": [
+            "university",
+            "library",
+            "school",
+            "book_store",
+            "coworking_space",
+            "office",
+            "park"
+        ],
+        "audienceCacheHit": true,
+        "pipelineSummary": {
+            "totalRawPlaces": 262,
+            "totalValidInstitutions": 90,
+            "categoriesSearched": 7,
+            "categoriesWithResults": 7
+        },
+        "categoryDiagnostics": {
+            "university": {
+                "config": {
+                    "weight": 10,
+                    "tier": "HIGH",
+                    "minReviews": 10,
+                    "maxInstitutions": 20
+                },
+                "filterStats": {
+                    "rawCount": 40,
+                    "rejectedSubUnit": 12,
+                    "rejectedLowActivity": 19,
+                    "clustered": 2,
+                    "validCount": 7
+                },
+                "validInstitutions": [
+                    {
+                        "placeId": "ChIJ_9TwNJy1RIYRhU5JineexiY",
+                        "name": "University Teaching Center (UTC)",
+                        "distanceMeters": 1829,
+                        "rating": 4.1,
+                        "reviewCount": 11
+                    },
+                    {
+                        "placeId": "ChIJ25KiC521RIYRUHfdqUV3EUc",
+                        "name": "Parlin Hall (PAR)",
+                        "distanceMeters": 1994,
+                        "rating": 4.4,
+                        "reviewCount": 38
+                    },
+                    {
+                        "placeId": "ChIJJzZ3nLe1RIYRdvSuQOlGY20",
+                        "name": "Huston-Tillotson University",
+                        "distanceMeters": 2013,
+                        "rating": 4.4,
+                        "reviewCount": 108
+                    },
+                    {
+                        "placeId": "ChIJD35jnZu1RIYR6BZ702mTVCg",
+                        "name": "Robert L. Patton Building (RLP)",
+                        "distanceMeters": 2099,
+                        "rating": 4.9,
+                        "reviewCount": 34
+                    },
+                    {
+                        "placeId": "ChIJt8-EJZu1RIYR3iFKF0_uMYE",
+                        "name": "The University of Texas at Austin",
+                        "distanceMeters": 2189,
+                        "rating": 4.5,
+                        "reviewCount": 1136
+                    },
+                    {
+                        "placeId": "ChIJoSyWRtq1RIYRQDDu3XuoMtg",
+                        "name": "Austin Community College Eastview Campus",
+                        "distanceMeters": 3570,
+                        "rating": 4.5,
+                        "reviewCount": 85
+                    },
+                    {
+                        "placeId": "ChIJGyBhrpK0RIYRNhPly4LCQhE",
+                        "name": "St. Edward's University",
+                        "distanceMeters": 4289,
+                        "rating": 4.6,
+                        "reviewCount": 188
+                    }
+                ],
+                "contribution": 35,
+                "institutionContributions": [
+                    {
+                        "name": "University Teaching Center (UTC)",
+                        "distanceMeters": 1829,
+                        "decayFactor": 0.7,
+                        "contribution": 7
+                    },
+                    {
+                        "name": "Parlin Hall (PAR)",
+                        "distanceMeters": 1994,
+                        "decayFactor": 0.7,
+                        "contribution": 7
+                    },
+                    {
+                        "name": "Huston-Tillotson University",
+                        "distanceMeters": 2013,
+                        "decayFactor": 0.5,
+                        "contribution": 5
+                    },
+                    {
+                        "name": "Robert L. Patton Building (RLP)",
+                        "distanceMeters": 2099,
+                        "decayFactor": 0.5,
+                        "contribution": 5
+                    },
+                    {
+                        "name": "The University of Texas at Austin",
+                        "distanceMeters": 2189,
+                        "decayFactor": 0.5,
+                        "contribution": 5
+                    },
+                    {
+                        "name": "Austin Community College Eastview Campus",
+                        "distanceMeters": 3570,
+                        "decayFactor": 0.3,
+                        "contribution": 3
+                    },
+                    {
+                        "name": "St. Edward's University",
+                        "distanceMeters": 4289,
+                        "decayFactor": 0.3,
+                        "contribution": 3
+                    }
+                ]
+            },
+            "library": {
+                "config": {
+                    "weight": 7,
+                    "tier": "MEDIUM",
+                    "minReviews": 5,
+                    "maxInstitutions": 15
+                },
+                "filterStats": {
+                    "rawCount": 36,
+                    "rejectedSubUnit": 2,
+                    "rejectedLowActivity": 14,
+                    "clustered": 7,
+                    "validCount": 13
+                },
+                "validInstitutions": [
+                    {
+                        "placeId": "ChIJvWCx3A-1RIYRHFJwgQAZH2o",
+                        "name": "Austin Central Library, Austin Public Library",
+                        "distanceMeters": 866,
+                        "rating": 4.7,
+                        "reviewCount": 1558
+                    },
+                    {
+                        "placeId": "ChIJD0Pz-YvKRIYR4M0-P6l10P4",
+                        "name": "Texas State Library and Archives Commission",
+                        "distanceMeters": 874,
+                        "rating": 4.4,
+                        "reviewCount": 30
+                    },
+                    {
+                        "placeId": "ChIJeVfVEQK1RIYR772a11_VAUU",
+                        "name": "Legislative Library",
+                        "distanceMeters": 879,
+                        "rating": 4.8,
+                        "reviewCount": 6
+                    },
+                    {
+                        "placeId": "ChIJcXn_peO1RIYR0815SArbi0E",
+                        "name": "Travis County Law Library & Self-Help Center",
+                        "distanceMeters": 1424,
+                        "rating": 3.2,
+                        "reviewCount": 13
+                    },
+                    {
+                        "placeId": "ChIJf7vhapy1RIYRjjjR8husUdI",
+                        "name": "Perry-Casta\u00f1eda Library",
+                        "distanceMeters": 1786,
+                        "rating": 4.5,
+                        "reviewCount": 162
+                    },
+                    {
+                        "placeId": "ChIJn4-5g521RIYR1cD_b2nbbB0",
+                        "name": "Harry Ransom Center",
+                        "distanceMeters": 1918,
+                        "rating": 4.8,
+                        "reviewCount": 176
+                    },
+                    {
+                        "placeId": "ChIJWQMqE521RIYRoGwp1C1lZMU",
+                        "name": "Architecture & Planning Library",
+                        "distanceMeters": 2047,
+                        "rating": 4.9,
+                        "reviewCount": 10
+                    },
+                    {
+                        "placeId": "ChIJgV2CQJ21RIYReuasCr8k6pE",
+                        "name": "Life Science Library",
+                        "distanceMeters": 2159,
+                        "rating": 4.6,
+                        "reviewCount": 14
+                    },
+                    {
+                        "placeId": "ChIJA6DI8JC1RIYRh-1rAv2dZR8",
+                        "name": "LLILAS Benson Latin American Studies and Collections",
+                        "distanceMeters": 2273,
+                        "rating": 5,
+                        "reviewCount": 5
+                    },
+                    {
+                        "placeId": "ChIJPTdwjpq1RIYRyxVb4LpptyM",
+                        "name": "Fine Arts Library",
+                        "distanceMeters": 2349,
+                        "rating": 4.4,
+                        "reviewCount": 17
+                    },
+                    {
+                        "placeId": "ChIJ-WVL_5C1RIYRfDHlppbnLYE",
+                        "name": "LBJ Presidential Library",
+                        "distanceMeters": 2466,
+                        "rating": 4.7,
+                        "reviewCount": 1434
+                    },
+                    {
+                        "placeId": "ChIJ0fsJiKW1RIYRuKcD4fXk00A",
+                        "name": "Texas Archive of the Moving Image",
+                        "distanceMeters": 4163,
+                        "rating": 5,
+                        "reviewCount": 10
+                    },
+                    {
+                        "placeId": "ChIJScHWXeu0RIYRi4HPaeGJNqw",
+                        "name": "Munday Library",
+                        "distanceMeters": 4239,
+                        "rating": 4.4,
+                        "reviewCount": 23
+                    }
+                ],
+                "contribution": 55.3,
+                "institutionContributions": [
+                    {
+                        "name": "Austin Central Library, Austin Public Library",
+                        "distanceMeters": 866,
+                        "decayFactor": 0.9,
+                        "contribution": 6.3
+                    },
+                    {
+                        "name": "Texas State Library and Archives Commission",
+                        "distanceMeters": 874,
+                        "decayFactor": 0.9,
+                        "contribution": 6.3
+                    },
+                    {
+                        "name": "Legislative Library",
+                        "distanceMeters": 879,
+                        "decayFactor": 0.9,
+                        "contribution": 6.3
+                    },
+                    {
+                        "name": "Travis County Law Library & Self-Help Center",
+                        "distanceMeters": 1424,
+                        "decayFactor": 0.7,
+                        "contribution": 4.9
+                    },
+                    {
+                        "name": "Perry-Casta\u00f1eda Library",
+                        "distanceMeters": 1786,
+                        "decayFactor": 0.7,
+                        "contribution": 4.9
+                    },
+                    {
+                        "name": "Harry Ransom Center",
+                        "distanceMeters": 1918,
+                        "decayFactor": 0.7,
+                        "contribution": 4.9
+                    },
+                    {
+                        "name": "Architecture & Planning Library",
+                        "distanceMeters": 2047,
+                        "decayFactor": 0.5,
+                        "contribution": 3.5
+                    },
+                    {
+                        "name": "Life Science Library",
+                        "distanceMeters": 2159,
+                        "decayFactor": 0.5,
+                        "contribution": 3.5
+                    },
+                    {
+                        "name": "LLILAS Benson Latin American Studies and Collections",
+                        "distanceMeters": 2273,
+                        "decayFactor": 0.5,
+                        "contribution": 3.5
+                    },
+                    {
+                        "name": "Fine Arts Library",
+                        "distanceMeters": 2349,
+                        "decayFactor": 0.5,
+                        "contribution": 3.5
+                    },
+                    {
+                        "name": "LBJ Presidential Library",
+                        "distanceMeters": 2466,
+                        "decayFactor": 0.5,
+                        "contribution": 3.5
+                    },
+                    {
+                        "name": "Texas Archive of the Moving Image",
+                        "distanceMeters": 4163,
+                        "decayFactor": 0.3,
+                        "contribution": 2.1
+                    },
+                    {
+                        "name": "Munday Library",
+                        "distanceMeters": 4239,
+                        "decayFactor": 0.3,
+                        "contribution": 2.1
+                    }
+                ]
+            },
+            "school": {
+                "config": {
+                    "weight": 2,
+                    "tier": "LOW",
+                    "minReviews": 5,
+                    "maxInstitutions": 20
+                },
+                "filterStats": {
+                    "rawCount": 40,
+                    "rejectedSubUnit": 1,
+                    "rejectedLowActivity": 28,
+                    "clustered": 1,
+                    "validCount": 10
+                },
+                "validInstitutions": [
+                    {
+                        "placeId": "ChIJ0fsJiKW1RIYRdmFyKhadj4w",
+                        "name": "Eastside Music School",
+                        "distanceMeters": 886,
+                        "rating": 4.8,
+                        "reviewCount": 48
+                    },
+                    {
+                        "placeId": "ChIJO2DDHBK1RIYRdJxB2BxVCCg",
+                        "name": "Life Time",
+                        "distanceMeters": 1067,
+                        "rating": 3.9,
+                        "reviewCount": 194
+                    },
+                    {
+                        "placeId": "ChIJ_dZIWhG1RIYROzIz44xxA1g",
+                        "name": "Townlake YMCA",
+                        "distanceMeters": 1348,
+                        "rating": 4.7,
+                        "reviewCount": 1191
+                    },
+                    {
+                        "placeId": "ChIJs1kCWXS1RIYRJdsGeCHk8sw",
+                        "name": "St. Martin's EV. Lutheran Church & Preschool",
+                        "distanceMeters": 1369,
+                        "rating": 4.8,
+                        "reviewCount": 60
+                    },
+                    {
+                        "placeId": "ChIJ8flvkhe1RIYRLQ4n--ovbts",
+                        "name": "Casa de Luz Village",
+                        "distanceMeters": 1822,
+                        "rating": 4.7,
+                        "reviewCount": 741
+                    },
+                    {
+                        "placeId": "ChIJZUd1ICC1RIYRh4X8egiv0Ws",
+                        "name": "South Austin Music",
+                        "distanceMeters": 2501,
+                        "rating": 4.8,
+                        "reviewCount": 235
+                    },
+                    {
+                        "placeId": "ChIJyztwFLu1RIYR_f5rDCLPbaw",
+                        "name": "Sukha Yoga Eastside",
+                        "distanceMeters": 2597,
+                        "rating": 4.7,
+                        "reviewCount": 30
+                    },
+                    {
+                        "placeId": "ChIJZ4DX3oW1RIYR_n8BA-a2YK8",
+                        "name": "Seminary of the Southwest",
+                        "distanceMeters": 3064,
+                        "rating": 4.1,
+                        "reviewCount": 9
+                    },
+                    {
+                        "placeId": "ChIJoSyWRtq1RIYRQDDu3XuoMtg",
+                        "name": "Austin Community College Eastview Campus",
+                        "distanceMeters": 3570,
+                        "rating": 4.5,
+                        "reviewCount": 85
+                    },
+                    {
+                        "placeId": "ChIJ3RZ1AjO1RIYRATvhbZ0fgoI",
+                        "name": "Child's Day",
+                        "distanceMeters": 3971,
+                        "rating": 4.3,
+                        "reviewCount": 21
+                    }
+                ],
+                "contribution": 11.2,
+                "institutionContributions": [
+                    {
+                        "name": "Eastside Music School",
+                        "distanceMeters": 886,
+                        "decayFactor": 0.9,
+                        "contribution": 1.8
+                    },
+                    {
+                        "name": "Life Time",
+                        "distanceMeters": 1067,
+                        "decayFactor": 0.7,
+                        "contribution": 1.4
+                    },
+                    {
+                        "name": "Townlake YMCA",
+                        "distanceMeters": 1348,
+                        "decayFactor": 0.7,
+                        "contribution": 1.4
+                    },
+                    {
+                        "name": "St. Martin's EV. Lutheran Church & Preschool",
+                        "distanceMeters": 1369,
+                        "decayFactor": 0.7,
+                        "contribution": 1.4
+                    },
+                    {
+                        "name": "Casa de Luz Village",
+                        "distanceMeters": 1822,
+                        "decayFactor": 0.7,
+                        "contribution": 1.4
+                    },
+                    {
+                        "name": "South Austin Music",
+                        "distanceMeters": 2501,
+                        "decayFactor": 0.5,
+                        "contribution": 1
+                    },
+                    {
+                        "name": "Sukha Yoga Eastside",
+                        "distanceMeters": 2597,
+                        "decayFactor": 0.5,
+                        "contribution": 1
+                    },
+                    {
+                        "name": "Seminary of the Southwest",
+                        "distanceMeters": 3064,
+                        "decayFactor": 0.3,
+                        "contribution": 0.6
+                    },
+                    {
+                        "name": "Austin Community College Eastview Campus",
+                        "distanceMeters": 3570,
+                        "decayFactor": 0.3,
+                        "contribution": 0.6
+                    },
+                    {
+                        "name": "Child's Day",
+                        "distanceMeters": 3971,
+                        "decayFactor": 0.3,
+                        "contribution": 0.6
+                    }
+                ]
+            },
+            "book_store": {
+                "config": {
+                    "weight": 6,
+                    "tier": "MEDIUM",
+                    "minReviews": 3,
+                    "maxInstitutions": 15
+                },
+                "filterStats": {
+                    "rawCount": 26,
+                    "rejectedSubUnit": 0,
+                    "rejectedLowActivity": 6,
+                    "clustered": 3,
+                    "validCount": 15
+                },
+                "validInstitutions": [
+                    {
+                        "placeId": "ChIJL1xHbAC1RIYRdYT73oqn5v0",
+                        "name": "TOMO mags",
+                        "distanceMeters": 159,
+                        "rating": 5,
+                        "reviewCount": 47
+                    },
+                    {
+                        "placeId": "ChIJb4u6ehK1RIYRxYGE7rdra90",
+                        "name": "BookPeople",
+                        "distanceMeters": 1091,
+                        "rating": 4.8,
+                        "reviewCount": 4378
+                    },
+                    {
+                        "placeId": "ChIJW_g5fQG1RIYRPGPC_4mMw_I",
+                        "name": "Enlightened Baby",
+                        "distanceMeters": 1292,
+                        "rating": 4.7,
+                        "reviewCount": 205
+                    },
+                    {
+                        "placeId": "ChIJb8SyqXK1RIYRgKWcAPltXKw",
+                        "name": "Whole Earth Provision Co.",
+                        "distanceMeters": 1302,
+                        "rating": 4.6,
+                        "reviewCount": 564
+                    },
+                    {
+                        "placeId": "ChIJp_gQVei1RIYRdfN-Yws_ZRY",
+                        "name": "Vintage Bookstore and Wine Bar",
+                        "distanceMeters": 1342,
+                        "rating": 4.7,
+                        "reviewCount": 428
+                    },
+                    {
+                        "placeId": "ChIJX1EK33e1RIYRz_P10McnlPM",
+                        "name": "University Co-op",
+                        "distanceMeters": 2117,
+                        "rating": 4.4,
+                        "reviewCount": 861
+                    },
+                    {
+                        "placeId": "ChIJsYvYGbq1RIYR1HVZamaOR_4",
+                        "name": "NOAH MARION",
+                        "distanceMeters": 2276,
+                        "rating": 3.7,
+                        "reviewCount": 22
+                    },
+                    {
+                        "placeId": "ChIJE1YjoU-1RIYRaRjNXFIktDg",
+                        "name": "Goodwill Central Texas Lake Austin Store",
+                        "distanceMeters": 3137,
+                        "rating": 3.9,
+                        "reviewCount": 301
+                    },
+                    {
+                        "placeId": "ChIJqYbvn3S1RIYRsb9PsC5Rv6U",
+                        "name": "Alienated Majesty Books",
+                        "distanceMeters": 3139,
+                        "rating": 4.8,
+                        "reviewCount": 144
+                    },
+                    {
+                        "placeId": "ChIJ068EiGRLW4YRTTq9HuvLMRo",
+                        "name": "Estate Sales America",
+                        "distanceMeters": 3407,
+                        "rating": 4.1,
+                        "reviewCount": 9
+                    },
+                    {
+                        "placeId": "ChIJQ4oOqta1RIYRFbCyrE1VT2g",
+                        "name": "Austin Pets Alive! Thrift - Oltorf",
+                        "distanceMeters": 3409,
+                        "rating": 4.5,
+                        "reviewCount": 181
+                    },
+                    {
+                        "placeId": "ChIJ2wj8MqS3RIYR1BU3YyC_19I",
+                        "name": "Time Being Books",
+                        "distanceMeters": 4023,
+                        "rating": 4.8,
+                        "reviewCount": 17
+                    },
+                    {
+                        "placeId": "ChIJO7938nK1RIYRq3fdGVBsamk",
+                        "name": "Finney's Books",
+                        "distanceMeters": 4234,
+                        "rating": 5,
+                        "reviewCount": 28
+                    },
+                    {
+                        "placeId": "ChIJScHWXeu0RIYR6Ut0WNMxDD8",
+                        "name": "Fondren Hall Campus Bookstore",
+                        "distanceMeters": 4395,
+                        "rating": 4.5,
+                        "reviewCount": 126
+                    },
+                    {
+                        "placeId": "ChIJuwy956fLRIYRS2W-UvOS-qk",
+                        "name": "Livra Books",
+                        "distanceMeters": 4421,
+                        "rating": 4.9,
+                        "reviewCount": 79
+                    }
+                ],
+                "contribution": 43.2,
+                "institutionContributions": [
+                    {
+                        "name": "TOMO mags",
+                        "distanceMeters": 159,
+                        "decayFactor": 1,
+                        "contribution": 6
+                    },
+                    {
+                        "name": "BookPeople",
+                        "distanceMeters": 1091,
+                        "decayFactor": 0.7,
+                        "contribution": 4.2
+                    },
+                    {
+                        "name": "Enlightened Baby",
+                        "distanceMeters": 1292,
+                        "decayFactor": 0.7,
+                        "contribution": 4.2
+                    },
+                    {
+                        "name": "Whole Earth Provision Co.",
+                        "distanceMeters": 1302,
+                        "decayFactor": 0.7,
+                        "contribution": 4.2
+                    },
+                    {
+                        "name": "Vintage Bookstore and Wine Bar",
+                        "distanceMeters": 1342,
+                        "decayFactor": 0.7,
+                        "contribution": 4.2
+                    },
+                    {
+                        "name": "University Co-op",
+                        "distanceMeters": 2117,
+                        "decayFactor": 0.5,
+                        "contribution": 3
+                    },
+                    {
+                        "name": "NOAH MARION",
+                        "distanceMeters": 2276,
+                        "decayFactor": 0.5,
+                        "contribution": 3
+                    },
+                    {
+                        "name": "Goodwill Central Texas Lake Austin Store",
+                        "distanceMeters": 3137,
+                        "decayFactor": 0.3,
+                        "contribution": 1.8
+                    },
+                    {
+                        "name": "Alienated Majesty Books",
+                        "distanceMeters": 3139,
+                        "decayFactor": 0.3,
+                        "contribution": 1.8
+                    },
+                    {
+                        "name": "Estate Sales America",
+                        "distanceMeters": 3407,
+                        "decayFactor": 0.3,
+                        "contribution": 1.8
+                    },
+                    {
+                        "name": "Austin Pets Alive! Thrift - Oltorf",
+                        "distanceMeters": 3409,
+                        "decayFactor": 0.3,
+                        "contribution": 1.8
+                    },
+                    {
+                        "name": "Time Being Books",
+                        "distanceMeters": 4023,
+                        "decayFactor": 0.3,
+                        "contribution": 1.8
+                    },
+                    {
+                        "name": "Finney's Books",
+                        "distanceMeters": 4234,
+                        "decayFactor": 0.3,
+                        "contribution": 1.8
+                    },
+                    {
+                        "name": "Fondren Hall Campus Bookstore",
+                        "distanceMeters": 4395,
+                        "decayFactor": 0.3,
+                        "contribution": 1.8
+                    },
+                    {
+                        "name": "Livra Books",
+                        "distanceMeters": 4421,
+                        "decayFactor": 0.3,
+                        "contribution": 1.8
+                    }
+                ]
+            },
+            "coworking_space": {
+                "config": {
+                    "weight": 8,
+                    "tier": "HIGH",
+                    "minReviews": 10,
+                    "maxInstitutions": 15
+                },
+                "filterStats": {
+                    "rawCount": 40,
+                    "rejectedSubUnit": 0,
+                    "rejectedLowActivity": 7,
+                    "clustered": 8,
+                    "validCount": 15
+                },
+                "validInstitutions": [
+                    {
+                        "placeId": "ChIJRYE8vgm1RIYR14P_Hc-SGKY",
+                        "name": "600 Congress",
+                        "distanceMeters": 127,
+                        "rating": 4.3,
+                        "reviewCount": 47
+                    },
+                    {
+                        "placeId": "ChIJQ51pbb61RIYRH66CkcglY1U",
+                        "name": "Common Desk - 6th & Congress",
+                        "distanceMeters": 129,
+                        "rating": 4.9,
+                        "reviewCount": 43
+                    },
+                    {
+                        "placeId": "ChIJnW9wwAm1RIYRpiaGauNxwbU",
+                        "name": "WeWork Office Space & Coworking",
+                        "distanceMeters": 138,
+                        "rating": 4.3,
+                        "reviewCount": 169
+                    },
+                    {
+                        "placeId": "ChIJhxZPAgm1RIYRO3k0ZWr0U8M",
+                        "name": "Industrious",
+                        "distanceMeters": 202,
+                        "rating": 4.9,
+                        "reviewCount": 123
+                    },
+                    {
+                        "placeId": "ChIJR4ekQae1RIYRnXanK3TPfDw",
+                        "name": "Capital Factory",
+                        "distanceMeters": 308,
+                        "rating": 4.6,
+                        "reviewCount": 353
+                    },
+                    {
+                        "placeId": "ChIJhVFdeG61RIYRzIeyDCNjb1I",
+                        "name": "Spaces 111 Congress Avenue",
+                        "distanceMeters": 405,
+                        "rating": 3.4,
+                        "reviewCount": 16
+                    },
+                    {
+                        "placeId": "ChIJKabdEQ-1RIYR7cwvMFxzmkc",
+                        "name": "Firmspace Austin",
+                        "distanceMeters": 596,
+                        "rating": 4.9,
+                        "reviewCount": 101
+                    },
+                    {
+                        "placeId": "ChIJEy_sxQq1RIYRFDZpoecUdrs",
+                        "name": "Spaces Westview",
+                        "distanceMeters": 898,
+                        "rating": 4,
+                        "reviewCount": 12
+                    },
+                    {
+                        "placeId": "ChIJE81a-OC1RIYRJ11PJBlCxNE",
+                        "name": "Daydreamer Coffee",
+                        "distanceMeters": 962,
+                        "rating": 4.5,
+                        "reviewCount": 56
+                    },
+                    {
+                        "placeId": "ChIJN1ctt_O1RIYRHEO4_uNyLzY",
+                        "name": "Trick Hat Workway",
+                        "distanceMeters": 1071,
+                        "rating": 4.8,
+                        "reviewCount": 16
+                    },
+                    {
+                        "placeId": "ChIJpaNGVSS1RIYRBQG0Ji5dixI",
+                        "name": "SXSW Center",
+                        "distanceMeters": 1107,
+                        "rating": 4.3,
+                        "reviewCount": 16
+                    },
+                    {
+                        "placeId": "ChIJ28CxNyq1RIYRrn6en8qHBAs",
+                        "name": "Bond Collective - East Austin",
+                        "distanceMeters": 1602,
+                        "rating": 4.7,
+                        "reviewCount": 39
+                    },
+                    {
+                        "placeId": "ChIJRyA9Prm1RIYRkcXgiptky_U",
+                        "name": "Kollective",
+                        "distanceMeters": 1642,
+                        "rating": 4.8,
+                        "reviewCount": 82
+                    },
+                    {
+                        "placeId": "ChIJHZn3i521RIYRDmgI6QZB1E0",
+                        "name": "Regus",
+                        "distanceMeters": 1806,
+                        "rating": 3.3,
+                        "reviewCount": 30
+                    },
+                    {
+                        "placeId": "ChIJVVUhezBLW4YRiPm3vTIz63g",
+                        "name": "Third eye cacao",
+                        "distanceMeters": 1811,
+                        "rating": 5,
+                        "reviewCount": 186
+                    }
+                ],
+                "contribution": 103.2,
+                "institutionContributions": [
+                    {
+                        "name": "600 Congress",
+                        "distanceMeters": 127,
+                        "decayFactor": 1,
+                        "contribution": 8
+                    },
+                    {
+                        "name": "Common Desk - 6th & Congress",
+                        "distanceMeters": 129,
+                        "decayFactor": 1,
+                        "contribution": 8
+                    },
+                    {
+                        "name": "WeWork Office Space & Coworking",
+                        "distanceMeters": 138,
+                        "decayFactor": 1,
+                        "contribution": 8
+                    },
+                    {
+                        "name": "Industrious",
+                        "distanceMeters": 202,
+                        "decayFactor": 1,
+                        "contribution": 8
+                    },
+                    {
+                        "name": "Capital Factory",
+                        "distanceMeters": 308,
+                        "decayFactor": 1,
+                        "contribution": 8
+                    },
+                    {
+                        "name": "Spaces 111 Congress Avenue",
+                        "distanceMeters": 405,
+                        "decayFactor": 1,
+                        "contribution": 8
+                    },
+                    {
+                        "name": "Firmspace Austin",
+                        "distanceMeters": 596,
+                        "decayFactor": 0.9,
+                        "contribution": 7.2
+                    },
+                    {
+                        "name": "Spaces Westview",
+                        "distanceMeters": 898,
+                        "decayFactor": 0.9,
+                        "contribution": 7.2
+                    },
+                    {
+                        "name": "Daydreamer Coffee",
+                        "distanceMeters": 962,
+                        "decayFactor": 0.9,
+                        "contribution": 7.2
+                    },
+                    {
+                        "name": "Trick Hat Workway",
+                        "distanceMeters": 1071,
+                        "decayFactor": 0.7,
+                        "contribution": 5.6
+                    },
+                    {
+                        "name": "SXSW Center",
+                        "distanceMeters": 1107,
+                        "decayFactor": 0.7,
+                        "contribution": 5.6
+                    },
+                    {
+                        "name": "Bond Collective - East Austin",
+                        "distanceMeters": 1602,
+                        "decayFactor": 0.7,
+                        "contribution": 5.6
+                    },
+                    {
+                        "name": "Kollective",
+                        "distanceMeters": 1642,
+                        "decayFactor": 0.7,
+                        "contribution": 5.6
+                    },
+                    {
+                        "name": "Regus",
+                        "distanceMeters": 1806,
+                        "decayFactor": 0.7,
+                        "contribution": 5.6
+                    },
+                    {
+                        "name": "Third eye cacao",
+                        "distanceMeters": 1811,
+                        "decayFactor": 0.7,
+                        "contribution": 5.6
+                    }
+                ]
+            },
+            "office": {
+                "config": {
+                    "weight": 3,
+                    "tier": "LOW",
+                    "minReviews": 5,
+                    "maxInstitutions": 15
+                },
+                "filterStats": {
+                    "rawCount": 40,
+                    "rejectedSubUnit": 1,
+                    "rejectedLowActivity": 2,
+                    "clustered": 12,
+                    "validCount": 15
+                },
+                "validInstitutions": [
+                    {
+                        "placeId": "ChIJ4yWPfKe1RIYRui8YMpjSzaA",
+                        "name": "The Driskill - The Unbound Collection by Hyatt",
+                        "distanceMeters": 167,
+                        "rating": 4.6,
+                        "reviewCount": 5401
+                    },
+                    {
+                        "placeId": "ChIJ7XFDZae1RIYROB6oLNdB2Bk",
+                        "name": "Firehouse Lounge",
+                        "distanceMeters": 221,
+                        "rating": 4.5,
+                        "reviewCount": 1519
+                    },
+                    {
+                        "placeId": "ChIJ6WDC6Am1RIYRrrlq89b7oQs",
+                        "name": "The Stephen F. Austin Royal Sonesta Hotel",
+                        "distanceMeters": 235,
+                        "rating": 4.4,
+                        "reviewCount": 1497
+                    },
+                    {
+                        "placeId": "ChIJ1XlZ4Qm1RIYR4rpevy6Ybs4",
+                        "name": "Roaring Fork",
+                        "distanceMeters": 236,
+                        "rating": 4.5,
+                        "reviewCount": 2171
+                    },
+                    {
+                        "placeId": "ChIJrQKrmKe1RIYRPghJQoExXJM",
+                        "name": "Parkside",
+                        "distanceMeters": 264,
+                        "rating": 4.1,
+                        "reviewCount": 890
+                    },
+                    {
+                        "placeId": "ChIJaci15Am1RIYR-gZh_95-oPw",
+                        "name": "The Paramount Theatre",
+                        "distanceMeters": 274,
+                        "rating": 4.7,
+                        "reviewCount": 2891
+                    },
+                    {
+                        "placeId": "ChIJQ2AAawm1RIYRYJhKaNLz5rw",
+                        "name": "The Belmont",
+                        "distanceMeters": 296,
+                        "rating": 4.3,
+                        "reviewCount": 430
+                    },
+                    {
+                        "placeId": "ChIJSzRI6ae1RIYRMd0U7P8cMXM",
+                        "name": "Residence Inn by Marriott Austin Downtown/Convention Center",
+                        "distanceMeters": 301,
+                        "rating": 4.5,
+                        "reviewCount": 1208
+                    },
+                    {
+                        "placeId": "ChIJwYlSqae1RIYRyqQConsdnyc",
+                        "name": "Iron Cactus Mexican Restaurant and Margarita Bar",
+                        "distanceMeters": 348,
+                        "rating": 4.1,
+                        "reviewCount": 4042
+                    },
+                    {
+                        "placeId": "ChIJF9-xywi1RIYRLTdVOm_2ebk",
+                        "name": "W Austin",
+                        "distanceMeters": 399,
+                        "rating": 4.6,
+                        "reviewCount": 3500
+                    },
+                    {
+                        "placeId": "ChIJ_____1u1RIYRpbuTY6jerdc",
+                        "name": "Violet Crown Austin",
+                        "distanceMeters": 512,
+                        "rating": 4.5,
+                        "reviewCount": 913
+                    },
+                    {
+                        "placeId": "ChIJAW3LRQ-1RIYR5hvk_KAUmbo",
+                        "name": "Lamberts",
+                        "distanceMeters": 512,
+                        "rating": 4.4,
+                        "reviewCount": 2091
+                    },
+                    {
+                        "placeId": "ChIJ8QdKLqa1RIYRkalYuV2AbW0",
+                        "name": "Skyline Health Club",
+                        "distanceMeters": 519,
+                        "rating": 3.9,
+                        "reviewCount": 19
+                    },
+                    {
+                        "placeId": "ChIJj9dtEqi1RIYRaUVSQdHpaiA",
+                        "name": "Hilton Austin",
+                        "distanceMeters": 524,
+                        "rating": 4.3,
+                        "reviewCount": 5985
+                    },
+                    {
+                        "placeId": "ChIJzTkDkai1RIYR9PpN5L6zHD0",
+                        "name": "Moonshine Grill",
+                        "distanceMeters": 614,
+                        "rating": 4.6,
+                        "reviewCount": 7354
+                    }
+                ],
+                "contribution": 43.5,
+                "institutionContributions": [
+                    {
+                        "name": "The Driskill - The Unbound Collection by Hyatt",
+                        "distanceMeters": 167,
+                        "decayFactor": 1,
+                        "contribution": 3
+                    },
+                    {
+                        "name": "Firehouse Lounge",
+                        "distanceMeters": 221,
+                        "decayFactor": 1,
+                        "contribution": 3
+                    },
+                    {
+                        "name": "The Stephen F. Austin Royal Sonesta Hotel",
+                        "distanceMeters": 235,
+                        "decayFactor": 1,
+                        "contribution": 3
+                    },
+                    {
+                        "name": "Roaring Fork",
+                        "distanceMeters": 236,
+                        "decayFactor": 1,
+                        "contribution": 3
+                    },
+                    {
+                        "name": "Parkside",
+                        "distanceMeters": 264,
+                        "decayFactor": 1,
+                        "contribution": 3
+                    },
+                    {
+                        "name": "The Paramount Theatre",
+                        "distanceMeters": 274,
+                        "decayFactor": 1,
+                        "contribution": 3
+                    },
+                    {
+                        "name": "The Belmont",
+                        "distanceMeters": 296,
+                        "decayFactor": 1,
+                        "contribution": 3
+                    },
+                    {
+                        "name": "Residence Inn by Marriott Austin Downtown/Convention Center",
+                        "distanceMeters": 301,
+                        "decayFactor": 1,
+                        "contribution": 3
+                    },
+                    {
+                        "name": "Iron Cactus Mexican Restaurant and Margarita Bar",
+                        "distanceMeters": 348,
+                        "decayFactor": 1,
+                        "contribution": 3
+                    },
+                    {
+                        "name": "W Austin",
+                        "distanceMeters": 399,
+                        "decayFactor": 1,
+                        "contribution": 3
+                    },
+                    {
+                        "name": "Violet Crown Austin",
+                        "distanceMeters": 512,
+                        "decayFactor": 0.9,
+                        "contribution": 2.7
+                    },
+                    {
+                        "name": "Lamberts",
+                        "distanceMeters": 512,
+                        "decayFactor": 0.9,
+                        "contribution": 2.7
+                    },
+                    {
+                        "name": "Skyline Health Club",
+                        "distanceMeters": 519,
+                        "decayFactor": 0.9,
+                        "contribution": 2.7
+                    },
+                    {
+                        "name": "Hilton Austin",
+                        "distanceMeters": 524,
+                        "decayFactor": 0.9,
+                        "contribution": 2.7
+                    },
+                    {
+                        "name": "Moonshine Grill",
+                        "distanceMeters": 614,
+                        "decayFactor": 0.9,
+                        "contribution": 2.7
+                    }
+                ]
+            },
+            "park": {
+                "config": {
+                    "weight": 2,
+                    "tier": "LOW",
+                    "minReviews": 3,
+                    "maxInstitutions": 15
+                },
+                "filterStats": {
+                    "rawCount": 40,
+                    "rejectedSubUnit": 0,
+                    "rejectedLowActivity": 1,
+                    "clustered": 15,
+                    "validCount": 15
+                },
+                "validInstitutions": [
+                    {
+                        "placeId": "ChIJ6Q2TzQ61RIYRp0BuFjs3XLI",
+                        "name": "Republic Square",
+                        "distanceMeters": 416,
+                        "rating": 4.3,
+                        "reviewCount": 2457
+                    },
+                    {
+                        "placeId": "ChIJRa4dJKu1RIYRpWE8ArsYIgI",
+                        "name": "Waller Beach at Town Lake Metropolitan Park",
+                        "distanceMeters": 777,
+                        "rating": 4.6,
+                        "reviewCount": 701
+                    },
+                    {
+                        "placeId": "ChIJTVrdMqC1RIYRC0oOCe0Agek",
+                        "name": "Texas Peace Officers Memorial",
+                        "distanceMeters": 979,
+                        "rating": 4.6,
+                        "reviewCount": 35
+                    },
+                    {
+                        "placeId": "ChIJe0DW0HS1RIYRbTy5Sr5_c_Q",
+                        "name": "Seed Coalition",
+                        "distanceMeters": 1052,
+                        "rating": 4.3,
+                        "reviewCount": 3
+                    },
+                    {
+                        "placeId": "ChIJS1qGKBu1RIYRi_y4zQhjA6M",
+                        "name": "Liz Carpenter Splash Pad",
+                        "distanceMeters": 1227,
+                        "rating": 4.1,
+                        "reviewCount": 148
+                    },
+                    {
+                        "placeId": "ChIJs4XODxu1RIYR3hQAyzDR4n4",
+                        "name": "Butler Metro Park",
+                        "distanceMeters": 1230,
+                        "rating": 4.7,
+                        "reviewCount": 3118
+                    },
+                    {
+                        "placeId": "ChIJ7YxEWKy1RIYRitkczi_guDE",
+                        "name": "Sanchez School Park",
+                        "distanceMeters": 1266,
+                        "rating": 4.5,
+                        "reviewCount": 38
+                    },
+                    {
+                        "placeId": "ChIJ505alBu1RIYRH5rzuYxA5OI",
+                        "name": "Mary Dawson Park",
+                        "distanceMeters": 1563,
+                        "rating": 4.1,
+                        "reviewCount": 7
+                    },
+                    {
+                        "placeId": "ChIJ5240Drq1RIYRnQLaMrikYjA",
+                        "name": "Texas State Cemetery",
+                        "distanceMeters": 1579,
+                        "rating": 4.7,
+                        "reviewCount": 115
+                    },
+                    {
+                        "placeId": "ChIJ-aAEA7G1RIYR-f7jzHIF0yg",
+                        "name": "Plaza Saltillo",
+                        "distanceMeters": 1589,
+                        "rating": 4.3,
+                        "reviewCount": 52
+                    },
+                    {
+                        "placeId": "ChIJN7Odsqy1RIYRmlNrbTBEkEA",
+                        "name": "Festival Beach Food Forest",
+                        "distanceMeters": 1685,
+                        "rating": 4.9,
+                        "reviewCount": 63
+                    },
+                    {
+                        "placeId": "ChIJmeb5-oHKRIYRccb8QbrecOg",
+                        "name": "Pease Park Conservancy",
+                        "distanceMeters": 1734,
+                        "rating": 4.6,
+                        "reviewCount": 39
+                    },
+                    {
+                        "placeId": "ChIJ0X9Cc_60RIYR1D2a57IaRZc",
+                        "name": "The Circle Row Greenbelt",
+                        "distanceMeters": 1816,
+                        "rating": 4.8,
+                        "reviewCount": 6
+                    },
+                    {
+                        "placeId": "ChIJudFium61RIYRYCteDFIBpi0",
+                        "name": "Palma Plaza Pocket Park",
+                        "distanceMeters": 2185,
+                        "rating": 4.5,
+                        "reviewCount": 4
+                    },
+                    {
+                        "placeId": "ChIJryCBJZ21RIYRKOfmLeHPV6g",
+                        "name": "UT Turtle Pond",
+                        "distanceMeters": 2214,
+                        "rating": 4.8,
+                        "reviewCount": 60
+                    }
+                ],
+                "contribution": 21.6,
+                "institutionContributions": [
+                    {
+                        "name": "Republic Square",
+                        "distanceMeters": 416,
+                        "decayFactor": 1,
+                        "contribution": 2
+                    },
+                    {
+                        "name": "Waller Beach at Town Lake Metropolitan Park",
+                        "distanceMeters": 777,
+                        "decayFactor": 0.9,
+                        "contribution": 1.8
+                    },
+                    {
+                        "name": "Texas Peace Officers Memorial",
+                        "distanceMeters": 979,
+                        "decayFactor": 0.9,
+                        "contribution": 1.8
+                    },
+                    {
+                        "name": "Seed Coalition",
+                        "distanceMeters": 1052,
+                        "decayFactor": 0.7,
+                        "contribution": 1.4
+                    },
+                    {
+                        "name": "Liz Carpenter Splash Pad",
+                        "distanceMeters": 1227,
+                        "decayFactor": 0.7,
+                        "contribution": 1.4
+                    },
+                    {
+                        "name": "Butler Metro Park",
+                        "distanceMeters": 1230,
+                        "decayFactor": 0.7,
+                        "contribution": 1.4
+                    },
+                    {
+                        "name": "Sanchez School Park",
+                        "distanceMeters": 1266,
+                        "decayFactor": 0.7,
+                        "contribution": 1.4
+                    },
+                    {
+                        "name": "Mary Dawson Park",
+                        "distanceMeters": 1563,
+                        "decayFactor": 0.7,
+                        "contribution": 1.4
+                    },
+                    {
+                        "name": "Texas State Cemetery",
+                        "distanceMeters": 1579,
+                        "decayFactor": 0.7,
+                        "contribution": 1.4
+                    },
+                    {
+                        "name": "Plaza Saltillo",
+                        "distanceMeters": 1589,
+                        "decayFactor": 0.7,
+                        "contribution": 1.4
+                    },
+                    {
+                        "name": "Festival Beach Food Forest",
+                        "distanceMeters": 1685,
+                        "decayFactor": 0.7,
+                        "contribution": 1.4
+                    },
+                    {
+                        "name": "Pease Park Conservancy",
+                        "distanceMeters": 1734,
+                        "decayFactor": 0.7,
+                        "contribution": 1.4
+                    },
+                    {
+                        "name": "The Circle Row Greenbelt",
+                        "distanceMeters": 1816,
+                        "decayFactor": 0.7,
+                        "contribution": 1.4
+                    },
+                    {
+                        "name": "Palma Plaza Pocket Park",
+                        "distanceMeters": 2185,
+                        "decayFactor": 0.5,
+                        "contribution": 1
+                    },
+                    {
+                        "name": "UT Turtle Pond",
+                        "distanceMeters": 2214,
+                        "decayFactor": 0.5,
+                        "contribution": 1
+                    }
+                ]
+            }
+        },
+        "audienceStrength": {
+            "value": 313,
+            "formula": "\u03a3 (categoryWeight \u00d7 distanceDecayFactor) per valid institution"
+        },
+        "normalization": {
+            "formula": "audienceStrength / (audienceStrength + K) \u00d7 100",
+            "K": 100,
+            "audienceStrength": 313,
+            "demandScore": 76
+        },
+        "topDrivers": [
+            {
+                "category": "coworking_space",
+                "tier": "HIGH",
+                "weight": 8,
+                "validInstitutions": 15,
+                "contribution": 103.2,
+                "sharePercent": 33
+            },
+            {
+                "category": "library",
+                "tier": "MEDIUM",
+                "weight": 7,
+                "validInstitutions": 13,
+                "contribution": 55.3,
+                "sharePercent": 18
+            },
+            {
+                "category": "office",
+                "tier": "LOW",
+                "weight": 3,
+                "validInstitutions": 15,
+                "contribution": 43.5,
+                "sharePercent": 14
+            },
+            {
+                "category": "book_store",
+                "tier": "MEDIUM",
+                "weight": 6,
+                "validInstitutions": 15,
+                "contribution": 43.2,
+                "sharePercent": 14
+            },
+            {
+                "category": "university",
+                "tier": "HIGH",
+                "weight": 10,
+                "validInstitutions": 7,
+                "contribution": 35,
+                "sharePercent": 11
+            }
+        ],
+        "densityBand": "Strong",
+        "finalDemandScore": 76
+    }
+}
+
+────────────────────────────────────────────────────────────────────────────────
+TEST 1 SUMMARY — Austin, TX (Dense City)
+────────────────────────────────────────────────────────────────────────────────
+  Address              : Austin, TX, USA
+  Categories Searched  : university, library, school, book_store, coworking_space, office, park
+  Total Raw Places     : 262
+  Valid Institutions   : 90
+  Audience Strength    : 313 pts
+  Top 3 Drivers        : coworking_space(103.2pts), library(55.3pts), office(43.5pts)
+  DEMAND SCORE         : 76 / 100  [Strong]
+  Response Time        : 8367ms
+
+================================================================================
+TEST 2 — SUBURBAN: Round Rock, TX
+================================================================================
+
+Full Response:
+{
+    "success": true,
+    "data": {
+        "input": {
+            "location": "Round Rock, TX",
+            "businessType": "Coffee Shop",
+            "niche": "study cafe",
+            "radius": 5000
+        },
+        "geocoded": {
+            "formattedAddress": "Round Rock, TX, USA",
+            "coordinates": {
+                "lat": 30.5082551,
+                "lng": -97.678896
+            }
+        },
+        "audienceCategories": [
+            "university",
+            "library",
+            "school",
+            "book_store",
+            "coworking_space",
+            "office",
+            "park"
+        ],
+        "audienceCacheHit": true,
+        "pipelineSummary": {
+            "totalRawPlaces": 141,
+            "totalValidInstitutions": 47,
+            "categoriesSearched": 7,
+            "categoriesWithResults": 7
+        },
+        "categoryDiagnostics": {
+            "university": {
+                "config": {
+                    "weight": 10,
+                    "tier": "HIGH",
+                    "minReviews": 10,
+                    "maxInstitutions": 20
+                },
+                "filterStats": {
+                    "rawCount": 4,
+                    "rejectedSubUnit": 2,
+                    "rejectedLowActivity": 1,
+                    "clustered": 0,
+                    "validCount": 1
+                },
+                "validInstitutions": [
+                    {
+                        "placeId": "ChIJ9dEBTh3ORIYROgqxlhlKqLo",
+                        "name": "South University, Austin",
+                        "distanceMeters": 3374,
+                        "rating": 3.2,
+                        "reviewCount": 17
+                    }
+                ],
+                "contribution": 3,
+                "institutionContributions": [
+                    {
+                        "name": "South University, Austin",
+                        "distanceMeters": 3374,
+                        "decayFactor": 0.3,
+                        "contribution": 3
+                    }
+                ]
+            },
+            "library": {
+                "config": {
+                    "weight": 7,
+                    "tier": "MEDIUM",
+                    "minReviews": 5,
+                    "maxInstitutions": 15
+                },
+                "filterStats": {
+                    "rawCount": 2,
+                    "rejectedSubUnit": 0,
+                    "rejectedLowActivity": 1,
+                    "clustered": 0,
+                    "validCount": 1
+                },
+                "validInstitutions": [
+                    {
+                        "placeId": "ChIJQRFmS5XRRIYRdbRkGbuoMVk",
+                        "name": "Round Rock Public Library - RRPL",
+                        "distanceMeters": 213,
+                        "rating": 4.8,
+                        "reviewCount": 779
+                    }
+                ],
+                "contribution": 7,
+                "institutionContributions": [
+                    {
+                        "name": "Round Rock Public Library - RRPL",
+                        "distanceMeters": 213,
+                        "decayFactor": 1,
+                        "contribution": 7
+                    }
+                ]
+            },
+            "school": {
+                "config": {
+                    "weight": 2,
+                    "tier": "LOW",
+                    "minReviews": 5,
+                    "maxInstitutions": 20
+                },
+                "filterStats": {
+                    "rawCount": 40,
+                    "rejectedSubUnit": 2,
+                    "rejectedLowActivity": 25,
+                    "clustered": 5,
+                    "validCount": 8
+                },
+                "validInstitutions": [
+                    {
+                        "placeId": "ChIJlWQbouzRRIYRs6tcpjp6gBQ",
+                        "name": "Blooming Scholars Montessori School Near Me | Round Rock",
+                        "distanceMeters": 340,
+                        "rating": 4.3,
+                        "reviewCount": 11
+                    },
+                    {
+                        "placeId": "ChIJmQtAlovRRIYRaHmt9q7InTw",
+                        "name": "Austin Driving School",
+                        "distanceMeters": 1478,
+                        "rating": 3.9,
+                        "reviewCount": 183
+                    },
+                    {
+                        "placeId": "ChIJaYZA8rDRRIYRYpnagFfcxwE",
+                        "name": "St. Richard's Episcopal Preschool and Kindergarten",
+                        "distanceMeters": 1904,
+                        "rating": 5,
+                        "reviewCount": 14
+                    },
+                    {
+                        "placeId": "ChIJSbRXVIPRRIYRswrp2MpKy-g",
+                        "name": "YMCA Preschool and Afterschool Office",
+                        "distanceMeters": 2103,
+                        "rating": 3.8,
+                        "reviewCount": 20
+                    },
+                    {
+                        "placeId": "ChIJbVam7z_SRIYRPoCvJfFJJlo",
+                        "name": "Guiding Steps Montessori",
+                        "distanceMeters": 2592,
+                        "rating": 4.8,
+                        "reviewCount": 54
+                    },
+                    {
+                        "placeId": "ChIJ19-o9CXSRIYRQsvcIENHqHc",
+                        "name": "Ann Vanderschaaf Piano Studio",
+                        "distanceMeters": 2739,
+                        "rating": 5,
+                        "reviewCount": 5
+                    },
+                    {
+                        "placeId": "ChIJ_fFQBirQRIYRZpO8ho5zxZU",
+                        "name": "Texas Spanish Academy",
+                        "distanceMeters": 3450,
+                        "rating": 4.5,
+                        "reviewCount": 28
+                    },
+                    {
+                        "placeId": "ChIJs3zoft7WRIYROaq7B01bxzQ",
+                        "name": "Clark's Music Class",
+                        "distanceMeters": 4297,
+                        "rating": 5,
+                        "reviewCount": 11
+                    }
+                ],
+                "contribution": 9,
+                "institutionContributions": [
+                    {
+                        "name": "Blooming Scholars Montessori School Near Me | Round Rock",
+                        "distanceMeters": 340,
+                        "decayFactor": 1,
+                        "contribution": 2
+                    },
+                    {
+                        "name": "Austin Driving School",
+                        "distanceMeters": 1478,
+                        "decayFactor": 0.7,
+                        "contribution": 1.4
+                    },
+                    {
+                        "name": "St. Richard's Episcopal Preschool and Kindergarten",
+                        "distanceMeters": 1904,
+                        "decayFactor": 0.7,
+                        "contribution": 1.4
+                    },
+                    {
+                        "name": "YMCA Preschool and Afterschool Office",
+                        "distanceMeters": 2103,
+                        "decayFactor": 0.5,
+                        "contribution": 1
+                    },
+                    {
+                        "name": "Guiding Steps Montessori",
+                        "distanceMeters": 2592,
+                        "decayFactor": 0.5,
+                        "contribution": 1
+                    },
+                    {
+                        "name": "Ann Vanderschaaf Piano Studio",
+                        "distanceMeters": 2739,
+                        "decayFactor": 0.5,
+                        "contribution": 1
+                    },
+                    {
+                        "name": "Texas Spanish Academy",
+                        "distanceMeters": 3450,
+                        "decayFactor": 0.3,
+                        "contribution": 0.6
+                    },
+                    {
+                        "name": "Clark's Music Class",
+                        "distanceMeters": 4297,
+                        "decayFactor": 0.3,
+                        "contribution": 0.6
+                    }
+                ]
+            },
+            "book_store": {
+                "config": {
+                    "weight": 6,
+                    "tier": "MEDIUM",
+                    "minReviews": 3,
+                    "maxInstitutions": 15
+                },
+                "filterStats": {
+                    "rawCount": 6,
+                    "rejectedSubUnit": 0,
+                    "rejectedLowActivity": 0,
+                    "clustered": 1,
+                    "validCount": 5
+                },
+                "validInstitutions": [
+                    {
+                        "placeId": "ChIJa7bb6ZDRRIYRTLW2_2iyviM",
+                        "name": "Goodwill Central Texas - Round Rock Store",
+                        "distanceMeters": 1284,
+                        "rating": 3.8,
+                        "reviewCount": 546
+                    },
+                    {
+                        "placeId": "ChIJoTAydefRRIYR2f6nugDm-vY",
+                        "name": "Rogues Gallery Comics & Games",
+                        "distanceMeters": 1506,
+                        "rating": 4.7,
+                        "reviewCount": 700
+                    },
+                    {
+                        "placeId": "ChIJA0IBYsTTRIYRg4b7yJ3IFlU",
+                        "name": "Comic Blessing - We Buy Books, Comic Books, CDs, DVDs & More (Appointment Necessary)",
+                        "distanceMeters": 2119,
+                        "rating": 4.5,
+                        "reviewCount": 10
+                    },
+                    {
+                        "placeId": "ChIJmZydjSPORIYRyhX3SpE8y8Y",
+                        "name": "Half Price Books",
+                        "distanceMeters": 2682,
+                        "rating": 4.6,
+                        "reviewCount": 2416
+                    },
+                    {
+                        "placeId": "ChIJHcs7NBnORIYRPk7dNCM9KLQ",
+                        "name": "Barnes & Noble",
+                        "distanceMeters": 3033,
+                        "rating": 4.6,
+                        "reviewCount": 1983
+                    }
+                ],
+                "contribution": 16.2,
+                "institutionContributions": [
+                    {
+                        "name": "Goodwill Central Texas - Round Rock Store",
+                        "distanceMeters": 1284,
+                        "decayFactor": 0.7,
+                        "contribution": 4.2
+                    },
+                    {
+                        "name": "Rogues Gallery Comics & Games",
+                        "distanceMeters": 1506,
+                        "decayFactor": 0.7,
+                        "contribution": 4.2
+                    },
+                    {
+                        "name": "Comic Blessing - We Buy Books, Comic Books, CDs, DVDs & More (Appointment Necessary)",
+                        "distanceMeters": 2119,
+                        "decayFactor": 0.5,
+                        "contribution": 3
+                    },
+                    {
+                        "name": "Half Price Books",
+                        "distanceMeters": 2682,
+                        "decayFactor": 0.5,
+                        "contribution": 3
+                    },
+                    {
+                        "name": "Barnes & Noble",
+                        "distanceMeters": 3033,
+                        "decayFactor": 0.3,
+                        "contribution": 1.8
+                    }
+                ]
+            },
+            "coworking_space": {
+                "config": {
+                    "weight": 8,
+                    "tier": "HIGH",
+                    "minReviews": 10,
+                    "maxInstitutions": 15
+                },
+                "filterStats": {
+                    "rawCount": 9,
+                    "rejectedSubUnit": 0,
+                    "rejectedLowActivity": 3,
+                    "clustered": 2,
+                    "validCount": 4
+                },
+                "validInstitutions": [
+                    {
+                        "placeId": "ChIJ_dheWx_RRIYR8ox1axzSR98",
+                        "name": "Office Evolution - Round Rock, TX",
+                        "distanceMeters": 562,
+                        "rating": 5,
+                        "reviewCount": 113
+                    },
+                    {
+                        "placeId": "ChIJs6Z97mfRRIYRKe7FqlUQ4IE",
+                        "name": "The Palmer Apartment Homes",
+                        "distanceMeters": 2787,
+                        "rating": 4.1,
+                        "reviewCount": 92
+                    },
+                    {
+                        "placeId": "ChIJoVE89wvPRIYRDtkkzD8qAm4",
+                        "name": "The Warner",
+                        "distanceMeters": 4043,
+                        "rating": 4.4,
+                        "reviewCount": 298
+                    },
+                    {
+                        "placeId": "ChIJ-zymZDnRRIYRUdxwygjEpdk",
+                        "name": "ReadySpaces",
+                        "distanceMeters": 5018,
+                        "rating": 4.6,
+                        "reviewCount": 41
+                    }
+                ],
+                "contribution": 14.8,
+                "institutionContributions": [
+                    {
+                        "name": "Office Evolution - Round Rock, TX",
+                        "distanceMeters": 562,
+                        "decayFactor": 0.9,
+                        "contribution": 7.2
+                    },
+                    {
+                        "name": "The Palmer Apartment Homes",
+                        "distanceMeters": 2787,
+                        "decayFactor": 0.5,
+                        "contribution": 4
+                    },
+                    {
+                        "name": "The Warner",
+                        "distanceMeters": 4043,
+                        "decayFactor": 0.3,
+                        "contribution": 2.4
+                    },
+                    {
+                        "name": "ReadySpaces",
+                        "distanceMeters": 5018,
+                        "decayFactor": 0.15,
+                        "contribution": 1.2
+                    }
+                ]
+            },
+            "office": {
+                "config": {
+                    "weight": 3,
+                    "tier": "LOW",
+                    "minReviews": 5,
+                    "maxInstitutions": 15
+                },
+                "filterStats": {
+                    "rawCount": 40,
+                    "rejectedSubUnit": 0,
+                    "rejectedLowActivity": 5,
+                    "clustered": 22,
+                    "validCount": 13
+                },
+                "validInstitutions": [
+                    {
+                        "placeId": "ChIJo34oxZTRRIYRGJYLjuMUn8I",
+                        "name": "Round Rock Donuts",
+                        "distanceMeters": 177,
+                        "rating": 4.8,
+                        "reviewCount": 13178
+                    },
+                    {
+                        "placeId": "ChIJHy9wuorRRIYRxccyS39xWP0",
+                        "name": "Marine Corps Junior ROTC",
+                        "distanceMeters": 1795,
+                        "rating": 4.2,
+                        "reviewCount": 127
+                    },
+                    {
+                        "placeId": "ChIJ6-DVFx7ORIYRoYbDpNqrjE4",
+                        "name": "Sam's Club",
+                        "distanceMeters": 2542,
+                        "rating": 4.1,
+                        "reviewCount": 1722
+                    },
+                    {
+                        "placeId": "ChIJ1ZHPZyDORIYRAfxfcgcUCSs",
+                        "name": "The UPS Store",
+                        "distanceMeters": 2612,
+                        "rating": 4.4,
+                        "reviewCount": 431
+                    },
+                    {
+                        "placeId": "ChIJHX_olR3ORIYRR8VB-KNyLNo",
+                        "name": "Lane Bryant",
+                        "distanceMeters": 2620,
+                        "rating": 4.4,
+                        "reviewCount": 171
+                    },
+                    {
+                        "placeId": "ChIJHX_olR3ORIYRWY2phED3XuM",
+                        "name": "World Market",
+                        "distanceMeters": 2624,
+                        "rating": 4.5,
+                        "reviewCount": 502
+                    },
+                    {
+                        "placeId": "ChIJtbYMMGnJRIYRXz91nthC19Q",
+                        "name": "PetSmart",
+                        "distanceMeters": 2744,
+                        "rating": 4.2,
+                        "reviewCount": 1827
+                    },
+                    {
+                        "placeId": "ChIJZaNkqR_ORIYR5flIx4x1lBo",
+                        "name": "Petco",
+                        "distanceMeters": 2784,
+                        "rating": 4.3,
+                        "reviewCount": 1036
+                    },
+                    {
+                        "placeId": "ChIJZaNkqR_ORIYRIVYfko1E8xw",
+                        "name": "Ulta Beauty",
+                        "distanceMeters": 2914,
+                        "rating": 4.1,
+                        "reviewCount": 681
+                    },
+                    {
+                        "placeId": "ChIJqTeg6h7ORIYR3O8Ov7Rcn7E",
+                        "name": "Old Navy",
+                        "distanceMeters": 2961,
+                        "rating": 4.2,
+                        "reviewCount": 495
+                    },
+                    {
+                        "placeId": "ChIJWUFmzn7RRIYRO2BOD_l_qvg",
+                        "name": "Chuy's",
+                        "distanceMeters": 3229,
+                        "rating": 4.4,
+                        "reviewCount": 6615
+                    },
+                    {
+                        "placeId": "ChIJvaKyGCTORIYRB7oNH1tHENk",
+                        "name": "Target",
+                        "distanceMeters": 3340,
+                        "rating": 4,
+                        "reviewCount": 860
+                    },
+                    {
+                        "placeId": "ChIJN2F-WyPORIYRV08DiUE-8jo",
+                        "name": "Best Buy",
+                        "distanceMeters": 3668,
+                        "rating": 4.1,
+                        "reviewCount": 3882
+                    }
+                ],
+                "contribution": 19.8,
+                "institutionContributions": [
+                    {
+                        "name": "Round Rock Donuts",
+                        "distanceMeters": 177,
+                        "decayFactor": 1,
+                        "contribution": 3
+                    },
+                    {
+                        "name": "Marine Corps Junior ROTC",
+                        "distanceMeters": 1795,
+                        "decayFactor": 0.7,
+                        "contribution": 2.1
+                    },
+                    {
+                        "name": "Sam's Club",
+                        "distanceMeters": 2542,
+                        "decayFactor": 0.5,
+                        "contribution": 1.5
+                    },
+                    {
+                        "name": "The UPS Store",
+                        "distanceMeters": 2612,
+                        "decayFactor": 0.5,
+                        "contribution": 1.5
+                    },
+                    {
+                        "name": "Lane Bryant",
+                        "distanceMeters": 2620,
+                        "decayFactor": 0.5,
+                        "contribution": 1.5
+                    },
+                    {
+                        "name": "World Market",
+                        "distanceMeters": 2624,
+                        "decayFactor": 0.5,
+                        "contribution": 1.5
+                    },
+                    {
+                        "name": "PetSmart",
+                        "distanceMeters": 2744,
+                        "decayFactor": 0.5,
+                        "contribution": 1.5
+                    },
+                    {
+                        "name": "Petco",
+                        "distanceMeters": 2784,
+                        "decayFactor": 0.5,
+                        "contribution": 1.5
+                    },
+                    {
+                        "name": "Ulta Beauty",
+                        "distanceMeters": 2914,
+                        "decayFactor": 0.5,
+                        "contribution": 1.5
+                    },
+                    {
+                        "name": "Old Navy",
+                        "distanceMeters": 2961,
+                        "decayFactor": 0.5,
+                        "contribution": 1.5
+                    },
+                    {
+                        "name": "Chuy's",
+                        "distanceMeters": 3229,
+                        "decayFactor": 0.3,
+                        "contribution": 0.9
+                    },
+                    {
+                        "name": "Target",
+                        "distanceMeters": 3340,
+                        "decayFactor": 0.3,
+                        "contribution": 0.9
+                    },
+                    {
+                        "name": "Best Buy",
+                        "distanceMeters": 3668,
+                        "decayFactor": 0.3,
+                        "contribution": 0.9
+                    }
+                ]
+            },
+            "park": {
+                "config": {
+                    "weight": 2,
+                    "tier": "LOW",
+                    "minReviews": 3,
+                    "maxInstitutions": 15
+                },
+                "filterStats": {
+                    "rawCount": 40,
+                    "rejectedSubUnit": 1,
+                    "rejectedLowActivity": 8,
+                    "clustered": 8,
+                    "validCount": 15
+                },
+                "validInstitutions": [
+                    {
+                        "placeId": "ChIJwVN_05TRRIYRx_ZXsKBHuYQ",
+                        "name": "Koughan Memorial Water Tower Park",
+                        "distanceMeters": 96,
+                        "rating": 4.5,
+                        "reviewCount": 70
+                    },
+                    {
+                        "placeId": "ChIJ154Yb-vRRIYRSejs2w3grNQ",
+                        "name": "Centennial Plaza",
+                        "distanceMeters": 288,
+                        "rating": 4.6,
+                        "reviewCount": 190
+                    },
+                    {
+                        "placeId": "ChIJWzpZ5unRRIYRVm1wahVYf28",
+                        "name": "Buck Egger Park",
+                        "distanceMeters": 725,
+                        "rating": 4.3,
+                        "reviewCount": 200
+                    },
+                    {
+                        "placeId": "ChIJEXhtAL7RRIYRKbgIHp07bD0",
+                        "name": "Veterans Park",
+                        "distanceMeters": 792,
+                        "rating": 4.7,
+                        "reviewCount": 538
+                    },
+                    {
+                        "placeId": "ChIJfV1ggLjRRIYR74T9vtMwn98",
+                        "name": "Lake Creek Park",
+                        "distanceMeters": 1067,
+                        "rating": 4.6,
+                        "reviewCount": 61
+                    },
+                    {
+                        "placeId": "ChIJ3Vsmzd_RRIYRQYWYidDrHiM",
+                        "name": "The Butterfly Garden",
+                        "distanceMeters": 1081,
+                        "rating": 3.7,
+                        "reviewCount": 6
+                    },
+                    {
+                        "placeId": "ChIJ1WXksI3RRIYRlhW8_4oeFgg",
+                        "name": "Chisholm Trail Crossing Park",
+                        "distanceMeters": 1101,
+                        "rating": 4.5,
+                        "reviewCount": 578
+                    },
+                    {
+                        "placeId": "ChIJHZT5ArjRRIYR_okqNo13et8",
+                        "name": "Round Rock Dog Depot",
+                        "distanceMeters": 1173,
+                        "rating": 4.5,
+                        "reviewCount": 875
+                    },
+                    {
+                        "placeId": "ChIJz2Vf2urRRIYRAt-36yagvE0",
+                        "name": "Greenlawn Park",
+                        "distanceMeters": 1640,
+                        "rating": 4.5,
+                        "reviewCount": 4
+                    },
+                    {
+                        "placeId": "ChIJQTtJoaTRRIYRbl0bPQMJWmU",
+                        "name": "Mesa Village Park",
+                        "distanceMeters": 1660,
+                        "rating": 4.4,
+                        "reviewCount": 92
+                    },
+                    {
+                        "placeId": "ChIJ_-GpZsrRRIYRsTfcbbQW8A0",
+                        "name": "Stella Park",
+                        "distanceMeters": 1771,
+                        "rating": 5,
+                        "reviewCount": 4
+                    },
+                    {
+                        "placeId": "ChIJ98MjmKfRRIYRQsq7BJRf84w",
+                        "name": "Kensington Greenbelt",
+                        "distanceMeters": 2038,
+                        "rating": 4.4,
+                        "reviewCount": 29
+                    },
+                    {
+                        "placeId": "ChIJrb4YWPvRRIYRhDYk_2SZRRg",
+                        "name": "Frontier Park",
+                        "distanceMeters": 2094,
+                        "rating": 4.4,
+                        "reviewCount": 207
+                    },
+                    {
+                        "placeId": "ChIJU1u0tTLQRIYRLRd29pt7Lx8",
+                        "name": "Kinningham Park",
+                        "distanceMeters": 2487,
+                        "rating": 4.2,
+                        "reviewCount": 116
+                    },
+                    {
+                        "placeId": "ChIJxws-5NfRRIYRZFLQorW2N-c",
+                        "name": "Bowman Park",
+                        "distanceMeters": 2507,
+                        "rating": 4.5,
+                        "reviewCount": 17
+                    }
+                ],
+                "contribution": 21.4,
+                "institutionContributions": [
+                    {
+                        "name": "Koughan Memorial Water Tower Park",
+                        "distanceMeters": 96,
+                        "decayFactor": 1,
+                        "contribution": 2
+                    },
+                    {
+                        "name": "Centennial Plaza",
+                        "distanceMeters": 288,
+                        "decayFactor": 1,
+                        "contribution": 2
+                    },
+                    {
+                        "name": "Buck Egger Park",
+                        "distanceMeters": 725,
+                        "decayFactor": 0.9,
+                        "contribution": 1.8
+                    },
+                    {
+                        "name": "Veterans Park",
+                        "distanceMeters": 792,
+                        "decayFactor": 0.9,
+                        "contribution": 1.8
+                    },
+                    {
+                        "name": "Lake Creek Park",
+                        "distanceMeters": 1067,
+                        "decayFactor": 0.7,
+                        "contribution": 1.4
+                    },
+                    {
+                        "name": "The Butterfly Garden",
+                        "distanceMeters": 1081,
+                        "decayFactor": 0.7,
+                        "contribution": 1.4
+                    },
+                    {
+                        "name": "Chisholm Trail Crossing Park",
+                        "distanceMeters": 1101,
+                        "decayFactor": 0.7,
+                        "contribution": 1.4
+                    },
+                    {
+                        "name": "Round Rock Dog Depot",
+                        "distanceMeters": 1173,
+                        "decayFactor": 0.7,
+                        "contribution": 1.4
+                    },
+                    {
+                        "name": "Greenlawn Park",
+                        "distanceMeters": 1640,
+                        "decayFactor": 0.7,
+                        "contribution": 1.4
+                    },
+                    {
+                        "name": "Mesa Village Park",
+                        "distanceMeters": 1660,
+                        "decayFactor": 0.7,
+                        "contribution": 1.4
+                    },
+                    {
+                        "name": "Stella Park",
+                        "distanceMeters": 1771,
+                        "decayFactor": 0.7,
+                        "contribution": 1.4
+                    },
+                    {
+                        "name": "Kensington Greenbelt",
+                        "distanceMeters": 2038,
+                        "decayFactor": 0.5,
+                        "contribution": 1
+                    },
+                    {
+                        "name": "Frontier Park",
+                        "distanceMeters": 2094,
+                        "decayFactor": 0.5,
+                        "contribution": 1
+                    },
+                    {
+                        "name": "Kinningham Park",
+                        "distanceMeters": 2487,
+                        "decayFactor": 0.5,
+                        "contribution": 1
+                    },
+                    {
+                        "name": "Bowman Park",
+                        "distanceMeters": 2507,
+                        "decayFactor": 0.5,
+                        "contribution": 1
+                    }
+                ]
+            }
+        },
+        "audienceStrength": {
+            "value": 91.2,
+            "formula": "\u03a3 (categoryWeight \u00d7 distanceDecayFactor) per valid institution"
+        },
+        "normalization": {
+            "formula": "audienceStrength / (audienceStrength + K) \u00d7 100",
+            "K": 100,
+            "audienceStrength": 91.2,
+            "demandScore": 48
+        },
+        "topDrivers": [
+            {
+                "category": "park",
+                "tier": "LOW",
+                "weight": 2,
+                "validInstitutions": 15,
+                "contribution": 21.4,
+                "sharePercent": 23
+            },
+            {
+                "category": "office",
+                "tier": "LOW",
+                "weight": 3,
+                "validInstitutions": 13,
+                "contribution": 19.8,
+                "sharePercent": 22
+            },
+            {
+                "category": "book_store",
+                "tier": "MEDIUM",
+                "weight": 6,
+                "validInstitutions": 5,
+                "contribution": 16.2,
+                "sharePercent": 18
+            },
+            {
+                "category": "coworking_space",
+                "tier": "HIGH",
+                "weight": 8,
+                "validInstitutions": 4,
+                "contribution": 14.8,
+                "sharePercent": 16
+            },
+            {
+                "category": "school",
+                "tier": "LOW",
+                "weight": 2,
+                "validInstitutions": 8,
+                "contribution": 9,
+                "sharePercent": 10
+            }
+        ],
+        "densityBand": "Moderate",
+        "finalDemandScore": 48
+    }
+}
+
+────────────────────────────────────────────────────────────────────────────────
+TEST 2 SUMMARY — Round Rock, TX (Suburban)
+────────────────────────────────────────────────────────────────────────────────
+  Address              : Round Rock, TX, USA
+  Total Raw Places     : 141
+  Valid Institutions   : 47
+  Audience Strength    : 91.2 pts
+  Top 3 Drivers        : park(21.4pts), office(19.8pts), book_store(16.2pts)
+  DEMAND SCORE         : 48 / 100  [Moderate]
+  Response Time        : 3766ms
+
+================================================================================
+TEST 3 — RURAL: Fredericksburg, TX
+================================================================================
+
+Full Response:
+{
+    "success": true,
+    "data": {
+        "input": {
+            "location": "Fredericksburg, TX",
+            "businessType": "Coffee Shop",
+            "niche": "study cafe",
+            "radius": 5000
+        },
+        "geocoded": {
+            "formattedAddress": "Fredericksburg, TX 78624, USA",
+            "coordinates": {
+                "lat": 30.27637,
+                "lng": -98.8738819
+            }
+        },
+        "audienceCategories": [
+            "university",
+            "library",
+            "school",
+            "book_store",
+            "coworking_space",
+            "office",
+            "park"
+        ],
+        "audienceCacheHit": true,
+        "pipelineSummary": {
+            "totalRawPlaces": 78,
+            "totalValidInstitutions": 30,
+            "categoriesSearched": 7,
+            "categoriesWithResults": 6
+        },
+        "categoryDiagnostics": {
+            "university": {
+                "config": {
+                    "weight": 10,
+                    "tier": "HIGH",
+                    "minReviews": 10,
+                    "maxInstitutions": 20
+                },
+                "filterStats": {
+                    "rawCount": 2,
+                    "rejectedSubUnit": 0,
+                    "rejectedLowActivity": 1,
+                    "clustered": 0,
+                    "validCount": 1
+                },
+                "validInstitutions": [
+                    {
+                        "placeId": "ChIJCeH1lPjAW4YRSGzsz1VYojs",
+                        "name": "Texas Tech University- Fredericksburg",
+                        "distanceMeters": 4594,
+                        "rating": 4.9,
+                        "reviewCount": 16
+                    }
+                ],
+                "contribution": 3,
+                "institutionContributions": [
+                    {
+                        "name": "Texas Tech University- Fredericksburg",
+                        "distanceMeters": 4594,
+                        "decayFactor": 0.3,
+                        "contribution": 3
+                    }
+                ]
+            },
+            "library": {
+                "config": {
+                    "weight": 7,
+                    "tier": "MEDIUM",
+                    "minReviews": 5,
+                    "maxInstitutions": 15
+                },
+                "filterStats": {
+                    "rawCount": 1,
+                    "rejectedSubUnit": 0,
+                    "rejectedLowActivity": 0,
+                    "clustered": 0,
+                    "validCount": 1
+                },
+                "validInstitutions": [
+                    {
+                        "placeId": "ChIJNzKL-_jAW4YRO7WR3n3CROA",
+                        "name": "Pioneer Memorial Library",
+                        "distanceMeters": 122,
+                        "rating": 4.6,
+                        "reviewCount": 79
+                    }
+                ],
+                "contribution": 7,
+                "institutionContributions": [
+                    {
+                        "name": "Pioneer Memorial Library",
+                        "distanceMeters": 122,
+                        "decayFactor": 1,
+                        "contribution": 7
+                    }
+                ]
+            },
+            "school": {
+                "config": {
+                    "weight": 2,
+                    "tier": "LOW",
+                    "minReviews": 5,
+                    "maxInstitutions": 20
+                },
+                "filterStats": {
+                    "rawCount": 19,
+                    "rejectedSubUnit": 1,
+                    "rejectedLowActivity": 16,
+                    "clustered": 0,
+                    "validCount": 2
+                },
+                "validInstitutions": [
+                    {
+                        "placeId": "ChIJbQk1p_nAW4YRwmmxAnnz6wI",
+                        "name": "Bethany Pre-School",
+                        "distanceMeters": 235,
+                        "rating": 5,
+                        "reviewCount": 5
+                    },
+                    {
+                        "placeId": "ChIJPxt_nKbBW4YRv-zWrPKEbLw",
+                        "name": "Little Peaches Learning Center",
+                        "distanceMeters": 1543,
+                        "rating": 5,
+                        "reviewCount": 5
+                    }
+                ],
+                "contribution": 3.4,
+                "institutionContributions": [
+                    {
+                        "name": "Bethany Pre-School",
+                        "distanceMeters": 235,
+                        "decayFactor": 1,
+                        "contribution": 2
+                    },
+                    {
+                        "name": "Little Peaches Learning Center",
+                        "distanceMeters": 1543,
+                        "decayFactor": 0.7,
+                        "contribution": 1.4
+                    }
+                ]
+            },
+            "book_store": {
+                "config": {
+                    "weight": 6,
+                    "tier": "MEDIUM",
+                    "minReviews": 3,
+                    "maxInstitutions": 15
+                },
+                "filterStats": {
+                    "rawCount": 5,
+                    "rejectedSubUnit": 0,
+                    "rejectedLowActivity": 1,
+                    "clustered": 0,
+                    "validCount": 4
+                },
+                "validInstitutions": [
+                    {
+                        "placeId": "ChIJuz0B89vBW4YRcT4tEkmQwto",
+                        "name": "Easy Company",
+                        "distanceMeters": 679,
+                        "rating": 4.5,
+                        "reviewCount": 20
+                    },
+                    {
+                        "placeId": "ChIJ06Rsa1jAW4YRwVmVHlJm4-Q",
+                        "name": "Admiral Nimitz Bookstore",
+                        "distanceMeters": 768,
+                        "rating": 3.1,
+                        "reviewCount": 7
+                    },
+                    {
+                        "placeId": "ChIJdXq8qKDBW4YRNKdNQ8Pc-RU",
+                        "name": "Dragons Vault TCG, Sports & Comics",
+                        "distanceMeters": 2000,
+                        "rating": 4.9,
+                        "reviewCount": 29
+                    },
+                    {
+                        "placeId": "ChIJH_NAPGnAW4YRqBycZs_up8I",
+                        "name": "Goodwill Central Texas - Fredericksburg",
+                        "distanceMeters": 2917,
+                        "rating": 3.6,
+                        "reviewCount": 131
+                    }
+                ],
+                "contribution": 18,
+                "institutionContributions": [
+                    {
+                        "name": "Easy Company",
+                        "distanceMeters": 679,
+                        "decayFactor": 0.9,
+                        "contribution": 5.4
+                    },
+                    {
+                        "name": "Admiral Nimitz Bookstore",
+                        "distanceMeters": 768,
+                        "decayFactor": 0.9,
+                        "contribution": 5.4
+                    },
+                    {
+                        "name": "Dragons Vault TCG, Sports & Comics",
+                        "distanceMeters": 2000,
+                        "decayFactor": 0.7,
+                        "contribution": 4.2
+                    },
+                    {
+                        "name": "Goodwill Central Texas - Fredericksburg",
+                        "distanceMeters": 2917,
+                        "decayFactor": 0.5,
+                        "contribution": 3
+                    }
+                ]
+            },
+            "coworking_space": {
+                "config": {
+                    "weight": 8,
+                    "tier": "HIGH",
+                    "minReviews": 10,
+                    "maxInstitutions": 15
+                },
+                "filterStats": {
+                    "rawCount": 1,
+                    "rejectedSubUnit": 0,
+                    "rejectedLowActivity": 1,
+                    "clustered": 0,
+                    "validCount": 0
+                },
+                "validInstitutions": [],
+                "contribution": 0,
+                "institutionContributions": []
+            },
+            "office": {
+                "config": {
+                    "weight": 3,
+                    "tier": "LOW",
+                    "minReviews": 5,
+                    "maxInstitutions": 15
+                },
+                "filterStats": {
+                    "rawCount": 40,
+                    "rejectedSubUnit": 0,
+                    "rejectedLowActivity": 8,
+                    "clustered": 7,
+                    "validCount": 15
+                },
+                "validInstitutions": [
+                    {
+                        "placeId": "ChIJz4skyP7AW4YR47_D1iHThf8",
+                        "name": "Fredericksburg Winery",
+                        "distanceMeters": 168,
+                        "rating": 4.2,
+                        "reviewCount": 300
+                    },
+                    {
+                        "placeId": "ChIJUzs_oP7AW4YRAKYpUBoK71k",
+                        "name": "Hondo's On Main",
+                        "distanceMeters": 293,
+                        "rating": 4.3,
+                        "reviewCount": 3299
+                    },
+                    {
+                        "placeId": "ChIJ_UfEiPnAW4YRrq4wAVjYMYo",
+                        "name": "All Seasons Downtown Retreat",
+                        "distanceMeters": 329,
+                        "rating": 4.2,
+                        "reviewCount": 25
+                    },
+                    {
+                        "placeId": "ChIJ3To_IvjAW4YR0UI_l-O6LE4",
+                        "name": "Rockbox Theater",
+                        "distanceMeters": 444,
+                        "rating": 4.7,
+                        "reviewCount": 358
+                    },
+                    {
+                        "placeId": "ChIJ06Rsa1jAW4YR3VfrSXN0Qzs",
+                        "name": "National Museum of the Pacific War",
+                        "distanceMeters": 666,
+                        "rating": 4.8,
+                        "reviewCount": 4438
+                    },
+                    {
+                        "placeId": "ChIJibG1DFjAW4YRQ0KrM_S2IqA",
+                        "name": "Der Lindenbaum",
+                        "distanceMeters": 706,
+                        "rating": 4.1,
+                        "reviewCount": 1499
+                    },
+                    {
+                        "placeId": "ChIJVUvx5FXAW4YR7G5F1q2dTdQ",
+                        "name": "H-E-B",
+                        "distanceMeters": 716,
+                        "rating": 4.6,
+                        "reviewCount": 2427
+                    },
+                    {
+                        "placeId": "ChIJ69WcQFjAW4YRC3JErg4FxEg",
+                        "name": "Main Street Bed and Breakfast",
+                        "distanceMeters": 791,
+                        "rating": 4.1,
+                        "reviewCount": 120
+                    },
+                    {
+                        "placeId": "ChIJMSWiQfbAW4YRqNsc_wASVbg",
+                        "name": "Carriage House Fredericksburg",
+                        "distanceMeters": 839,
+                        "rating": 4.8,
+                        "reviewCount": 28
+                    },
+                    {
+                        "placeId": "ChIJu3QtcFfAW4YR6RHbFYyOmjQ",
+                        "name": "Inn on Barons Creek",
+                        "distanceMeters": 862,
+                        "rating": 4.4,
+                        "reviewCount": 695
+                    },
+                    {
+                        "placeId": "ChIJWxB7NFjAW4YRkoboPgFiNik",
+                        "name": "Fredericksburg Inn & Suites",
+                        "distanceMeters": 922,
+                        "rating": 4.3,
+                        "reviewCount": 1127
+                    },
+                    {
+                        "placeId": "ChIJGUO_a_HAW4YRi19vyXznTes",
+                        "name": "Wee Two Cottages B & B",
+                        "distanceMeters": 995,
+                        "rating": 4,
+                        "reviewCount": 17
+                    },
+                    {
+                        "placeId": "ChIJR3QYklTAW4YRXN03It0-MrI",
+                        "name": "Walgreens",
+                        "distanceMeters": 1083,
+                        "rating": 3.4,
+                        "reviewCount": 45
+                    },
+                    {
+                        "placeId": "ChIJZz2GK1nAW4YR6f_9mHFuMWo",
+                        "name": "Super 8 by Wyndham Fredericksburg",
+                        "distanceMeters": 1167,
+                        "rating": 3.3,
+                        "reviewCount": 920
+                    },
+                    {
+                        "placeId": "ChIJB_B7JQPBW4YRLFr2nB55s9s",
+                        "name": "Absolute Charm Vacation Rentals",
+                        "distanceMeters": 1209,
+                        "rating": 4.1,
+                        "reviewCount": 428
+                    }
+                ],
+                "contribution": 39.9,
+                "institutionContributions": [
+                    {
+                        "name": "Fredericksburg Winery",
+                        "distanceMeters": 168,
+                        "decayFactor": 1,
+                        "contribution": 3
+                    },
+                    {
+                        "name": "Hondo's On Main",
+                        "distanceMeters": 293,
+                        "decayFactor": 1,
+                        "contribution": 3
+                    },
+                    {
+                        "name": "All Seasons Downtown Retreat",
+                        "distanceMeters": 329,
+                        "decayFactor": 1,
+                        "contribution": 3
+                    },
+                    {
+                        "name": "Rockbox Theater",
+                        "distanceMeters": 444,
+                        "decayFactor": 1,
+                        "contribution": 3
+                    },
+                    {
+                        "name": "National Museum of the Pacific War",
+                        "distanceMeters": 666,
+                        "decayFactor": 0.9,
+                        "contribution": 2.7
+                    },
+                    {
+                        "name": "Der Lindenbaum",
+                        "distanceMeters": 706,
+                        "decayFactor": 0.9,
+                        "contribution": 2.7
+                    },
+                    {
+                        "name": "H-E-B",
+                        "distanceMeters": 716,
+                        "decayFactor": 0.9,
+                        "contribution": 2.7
+                    },
+                    {
+                        "name": "Main Street Bed and Breakfast",
+                        "distanceMeters": 791,
+                        "decayFactor": 0.9,
+                        "contribution": 2.7
+                    },
+                    {
+                        "name": "Carriage House Fredericksburg",
+                        "distanceMeters": 839,
+                        "decayFactor": 0.9,
+                        "contribution": 2.7
+                    },
+                    {
+                        "name": "Inn on Barons Creek",
+                        "distanceMeters": 862,
+                        "decayFactor": 0.9,
+                        "contribution": 2.7
+                    },
+                    {
+                        "name": "Fredericksburg Inn & Suites",
+                        "distanceMeters": 922,
+                        "decayFactor": 0.9,
+                        "contribution": 2.7
+                    },
+                    {
+                        "name": "Wee Two Cottages B & B",
+                        "distanceMeters": 995,
+                        "decayFactor": 0.9,
+                        "contribution": 2.7
+                    },
+                    {
+                        "name": "Walgreens",
+                        "distanceMeters": 1083,
+                        "decayFactor": 0.7,
+                        "contribution": 2.1
+                    },
+                    {
+                        "name": "Super 8 by Wyndham Fredericksburg",
+                        "distanceMeters": 1167,
+                        "decayFactor": 0.7,
+                        "contribution": 2.1
+                    },
+                    {
+                        "name": "Absolute Charm Vacation Rentals",
+                        "distanceMeters": 1209,
+                        "decayFactor": 0.7,
+                        "contribution": 2.1
+                    }
+                ]
+            },
+            "park": {
+                "config": {
+                    "weight": 2,
+                    "tier": "LOW",
+                    "minReviews": 3,
+                    "maxInstitutions": 15
+                },
+                "filterStats": {
+                    "rawCount": 10,
+                    "rejectedSubUnit": 0,
+                    "rejectedLowActivity": 3,
+                    "clustered": 0,
+                    "validCount": 7
+                },
+                "validInstitutions": [
+                    {
+                        "placeId": "ChIJPYFFG_nAW4YRUowW8k1DM50",
+                        "name": "Marktplatz von Fredericksburg",
+                        "distanceMeters": 106,
+                        "rating": 4.7,
+                        "reviewCount": 3280
+                    },
+                    {
+                        "placeId": "ChIJa0IzzZnBW4YRFXwK1cU_lQo",
+                        "name": "Frantzen Park",
+                        "distanceMeters": 607,
+                        "rating": 4.2,
+                        "reviewCount": 10
+                    },
+                    {
+                        "placeId": "ChIJGR7ljFbAW4YRlHRtHJRJdB4",
+                        "name": "Old Fair Park",
+                        "distanceMeters": 785,
+                        "rating": 4.6,
+                        "reviewCount": 98
+                    },
+                    {
+                        "placeId": "ChIJmbbqv6nBW4YRinhWJMe8oK4",
+                        "name": "Memorial Courtyard",
+                        "distanceMeters": 786,
+                        "rating": 4.5,
+                        "reviewCount": 8
+                    },
+                    {
+                        "placeId": "ChIJ0e0NdOjAW4YRn5GZBGPJmBc",
+                        "name": "Cross Mountain",
+                        "distanceMeters": 2034,
+                        "rating": 4.6,
+                        "reviewCount": 495
+                    },
+                    {
+                        "placeId": "ChIJLaJLTLnBW4YRbnr1mI8-isI",
+                        "name": "Hill Top Trails",
+                        "distanceMeters": 3889,
+                        "rating": 3.1,
+                        "reviewCount": 7
+                    },
+                    {
+                        "placeId": "ChIJP4tFJsLBW4YRjiLE3cTcQHw",
+                        "name": "Oak Crest Park",
+                        "distanceMeters": 4527,
+                        "rating": 4.2,
+                        "reviewCount": 43
+                    }
+                ],
+                "contribution": 9.6,
+                "institutionContributions": [
+                    {
+                        "name": "Marktplatz von Fredericksburg",
+                        "distanceMeters": 106,
+                        "decayFactor": 1,
+                        "contribution": 2
+                    },
+                    {
+                        "name": "Frantzen Park",
+                        "distanceMeters": 607,
+                        "decayFactor": 0.9,
+                        "contribution": 1.8
+                    },
+                    {
+                        "name": "Old Fair Park",
+                        "distanceMeters": 785,
+                        "decayFactor": 0.9,
+                        "contribution": 1.8
+                    },
+                    {
+                        "name": "Memorial Courtyard",
+                        "distanceMeters": 786,
+                        "decayFactor": 0.9,
+                        "contribution": 1.8
+                    },
+                    {
+                        "name": "Cross Mountain",
+                        "distanceMeters": 2034,
+                        "decayFactor": 0.5,
+                        "contribution": 1
+                    },
+                    {
+                        "name": "Hill Top Trails",
+                        "distanceMeters": 3889,
+                        "decayFactor": 0.3,
+                        "contribution": 0.6
+                    },
+                    {
+                        "name": "Oak Crest Park",
+                        "distanceMeters": 4527,
+                        "decayFactor": 0.3,
+                        "contribution": 0.6
+                    }
+                ]
+            }
+        },
+        "audienceStrength": {
+            "value": 80.9,
+            "formula": "\u03a3 (categoryWeight \u00d7 distanceDecayFactor) per valid institution"
+        },
+        "normalization": {
+            "formula": "audienceStrength / (audienceStrength + K) \u00d7 100",
+            "K": 100,
+            "audienceStrength": 80.9,
+            "demandScore": 45
+        },
+        "topDrivers": [
+            {
+                "category": "office",
+                "tier": "LOW",
+                "weight": 3,
+                "validInstitutions": 15,
+                "contribution": 39.9,
+                "sharePercent": 49
+            },
+            {
+                "category": "book_store",
+                "tier": "MEDIUM",
+                "weight": 6,
+                "validInstitutions": 4,
+                "contribution": 18,
+                "sharePercent": 22
+            },
+            {
+                "category": "park",
+                "tier": "LOW",
+                "weight": 2,
+                "validInstitutions": 7,
+                "contribution": 9.6,
+                "sharePercent": 12
+            },
+            {
+                "category": "library",
+                "tier": "MEDIUM",
+                "weight": 7,
+                "validInstitutions": 1,
+                "contribution": 7,
+                "sharePercent": 9
+            },
+            {
+                "category": "school",
+                "tier": "LOW",
+                "weight": 2,
+                "validInstitutions": 2,
+                "contribution": 3.4,
+                "sharePercent": 4
+            }
+        ],
+        "densityBand": "Moderate",
+        "finalDemandScore": 45
+    }
+}
+
+────────────────────────────────────────────────────────────────────────────────
+TEST 3 SUMMARY — Fredericksburg, TX (Rural)
+────────────────────────────────────────────────────────────────────────────────
+  Address              : Fredericksburg, TX 78624, USA
+  Total Raw Places     : 78
+  Valid Institutions   : 30
+  Audience Strength    : 80.9 pts
+  Top 3 Drivers        : office(39.9pts), book_store(18pts), park(9.6pts)
+  DEMAND SCORE         : 45 / 100  [Moderate]
+  Response Time        : 2772ms
+
+================================================================================
+FINAL COMPARISON — AUDIENCE QUALITY ENGINE GRADIENT VALIDATION
+================================================================================
+
+  Location                        Score    Strength       Band     Raw   Valid  Top Driver    
+  ──────────────────────────────  ─────  ──────────  ─────────  ──────  ──────  ──────────────
+  Austin, TX (Dense City)            76         313     Strong     262      90  coworking_space(103.2pts)
+  Round Rock, TX (Suburban)          48        91.2   Moderate     141      47  park(21.4pts) 
+  Fredericksburg, TX (Rural)         45        80.9   Moderate      78      30  office(39.9pts)
+
+  GRADIENT CHECK  : ✅ PASSED — Dense City > Suburban > Rural
+  VERDICT         : Audience Quality Engine produces genuine intelligence.
+
+================================================================================
+ VALIDATION COMPLETE
+ Engine             : Audience Quality Engine v4
+ Normalization      : Hyperbolic — strength / (strength + 100) * 100
+ Filtering          : Sub-unit pattern rejection + institution clustering
+ Distance Decay     : 0-500m=1.0, 0.5-1km=0.9, 1-2km=0.7, 2-3km=0.5, 3-5km=0.3
+ Total Time         : 14s
+ Result File        : /Users/mukikabi/Documents/New project/marketsite-analyst/debug_demand_test_result.txt
+================================================================================
