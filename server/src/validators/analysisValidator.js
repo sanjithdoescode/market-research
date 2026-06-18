@@ -41,3 +41,11 @@ export const chatRequestSchema = z
   })
   .strict();
 
+export const nicheSuggestionsRequestSchema = z
+  .object({
+    businessType: z.string().trim().min(2).max(100),
+    location: z.string().trim().min(2).max(180).optional()
+  })
+  .strict();
+
+

@@ -6,6 +6,7 @@ import { env } from './config/env.js';
 import analysisRoutes from './routes/analysisRoutes.js';
 import debugRoutes from './routes/debugRoutes.js';
 import historyRoutes from './routes/historyRoutes.js';
+import configRoutes from './routes/configRoutes.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 import { requestLogger } from './middleware/logger.js';
 import { apiLimiter } from './middleware/rateLimiter.js';
@@ -37,6 +38,7 @@ app.get('/health', (_req, res) => {
 app.use('/api/analysis', analysisRoutes);
 app.use('/api/history', historyRoutes);
 app.use('/api/debug', debugRoutes);
+app.use('/api/config', configRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

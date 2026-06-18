@@ -1,6 +1,6 @@
 import { createMarketAnalysis } from '../services/analysisService.js';
 import { findAnalysisById } from '../repositories/analysisRepository.js';
-import { generateChatResponse } from '../services/mistralService.js';
+import { generateChatResponse, generateNicheSuggestions } from '../services/mistralService.js';
 import { AppError } from '../utils/AppError.js';
 import { sendSuccess } from '../utils/responseFormatter.js';
 
@@ -39,3 +39,14 @@ export async function chatGeneral(req, res, next) {
     return next(error);
   }
 }
+
+export async function getNicheSuggestions(req, res, next) {
+  try {
+    const { businessType, location } = req.validatedBody;
+    const niches = await generateNicheSuggestions({ businessType, location });
+    return sendSuccess(res, niches);
+  } catch (error) {
+    return next(error);
+  }
+}
+

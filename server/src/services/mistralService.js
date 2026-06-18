@@ -304,3 +304,89 @@ export async function generateChatResponse({ analysis, messages }) {
     clearTimeout(timeout);
   }
 }
+
+export async function generateNicheSuggestions({ businessType, location }) {
+  const apiKey = requireEnv('MISTRAL_API_KEY', mistralConfig.apiKey);
+  
+  const prompt = `You are a professional business consultant and location strategist.
+For a target business type of "${businessType}"${location ? ` located in "${location}"` : ''}, suggest 5 highly creative, specific, viable, and profitable business niches.
+Your suggestions should be tailored to stand out in the local market, capitalize on recent consumer trends, and minimize direct competition.
+
+Provide your response strictly in JSON format matching this schema:
+{
+  "niches": ["string", "string", "string", "string", "string"]
+}`;
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), mistralConfig.timeoutMs);
+
+  try {
+    const response = await fetch(mistralConfig.apiUrl, {
+      method: 'POST',
+      signal: controller.signal,
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: mistralConfig.model,
+        temperature: 0.7,
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        response_format: {
+          type: 'json_schema',
+          json_schema: {
+            name: 'niche_suggestions_response',
+            strict: true,
+            schema: {
+              type: 'object',
+              properties: {
+                niches: {
+                  type: 'array',
+                  items: { type: 'string' }
+                }
+              },
+              required: ['niches'],
+              additionalProperties: false
+            }
+          }
+        }
+      })
+    });
+
+    const payload = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new AppError(502, 'Mistral niche suggestions request failed.', {
+        statusCode: response.status,
+        payload
+      });
+    }
+
+    const rawContent = extractContent(payload);
+    const parsed = parseJsonContent(rawContent);
+    
+    if (!parsed || !Array.isArray(parsed.niches)) {
+      throw new AppError(502, 'Mistral returned an invalid response structure for niche suggestions.');
+    }
+
+    return parsed.niches;
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      throw new AppError(504, 'Mistral niche suggestions request timed out.');
+    }
+
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    throw new AppError(502, 'Mistral niche suggestions failed.', { cause: error.message });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
