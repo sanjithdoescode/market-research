@@ -1,19 +1,42 @@
+import { useEffect } from 'react';
 import { History, MapPinned, Search, Zap, MessageSquare } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 import AppRoutes from './routes/AppRoutes.jsx';
 
 function App() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Support Ctrl + Cmd/Super (metaKey) OR Ctrl + Alt (altKey) for robust OS/browser compatibility
+      const hasModifiers = e.ctrlKey && (e.metaKey || e.altKey);
+      
+      if (hasModifiers) {
+        const key = e.key.toLowerCase();
+        const code = e.code;
+
+        if (code === 'KeyA' || key === 'a') {
+          e.preventDefault();
+          navigate('/');
+        } else if (code === 'KeyH' || key === 'h') {
+          e.preventDefault();
+          navigate('/history');
+        } else if (code === 'KeyB' || key === 'b') {
+          e.preventDefault();
+          navigate('/chat');
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [navigate]);
+
   return (
     <div className="app-shell">
       <header className="topbar">
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div className="window-dots" aria-hidden="true">
-            <span className="window-dot window-dot--close" />
-            <span className="window-dot window-dot--minimize" />
-            <span className="window-dot window-dot--maximize" />
-          </div>
-
           <NavLink to="/" className="brand" aria-label="MarketSite Analyst dashboard">
             <MapPinned size={22} aria-hidden="true" />
             <span>MarketSite Analyst</span>
@@ -22,16 +45,37 @@ function App() {
 
         <nav className="primary-nav" aria-label="Primary navigation">
           <NavLink to="/" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-            <Search size={16} aria-hidden="true" />
-            <span>Analyze</span>
+            <span className="nav-link-title">
+              <Search size={16} aria-hidden="true" />
+              <span>Analyze</span>
+            </span>
+            <span className="nav-link-keybind" aria-label="shortcut: Command Control A">
+              <kbd>⌘</kbd>
+              <kbd>⌃</kbd>
+              <kbd>A</kbd>
+            </span>
           </NavLink>
           <NavLink to="/history" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-            <History size={16} aria-hidden="true" />
-            <span>History</span>
+            <span className="nav-link-title">
+              <History size={16} aria-hidden="true" />
+              <span>History</span>
+            </span>
+            <span className="nav-link-keybind" aria-label="shortcut: Command Control H">
+              <kbd>⌘</kbd>
+              <kbd>⌃</kbd>
+              <kbd>H</kbd>
+            </span>
           </NavLink>
           <NavLink to="/chat" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-            <MessageSquare size={16} aria-hidden="true" />
-            <span>AI Chat</span>
+            <span className="nav-link-title">
+              <MessageSquare size={16} aria-hidden="true" />
+              <span>AI Chat</span>
+            </span>
+            <span className="nav-link-keybind" aria-label="shortcut: Command Control B">
+              <kbd>⌘</kbd>
+              <kbd>⌃</kbd>
+              <kbd>B</kbd>
+            </span>
           </NavLink>
         </nav>
       </header>
