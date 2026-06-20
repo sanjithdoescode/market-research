@@ -1,5 +1,5 @@
-import { MapPin, Search } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { MapPin, Search, Locate } from 'lucide-react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 
 const loadGoogleMapsScript = (apiKey) => {
   return new Promise((resolve, reject) => {
@@ -29,11 +29,104 @@ function MapPicker({ value, onChange }) {
   const [mapsLoaded, setMapsLoaded] = useState(false);
   const [inputValue, setInputValue] = useState(value || '');
   const [resolvedAddress, setResolvedAddress] = useState(value || '');
+  const [isLocating, setIsLocating] = useState(false);
+  const [locationError, setLocationError] = useState(null);
 
   const mapRef = useRef(null);
   const inputRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markerRef = useRef(null);
+  const hasAutoDetectedRef = useRef(false);
+
+  // Reusable geolocation detection function
+  const detectLocation = useCallback((force = false) => {
+    if (!mapsLoaded || !mapInstanceRef.current) return;
+    if (!navigator.geolocation) {
+      setLocationError('Geolocation is not supported by your browser');
+      return;
+    }
+
+    setIsLocating(true);
+    setLocationError(null);
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        // If not forced and user has already typed something in the input while we were waiting, don't overwrite it
+        if (!force && inputRef.current && inputRef.current.value) {
+          setIsLocating(false);
+          return;
+        }
+
+        const pos = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+
+        const geocoder = new window.google.maps.Geocoder();
+        geocoder.geocode({ location: pos }, (results, status) => {
+          setIsLocating(false);
+          if (status === 'OK' && results[0]) {
+            const address = results[0].formatted_address;
+            
+            // Double check that the user didn't type something during the geocoding request if not forced
+            if (!force && inputRef.current && inputRef.current.value) {
+              return;
+            }
+
+            const emeraldPin = {
+              path: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z',
+              fillColor: '#34d399',
+              fillOpacity: 1,
+              strokeColor: '#0e0e11',
+              strokeWeight: 2,
+              scale: 1.5,
+              anchor: new window.google.maps.Point(12, 22)
+            };
+
+            const map = mapInstanceRef.current;
+            if (markerRef.current) {
+              markerRef.current.setPosition(pos);
+            } else {
+              markerRef.current = new window.google.maps.Marker({
+                position: pos,
+                map,
+                icon: emeraldPin,
+                animation: window.google.maps.Animation.DROP
+              });
+            }
+            map.panTo(pos);
+            map.setZoom(15);
+
+            setResolvedAddress(address);
+            setInputValue(address);
+            onChange(address);
+          } else {
+            console.error('Geocoder failed:', status);
+            setLocationError('Could not resolve your coordinates to an address.');
+          }
+        });
+      },
+      (error) => {
+        setIsLocating(false);
+        console.warn('Geolocation error:', error);
+        let msg = 'Failed to detect location.';
+        if (error.code === error.PERMISSION_DENIED) {
+          msg = 'Location access denied.';
+        } else if (error.code === error.POSITION_UNAVAILABLE) {
+          msg = 'Location info unavailable.';
+        } else if (error.code === error.TIMEOUT) {
+          msg = 'Location detection timed out.';
+        }
+        setLocationError(msg);
+
+        // Auto-clear error after 5 seconds to keep UI clean
+        setTimeout(() => {
+          setLocationError(null);
+        }, 5000);
+      },
+      { enableHighAccuracy: true, timeout: 8000 }
+    );
+  }, [mapsLoaded, onChange]);
 
   // Load API key from server config
   useEffect(() => {
@@ -196,6 +289,7 @@ function MapPicker({ value, onChange }) {
       if (!place.geometry || !place.geometry.location) {
         return;
       }
+      setLocationError(null);
       const position = place.geometry.location;
       const address = place.formatted_address || place.name;
       updateMarker(position, address);
@@ -205,6 +299,7 @@ function MapPicker({ value, onChange }) {
     map.addListener('click', (event) => {
       const position = event.latLng;
       const geocoder = new window.google.maps.Geocoder();
+      setLocationError(null);
 
       geocoder.geocode({ location: position }, (results, status) => {
         if (status === 'OK' && results[0]) {
@@ -230,8 +325,14 @@ function MapPicker({ value, onChange }) {
           });
         }
       });
+    } else {
+      // Auto-detect user's location on initial load if no value is set
+      if (navigator.geolocation && !hasAutoDetectedRef.current) {
+        hasAutoDetectedRef.current = true;
+        detectLocation(false);
+      }
     }
-  }, [mapsLoaded, value]);
+  }, [mapsLoaded, value, detectLocation]);
 
   return (
     <div className="map-picker-wrapper">
@@ -241,12 +342,25 @@ function MapPicker({ value, onChange }) {
           ref={inputRef}
           type="text"
           value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
+          onChange={(e) => {
+            setInputValue(e.target.value);
+            setLocationError(null);
+          }}
           placeholder="Search for a location or click on the map below..."
           required
           minLength={2}
           maxLength={180}
         />
+        <button
+          type="button"
+          className={`map-locate-btn ${isLocating ? 'locating' : ''}`}
+          onClick={() => detectLocation(true)}
+          title="Detect my current location"
+          aria-label="Detect my current location"
+          disabled={isLocating || !mapsLoaded}
+        >
+          <Locate size={16} />
+        </button>
         <Search className="map-search-end-icon" size={16} aria-hidden="true" />
       </div>
 
@@ -256,7 +370,19 @@ function MapPicker({ value, onChange }) {
         {apiKey && !mapsLoaded && <div className="map-overlay-loading">Loading Google Maps...</div>}
       </div>
 
-      {resolvedAddress && (
+      {isLocating && (
+        <div className="map-resolved-address status-locating">
+          <span className="bullet pulsing" />
+          Detecting your location...
+        </div>
+      )}
+      {!isLocating && locationError && (
+        <div className="map-resolved-address status-error">
+          <span className="bullet error" />
+          Error: <strong style={{ color: 'var(--red)' }}>{locationError}</strong>
+        </div>
+      )}
+      {!isLocating && !locationError && resolvedAddress && (
         <div className="map-resolved-address">
           <span className="bullet" />
           Selected: <strong>{resolvedAddress}</strong>

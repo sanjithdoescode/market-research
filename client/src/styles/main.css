@@ -631,7 +631,43 @@ h3 {
 
 .map-search-container input {
   padding-left: 40px !important;
-  padding-right: 40px !important;
+  padding-right: 70px !important;
+}
+
+.map-locate-btn {
+  position: absolute;
+  right: 40px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 4px;
+  transition: all var(--duration) var(--ease-out);
+}
+
+.map-locate-btn:hover:not(:disabled) {
+  color: var(--accent);
+  background: var(--surface-3);
+}
+
+.map-locate-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.map-locate-btn.locating {
+  color: var(--accent);
+  animation: locate-pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes locate-pulse {
+  0%, 100% { opacity: 0.6; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.1); }
 }
 
 .map-container-outer {
@@ -682,6 +718,23 @@ h3 {
   border-radius: 50%;
   background: var(--accent);
   box-shadow: 0 0 8px var(--accent);
+  transition: all var(--duration) var(--ease-out);
+}
+
+.map-resolved-address .bullet.pulsing {
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent);
+  animation: bullet-glow-pulse 1.2s infinite ease-in-out;
+}
+
+.map-resolved-address .bullet.error {
+  background: var(--red);
+  box-shadow: 0 0 8px var(--red);
+}
+
+@keyframes bullet-glow-pulse {
+  0%, 100% { opacity: 0.4; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
 }
 
 /* Dark-Theme Overrides for Google Places Autocomplete dropdown */
