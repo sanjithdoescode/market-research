@@ -1,11 +1,13 @@
 import { useEffect } from 'react';
 import { History, MapPinned, Search, Zap, MessageSquare } from 'lucide-react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 
 import AppRoutes from './routes/AppRoutes.jsx';
 
 function App() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isChatPage = location.pathname === '/chat';
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -34,7 +36,7 @@ function App() {
   }, [navigate]);
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell ${isChatPage ? 'app-shell--chat' : ''}`}>
       <header className="topbar">
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <NavLink to="/" className="brand" aria-label="MarketSite Analyst dashboard">
