@@ -201,7 +201,6 @@
 }
 
 .landing-nav-links a:hover {
-  color: var(--lp-accent);
   background: var(--lp-accent-glow);
   border-color: var(--lp-accent);
 }
@@ -225,7 +224,6 @@
 }
 
 .landing-nav-cta:hover {
-  color: var(--lp-accent);
   background: var(--lp-accent-glow);
   border-color: var(--lp-accent);
   transform: translate3d(0, -1px, 0) scale(1.02);
