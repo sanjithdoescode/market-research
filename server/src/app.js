@@ -3,6 +3,7 @@ import express from 'express';
 import helmet from 'helmet';
 
 import { env } from './config/env.js';
+import { connectDatabase } from './config/database.js';
 import analysisRoutes from './routes/analysisRoutes.js';
 import debugRoutes from './routes/debugRoutes.js';
 import historyRoutes from './routes/historyRoutes.js';
@@ -22,6 +23,14 @@ app.use(
 );
 app.use(express.json({ limit: '1mb' }));
 app.use(requestLogger);
+app.use(async (req, res, next) => {
+  try {
+    await connectDatabase();
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
 app.use('/api', apiLimiter);
 
 app.get('/health', (_req, res) => {
