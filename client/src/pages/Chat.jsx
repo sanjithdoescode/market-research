@@ -41,6 +41,36 @@ const PROVIDERS = [
   { id: 'gemini', name: 'Google Gemini' }
 ];
 
+const MODEL_OPTIONS = {
+  mistral: [
+    { id: 'mistral-large-3', name: 'Mistral Large 3' },
+    { id: 'mistral-medium-3.5', name: 'Mistral Medium 3.5' },
+    { id: 'mistral-small-4', name: 'Mistral Small 4' },
+    { id: 'devstral-2', name: 'Devstral 2' },
+    { id: 'codestral-latest', name: 'Codestral' }
+  ],
+  openai: [
+    { id: 'gpt-5.5', name: 'GPT-5.5' },
+    { id: 'gpt-5.5-thinking', name: 'GPT-5.5 Thinking' },
+    { id: 'gpt-5.5-instant', name: 'GPT-5.5 Instant' },
+    { id: 'gpt-5.4-mini', name: 'GPT-5.4 Mini' },
+    { id: 'gpt-5.4-nano', name: 'GPT-5.4 Nano' }
+  ],
+  anthropic: [
+    { id: 'claude-fable-5', name: 'Claude 5 Fable' },
+    { id: 'claude-sonnet-4-6', name: 'Claude 4.6 Sonnet' },
+    { id: 'claude-opus-4-8', name: 'Claude 4.8 Opus' },
+    { id: 'claude-haiku-4-5', name: 'Claude 4.5 Haiku' }
+  ],
+  gemini: [
+    { id: 'gemini-3.5-flash', name: 'Gemini 3.5 Flash' },
+    { id: 'gemini-3.1-pro', name: 'Gemini 3.1 Pro' },
+    { id: 'gemini-3.1-flash-lite', name: 'Gemini 3.1 Flash-Lite' },
+    { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash' },
+    { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro' }
+  ]
+};
+
 /* ── Markdown parser ────────────────────────────────────────── */
 function parseMarkdownToHtml(text) {
   if (!text) return '';
@@ -302,10 +332,17 @@ function Chat() {
     anthropic: localStorage.getItem('byok_key_anthropic') || '',
     gemini: localStorage.getItem('byok_key_gemini') || '',
   }));
+  const [apiModels, setApiModels] = useState(() => ({
+    mistral: localStorage.getItem('byok_model_mistral') || 'mistral-large-3',
+    openai: localStorage.getItem('byok_model_openai') || 'gpt-5.5',
+    anthropic: localStorage.getItem('byok_model_anthropic') || 'claude-fable-5',
+    gemini: localStorage.getItem('byok_model_gemini') || 'gemini-3.5-flash',
+  }));
 
   const [showSettings, setShowSettings] = useState(false);
   const [tempProvider, setTempProvider] = useState(provider);
   const [tempApiKeys, setTempApiKeys] = useState(apiKeys);
+  const [tempApiModels, setTempApiModels] = useState(apiModels);
   const [showKey, setShowKey] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
@@ -314,13 +351,18 @@ function Chat() {
     if (showSettings) {
       setTempProvider(provider);
       setTempApiKeys(apiKeys);
+      setTempApiModels(apiModels);
       setSaveSuccess(false);
       setShowKey(false);
     }
-  }, [showSettings, provider, apiKeys]);
+  }, [showSettings, provider, apiKeys, apiModels]);
 
   const handleKeyChange = (prov, val) => {
     setTempApiKeys(prev => ({ ...prev, [prov]: val }));
+  };
+
+  const handleModelChange = (prov, val) => {
+    setTempApiModels(prev => ({ ...prev, [prov]: val }));
   };
 
   const saveSettings = () => {
@@ -330,8 +372,14 @@ function Chat() {
     localStorage.setItem('byok_key_anthropic', tempApiKeys.anthropic);
     localStorage.setItem('byok_key_gemini', tempApiKeys.gemini);
 
+    localStorage.setItem('byok_model_mistral', tempApiModels.mistral);
+    localStorage.setItem('byok_model_openai', tempApiModels.openai);
+    localStorage.setItem('byok_model_anthropic', tempApiModels.anthropic);
+    localStorage.setItem('byok_model_gemini', tempApiModels.gemini);
+
     setProvider(tempProvider);
     setApiKeys(tempApiKeys);
+    setApiModels(tempApiModels);
     setSaveSuccess(true);
 
     window.dispatchEvent(new Event('byok_provider_change'));
@@ -344,7 +392,8 @@ function Chat() {
 
   const getDisclaimerText = () => {
     const providerName = PROVIDERS.find(p => p.id === provider)?.name || 'Mistral AI';
-    return `AI insights may be inaccurate. Cross-reference independently. Powered by ${providerName}.`;
+    const modelName = MODEL_OPTIONS[provider]?.find(m => m.id === apiModels[provider])?.name || '';
+    return `AI insights may be inaccurate. Cross-reference independently. Powered by ${providerName}${modelName ? ` (${modelName})` : ''}.`;
   };
 
   const messagesEndRef = useRef(null);
@@ -399,7 +448,11 @@ function Chat() {
 
     try {
       const apiMessages = updatedMessages.slice(1).map(msg => ({ role: msg.role, content: msg.content }));
-      const byokSettings = { provider, apiKey: apiKeys[provider] || '' };
+      const byokSettings = {
+        provider,
+        apiKey: apiKeys[provider] || '',
+        model: apiModels[provider] || ''
+      };
       const response = analysisId
         ? await sendChatMessage(analysisId, apiMessages, byokSettings)
         : await sendGeneralChatMessage(apiMessages, byokSettings);
@@ -568,7 +621,7 @@ function Chat() {
               title="Configure AI Provider & Key"
             >
               <ProviderLogo provider={provider} className="ai-avatar-img" style={{ width: '14px', height: '14px', marginTop: 0 }} />
-              <span>{PROVIDERS.find(p => p.id === provider)?.name}</span>
+              <span>{PROVIDERS.find(p => p.id === provider)?.name} ({MODEL_OPTIONS[provider]?.find(m => m.id === apiModels[provider])?.name})</span>
               <Settings size={12} style={{ opacity: 0.7 }} />
             </button>
           </div>
@@ -682,6 +735,44 @@ function Chat() {
                   {tempProvider === 'mistral'
                     ? 'Using the default Mistral engine. No API key is required, but you can enter your own key here.'
                     : `To use ${PROVIDERS.find(p => p.id === tempProvider)?.name}, you must provide an API key. Your key is stored locally in your browser.`}
+                </span>
+              </div>
+
+              {/* Model Picker */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+                <label style={{ fontSize: '0.8rem', fontWeight: '700', color: 'var(--ink)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Model Selection
+                </label>
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                  <select
+                    value={tempApiModels[tempProvider] || ''}
+                    onChange={e => handleModelChange(tempProvider, e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: '8px',
+                      border: '1px solid var(--border)',
+                      background: 'var(--surface-2)',
+                      color: 'var(--ink)',
+                      fontSize: '0.9rem',
+                      outline: 'none',
+                      cursor: 'pointer',
+                      appearance: 'none',
+                      backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'right 14px center',
+                      backgroundSize: '16px',
+                    }}
+                  >
+                    {(MODEL_OPTIONS[tempProvider] || []).map(opt => (
+                      <option key={opt.id} value={opt.id}>
+                        {opt.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
+                  Select the model version to use for this provider.
                 </span>
               </div>
             </div>

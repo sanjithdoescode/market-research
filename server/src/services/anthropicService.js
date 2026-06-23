@@ -8,10 +8,12 @@ import { AppError } from '../utils/AppError.js';
  * @param {object[]} params.messages - User/assistant conversational history
  * @param {string} params.apiKey - User supplied Anthropic API key
  */
-export async function generateAnthropicChatResponse({ systemPrompt, messages, apiKey }) {
+export async function generateAnthropicChatResponse({ systemPrompt, messages, apiKey, model }) {
   if (!apiKey) {
     throw new AppError(400, 'Anthropic API key is required for BYOK.');
   }
+
+  const selectedModel = model || 'claude-fable-5';
 
   // Filter messages to only contain user and assistant roles (Anthropic does not allow system messages in messages array)
   const anthropicMessages = messages.filter(m => m.role === 'user' || m.role === 'assistant');
@@ -29,7 +31,7 @@ export async function generateAnthropicChatResponse({ systemPrompt, messages, ap
         'content-type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'claude-3-5-sonnet-20241022',
+        model: selectedModel,
         max_tokens: 4096,
         temperature: 0.7,
         system: systemPrompt || undefined,
@@ -54,7 +56,7 @@ export async function generateAnthropicChatResponse({ systemPrompt, messages, ap
     return {
       message: content,
       metadata: {
-        model: payload.model || 'claude-3-5-sonnet-20241022',
+        model: payload.model || selectedModel,
         usage: payload.usage
       }
     };

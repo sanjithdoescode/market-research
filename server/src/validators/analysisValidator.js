@@ -39,7 +39,8 @@ export const chatRequestSchema = z
       )
       .min(1),
     provider: z.enum(['mistral', 'openai', 'anthropic', 'gemini']).optional(),
-    apiKey: z.string().trim().optional()
+    apiKey: z.string().trim().optional(),
+    model: z.string().trim().optional()
   })
   .strict();
 

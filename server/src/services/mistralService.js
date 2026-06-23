@@ -285,26 +285,27 @@ export async function generateMarketAnalysis({
  * @param {object} params.analysis - Fully populated analysis document
  * @param {object[]} params.messages - Conversational history array
  */
-export async function generateChatResponse({ analysis, messages, provider = 'mistral', apiKey }) {
+export async function generateChatResponse({ analysis, messages, provider = 'mistral', apiKey, model }) {
   const systemPrompt = analysis ? buildChatSystemPrompt(analysis) : buildGeneralChatSystemPrompt();
 
   if (provider === 'openai') {
     const { generateOpenAIChatResponse } = await import('./openaiService.js');
-    return generateOpenAIChatResponse({ systemPrompt, messages, apiKey });
+    return generateOpenAIChatResponse({ systemPrompt, messages, apiKey, model });
   }
 
   if (provider === 'anthropic') {
     const { generateAnthropicChatResponse } = await import('./anthropicService.js');
-    return generateAnthropicChatResponse({ systemPrompt, messages, apiKey });
+    return generateAnthropicChatResponse({ systemPrompt, messages, apiKey, model });
   }
 
   if (provider === 'gemini') {
     const { generateGeminiChatResponse } = await import('./geminiService.js');
-    return generateGeminiChatResponse({ systemPrompt, messages, apiKey });
+    return generateGeminiChatResponse({ systemPrompt, messages, apiKey, model });
   }
 
   // Default to Mistral
   const resolvedApiKey = apiKey || requireEnv('MISTRAL_API_KEY', mistralConfig.apiKey);
+  const selectedModel = model || mistralConfig.model;
 
   const conversation = [
     { role: 'system', content: systemPrompt },
@@ -323,7 +324,7 @@ export async function generateChatResponse({ analysis, messages, provider = 'mis
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: mistralConfig.model,
+        model: selectedModel,
         temperature: 0.7,
         messages: conversation
       })
@@ -342,7 +343,7 @@ export async function generateChatResponse({ analysis, messages, provider = 'mis
     return {
       message: rawContent,
       metadata: {
-        model: payload.model || mistralConfig.model,
+        model: payload.model || selectedModel,
         usage: payload.usage
       }
     };

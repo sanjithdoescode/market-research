@@ -8,10 +8,12 @@ import { AppError } from '../utils/AppError.js';
  * @param {object[]} params.messages - User/assistant conversational history
  * @param {string} params.apiKey - User supplied Google Gemini API key
  */
-export async function generateGeminiChatResponse({ systemPrompt, messages, apiKey }) {
+export async function generateGeminiChatResponse({ systemPrompt, messages, apiKey, model }) {
   if (!apiKey) {
     throw new AppError(400, 'Google Gemini API key is required for BYOK.');
   }
+
+  const selectedModel = model || 'gemini-3.5-flash';
 
   // Gemini uses "model" instead of "assistant" for the assistant's role
   const contents = messages.map(m => ({
@@ -27,7 +29,7 @@ export async function generateGeminiChatResponse({ systemPrompt, messages, apiKe
   const timeout = setTimeout(() => controller.abort(), 60000); // 60s timeout
 
   try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`, {
       method: 'POST',
       signal: controller.signal,
       headers: {
@@ -59,7 +61,7 @@ export async function generateGeminiChatResponse({ systemPrompt, messages, apiKe
     return {
       message: content,
       metadata: {
-        model: 'gemini-1.5-pro',
+        model: selectedModel,
         usage: payload.usageMetadata
       }
     };

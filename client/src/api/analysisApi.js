@@ -48,7 +48,8 @@ export function sendChatMessage(id, messages, byokSettings = {}) {
     body: JSON.stringify({
       messages,
       provider: byokSettings.provider,
-      apiKey: byokSettings.apiKey
+      apiKey: byokSettings.apiKey,
+      model: byokSettings.model
     })
   });
 }
@@ -59,7 +60,8 @@ export function sendGeneralChatMessage(messages, byokSettings = {}) {
     body: JSON.stringify({
       messages,
       provider: byokSettings.provider,
-      apiKey: byokSettings.apiKey
+      apiKey: byokSettings.apiKey,
+      model: byokSettings.model
     })
   });
 }

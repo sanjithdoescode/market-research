@@ -8,10 +8,12 @@ import { AppError } from '../utils/AppError.js';
  * @param {object[]} params.messages - User/assistant conversational history
  * @param {string} params.apiKey - User supplied OpenAI API key
  */
-export async function generateOpenAIChatResponse({ systemPrompt, messages, apiKey }) {
+export async function generateOpenAIChatResponse({ systemPrompt, messages, apiKey, model }) {
   if (!apiKey) {
     throw new AppError(400, 'OpenAI API key is required for BYOK.');
   }
+
+  const selectedModel = model || 'gpt-5.5';
 
   const conversation = [];
   if (systemPrompt) {
@@ -31,7 +33,7 @@ export async function generateOpenAIChatResponse({ systemPrompt, messages, apiKe
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'gpt-4o',
+        model: selectedModel,
         temperature: 0.7,
         messages: conversation
       })
@@ -54,7 +56,7 @@ export async function generateOpenAIChatResponse({ systemPrompt, messages, apiKe
     return {
       message: content,
       metadata: {
-        model: payload.model || 'gpt-4o',
+        model: payload.model || selectedModel,
         usage: payload.usage
       }
     };
