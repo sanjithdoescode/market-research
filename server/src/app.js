@@ -35,6 +35,13 @@ app.get('/health', (_req, res) => {
   });
 });
 
+app.get('/', (_req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'MarketSense API is running.'
+  });
+});
+
 app.use('/api/analysis', analysisRoutes);
 app.use('/api/history', historyRoutes);
 app.use('/api/debug', debugRoutes);

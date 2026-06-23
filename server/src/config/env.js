@@ -19,7 +19,7 @@ export const env = Object.freeze({
   nodeEnv: process.env.NODE_ENV || 'development',
   port: parseInteger(process.env.PORT, 5001),
   clientOrigin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
-  mongoUri: process.env.MONGO_URI,
+  mongoUri: process.env.MONGO_URI || process.env.MONGODB_URI,
   googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
   googleApiTimeoutMs: parseInteger(process.env.GOOGLE_API_TIMEOUT_MS, 12000),
   googlePlacesMaxCompetitors: parseInteger(process.env.GOOGLE_PLACES_MAX_COMPETITORS, 10),

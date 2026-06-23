@@ -24,10 +24,20 @@ function shutdown(signal) {
   });
 }
 
-process.on('SIGINT', () => shutdown('SIGINT'));
-process.on('SIGTERM', () => shutdown('SIGTERM'));
+// Only setup listeners and start server if we are NOT running on Vercel
+if (process.env.VERCEL) {
+  // On Vercel, just establish the database connection top-level so Mongoose is ready
+  connectDatabase().catch((error) => {
+    console.error('Failed to connect to database in serverless environment:', error);
+  });
+} else {
+  process.on('SIGINT', () => shutdown('SIGINT'));
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
 
-startServer().catch((error) => {
-  console.error('Failed to start server:', error);
-  process.exit(1);
-});
+  startServer().catch((error) => {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  });
+}
+
+export default app;
