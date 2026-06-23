@@ -263,7 +263,8 @@ export default function LiquidGlass({
             position: 'absolute', 
             inset: 0, 
             clipPath: `inset(0 round ${computedRadius}px)`,
-            zIndex: -3
+            zIndex: -3,
+            overflow: 'hidden'
           }}
         >
           {/* Layer 1: Standalone Blur */}
@@ -289,7 +290,8 @@ export default function LiquidGlass({
                 transformOrigin: 'top left',
                 clipPath: `inset(${PAD}px round ${computedRadius}px)`,
                 pointerEvents: 'none',
-                willChange: 'filter'
+                willChange: 'filter',
+                overflow: 'hidden'
               }}
             >
               {/* Cloned DOM of background scene sits here, aligned by negative top/left */}
