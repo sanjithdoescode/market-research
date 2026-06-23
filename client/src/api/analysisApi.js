@@ -70,4 +70,14 @@ export function fetchConfig() {
   return request('/config');
 }
 
+export function getNicheSuggestions(businessType, location) {
+  return request('/analysis/niche-suggestions', {
+    method: 'POST',
+    body: JSON.stringify({
+      businessType,
+      location: location || undefined
+    })
+  });
+}
+
 

@@ -30,6 +30,7 @@ import {
 import { useState, useEffect } from 'react';
 import MapPicker from './MapPicker.jsx';
 import LiquidGlass from './LiquidGlass.jsx';
+import { getNicheSuggestions } from '../api/analysisApi.js';
 
 const initialValues = {
   location: '',
@@ -383,26 +384,15 @@ function SearchForm({ onSubmit, loading }) {
     setLoadingSuggestions(true);
     setSuggestionError(null);
     try {
-      const response = await fetch('/api/analysis/niche-suggestions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          businessType: values.businessType,
-          location: values.location || undefined
-        })
-      });
-      
-      const payload = await response.json();
-      if (payload?.success && Array.isArray(payload.data)) {
-        setNicheSuggestions(payload.data);
+      const data = await getNicheSuggestions(values.businessType, values.location);
+      if (Array.isArray(data)) {
+        setNicheSuggestions(data);
       } else {
-        setSuggestionError(payload?.error?.message || 'Failed to fetch suggestions');
+        setSuggestionError('Failed to fetch suggestions');
       }
     } catch (err) {
       console.error('Niche suggestions fetch failed:', err);
-      setSuggestionError('Error calling suggestions API');
+      setSuggestionError(err.message || 'Error calling suggestions API');
     } finally {
       setLoadingSuggestions(false);
     }
