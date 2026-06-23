@@ -1,5 +1,6 @@
 import { MapPin, Search, Locate } from 'lucide-react';
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { fetchConfig } from '../api/analysisApi.js';
 
 const loadGoogleMapsScript = (apiKey) => {
   return new Promise((resolve, reject) => {
@@ -131,18 +132,17 @@ function MapPicker({ value, onChange }) {
   // Load API key from server config
   useEffect(() => {
     let active = true;
-    async function fetchConfig() {
+    async function loadConfig() {
       try {
-        const res = await fetch('/api/config');
-        const data = await res.json();
-        if (active && data?.data?.googleMapsApiKey) {
-          setApiKey(data.data.googleMapsApiKey);
+        const data = await fetchConfig();
+        if (active && data?.googleMapsApiKey) {
+          setApiKey(data.googleMapsApiKey);
         }
       } catch (err) {
         console.error('Error fetching google maps config:', err);
       }
     }
-    fetchConfig();
+    loadConfig();
     return () => {
       active = false;
     };

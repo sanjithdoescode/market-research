@@ -66,4 +66,8 @@ export function sendGeneralChatMessage(messages, byokSettings = {}) {
   });
 }
 
+export function fetchConfig() {
+  return request('/config');
+}
+
 
