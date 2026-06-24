@@ -1,44 +1,40 @@
 import { Award, Gauge, ShieldCheck, TrendingUp, Zap, BarChart2, Target } from 'lucide-react';
 
-function ScoreRing({ score, color }) {
-  if (score === null || score === undefined) return null;
-  const clampedScore = Math.min(100, Math.max(0, score));
-  const radius = 20;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (clampedScore / 100) * circumference;
-
-  return (
-    <svg className="score-ring" viewBox="0 0 48 48" aria-hidden="true">
-      <circle cx="24" cy="24" r={radius} className="ring-track" />
-      <circle
-        cx="24"
-        cy="24"
-        r={radius}
-        className="ring-fill"
-        style={{
-          stroke: color,
-          strokeDasharray: circumference,
-          strokeDashoffset: offset,
-          '--circumference': circumference,
-          '--final-offset': offset
-        }}
-      />
-    </svg>
-  );
+function getBarColor(score, defaultColor) {
+  if (score === null || score === undefined) return defaultColor;
+  return defaultColor;
 }
 
-function MetricCard({ icon: Icon, label, value, color = 'var(--accent)', ringScore = null, large = false, delay = 0 }) {
+function MetricWidget({ icon: Icon, label, value, color = 'var(--accent)', score = null, hero = false, delay = 0 }) {
+  const clampedScore = score !== null && score !== undefined ? Math.min(100, Math.max(0, score)) : null;
+
   return (
     <article
-      className={`metric-card animate-in${large ? ' metric-card--large' : ''}`}
+      className={`metric-widget animate-in${hero ? ' metric-widget--hero' : ''}`}
       style={{ animationDelay: `${0.1 + delay * 0.06}s` }}
     >
-      <div className="metric-icon" style={{ background: `color-mix(in srgb, ${color} 15%, transparent)`, color }}>
-        <Icon size={20} aria-hidden="true" />
+      <div className="metric-widget-header">
+        <div className="metric-icon" style={{ background: `color-mix(in srgb, ${color} 12%, transparent)`, color }}>
+          <Icon size={18} aria-hidden="true" />
+        </div>
+        <span className="metric-label">{label}</span>
       </div>
-      {ringScore !== null && <ScoreRing score={ringScore} color={color} />}
-      <span className="metric-label">{label}</span>
-      <strong>{value ?? '—'}</strong>
+      <div className="metric-widget-body">
+        <strong className="metric-value">{value ?? '—'}</strong>
+        {clampedScore !== null && (
+          <div className="metric-progress-track">
+            <div
+              className="metric-progress-fill"
+              style={{
+                width: `${clampedScore}%`,
+                background: color,
+                animationDelay: `${0.3 + delay * 0.08}s`
+              }}
+              aria-label={`${clampedScore}%`}
+            />
+          </div>
+        )}
+      </div>
     </article>
   );
 }
@@ -52,30 +48,31 @@ function ScoreCard({ analysis, demandScore, supplyScore, opportunityScore, oppor
 
   return (
     <section className="score-grid" aria-label="Market score">
-      {/* ── Existing cards ─────────────────────────────────── */}
-      <MetricCard
+      {/* ── Primary Metrics Row ─────────────────────────────────── */}
+      <MetricWidget
         icon={Gauge}
         label="Overall score"
         value={score}
         color="var(--accent)"
-        ringScore={score}
+        score={score}
+        hero
         delay={0}
       />
-      <MetricCard
+      <MetricWidget
         icon={Award}
         label="Grade"
         value={analysis.grade}
         color="var(--green)"
         delay={1}
       />
-      <MetricCard
+      <MetricWidget
         icon={ShieldCheck}
         label="Confidence"
         value={analysis.confidence ? analysis.confidence.charAt(0).toUpperCase() + analysis.confidence.slice(1) : '—'}
         color="var(--amber)"
         delay={2}
       />
-      <MetricCard
+      <MetricWidget
         icon={TrendingUp}
         label="Market opportunity"
         value={analysis.marketAnalysis?.opportunityLevel}
@@ -83,46 +80,50 @@ function ScoreCard({ analysis, demandScore, supplyScore, opportunityScore, oppor
         delay={3}
       />
 
-      {/* ── New Demand Signal Engine cards ──────────────────── */}
-      <MetricCard
+      {/* ── Demand Signal Engine Metrics ────────────────────────── */}
+      <MetricWidget
         icon={BarChart2}
         label="Demand score"
         value={demandScore ?? '—'}
         color="var(--teal)"
-        ringScore={demandScore}
+        score={demandScore}
         delay={4}
       />
-      <MetricCard
+      <MetricWidget
         icon={ShieldCheck}
         label="Supply pressure"
         value={supplyScore ?? '—'}
-        color="var(--orange)"
-        ringScore={supplyScore}
+        color="var(--red)"
+        score={supplyScore}
         delay={5}
       />
-      <MetricCard
+      <MetricWidget
         icon={Target}
         label="Opportunity score"
         value={opportunityScore ?? '—'}
         color={opportunityScore >= 60 ? 'var(--green)' : opportunityScore >= 35 ? 'var(--amber)' : 'var(--red)'}
-        ringScore={opportunityScore}
-        large
+        score={opportunityScore}
+        hero
         delay={6}
       />
       {opportunityTier && (
         <article
-          className="metric-card opportunity-tier-card animate-in"
+          className="metric-widget opportunity-tier-card animate-in"
           style={{ animationDelay: '0.52s' }}
         >
-          <div className="metric-icon" style={{ background: 'rgba(167, 139, 250, 0.12)', color: 'var(--purple)' }}>
-            <Zap size={20} aria-hidden="true" />
+          <div className="metric-widget-header">
+            <div className="metric-icon" style={{ background: 'rgba(124, 58, 237, 0.08)', color: 'var(--purple)' }}>
+              <Zap size={18} aria-hidden="true" />
+            </div>
+            <span className="metric-label">Opportunity tier</span>
           </div>
-          <span className="metric-label">Opportunity tier</span>
-          <strong
-            className={`tier-label tier-${opportunityTier?.toLowerCase().replace(' ', '-')}`}
-          >
-            {opportunityTier}
-          </strong>
+          <div className="metric-widget-body">
+            <strong
+              className={`metric-value tier-label tier-${opportunityTier?.toLowerCase().replace(' ', '-')}`}
+            >
+              {opportunityTier}
+            </strong>
+          </div>
         </article>
       )}
     </section>

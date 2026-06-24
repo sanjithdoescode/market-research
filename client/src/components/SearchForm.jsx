@@ -452,193 +452,188 @@ function SearchForm({ onSubmit, loading }) {
         </div>
       </div>
 
-      {/* Pinpoint Location (Map Selection) */}
-      <div className="field">
-        <span>
-          <MapPin size={16} aria-hidden="true" />
-          Location
-        </span>
-        <MapPicker
-          value={values.location}
-          onChange={(val) => updateField('location', val)}
-        />
-      </div>
+      {/* ── Two-Column Command Console ─────────────────────────── */}
+      <div className="console-columns">
+        {/* ── Left Panel: Location & Map ─────────────────────── */}
+        <div className="console-left-panel">
+          {/* Pinpoint Location (Map Selection) */}
+          <div className="field">
+            <span>
+              <MapPin size={16} aria-hidden="true" />
+              Location
+            </span>
+            <MapPicker
+              value={values.location}
+              onChange={(val) => updateField('location', val)}
+            />
+          </div>
 
-      {/* Business Type Tiles */}
-      <div className="field">
-        <span>
-          <BriefcaseBusiness size={16} aria-hidden="true" />
-          Business type
-        </span>
-        <div className="business-tiles-grid">
-          {BUSINESS_TILES.map((tile) => {
-            const IconComponent = tile.icon;
-            const isActive = isCoreSelected && selectedTile === tile.id;
-            return (
+          <div className="form-row">
+            <label className="field">
+              <span>
+                <Radar size={16} aria-hidden="true" />
+                Radius
+              </span>
+              <select value={values.radius} onChange={(event) => updateField('radius', event.target.value)}>
+                <option value={1000}>1 km</option>
+                <option value={3000}>3 km</option>
+                <option value={5000}>5 km</option>
+                <option value={10000}>10 km</option>
+                <option value={25000}>25 km</option>
+              </select>
+            </label>
+
+            <label className="field">
+              <span>Competitors</span>
+              <input
+                type="number"
+                value={values.maxCompetitors}
+                onChange={(event) => updateField('maxCompetitors', event.target.value)}
+                min={1}
+                max={20}
+              />
+            </label>
+          </div>
+        </div>
+
+        {/* ── Right Panel: Business Type & Niche ────────────── */}
+        <div className="console-right-panel">
+          {/* Business Type Tiles */}
+          <div className="field">
+            <span>
+              <BriefcaseBusiness size={16} aria-hidden="true" />
+              Business type
+            </span>
+            <div className="business-tiles-grid">
+              {BUSINESS_TILES.map((tile) => {
+                const IconComponent = tile.icon;
+                const isActive = isCoreSelected && selectedTile === tile.id;
+                return (
+                  <button
+                    key={tile.id}
+                    type="button"
+                    className={`business-tile ${isActive ? 'active' : ''}`}
+                    onClick={() => {
+                      setSelectedTile(tile.id);
+                      updateField('businessType', tile.label);
+                      setNicheSuggestions([]);
+                    }}
+                  >
+                    <div className="business-tile-content">
+                      <IconComponent size={18} className="tile-icon" />
+                      <span className="tile-label">{tile.label}</span>
+                    </div>
+                  </button>
+                );
+              })}
+
+              {/* Dynamic Non-Core Tile if selected */}
+              {nonCoreTile && (
+                <button
+                  type="button"
+                  className="business-tile active"
+                  onClick={() => {
+                    // Clicking does nothing as it's already active
+                  }}
+                >
+                  <div className="business-tile-content">
+                    <nonCoreTile.icon size={18} className="tile-icon" />
+                    <span className="tile-label">{nonCoreTile.label}</span>
+                  </div>
+                </button>
+              )}
+              
+              {/* Show More option tile */}
               <button
-                key={tile.id}
                 type="button"
-                className={`business-tile ${isActive ? 'active' : ''}`}
-                onClick={() => {
-                  setSelectedTile(tile.id);
-                  updateField('businessType', tile.label);
-                  setNicheSuggestions([]);
-                }}
-                style={{ '--tile-bg': `url(${tile.image})` }}
+                className="business-tile custom-tile"
+                onClick={() => setShowMoreModal(true)}
               >
-                <div className="business-tile-bg" />
                 <div className="business-tile-content">
-                  <IconComponent size={24} className="tile-icon" />
-                  <span className="tile-label">{tile.label}</span>
+                  <MoreHorizontal size={18} className="tile-icon" />
+                  <span className="tile-label">Show More</span>
                 </div>
               </button>
-            );
-          })}
-
-          {/* Dynamic Non-Core Tile if selected */}
-          {nonCoreTile && (
-            <button
-              type="button"
-              className="business-tile active"
-              onClick={() => {
-                // Clicking does nothing as it's already active
-              }}
-              style={{ '--tile-bg': `url(${nonCoreTile.image})` }}
-            >
-              <div className="business-tile-bg" style={{ opacity: 0.35, filter: 'blur(0) brightness(0.5)', transform: 'scale(1.02)' }} />
-              <div className="business-tile-content">
-                <nonCoreTile.icon size={24} className="tile-icon" />
-                <span className="tile-label">{nonCoreTile.label}</span>
-              </div>
-            </button>
-          )}
-          
-          {/* Show More option tile */}
-          <button
-            type="button"
-            className="business-tile custom-tile"
-            onClick={() => setShowMoreModal(true)}
-          >
-            <div className="business-tile-content">
-              <MoreHorizontal size={24} className="tile-icon" />
-              <span className="tile-label">Show More</span>
             </div>
-          </button>
+          </div>
+
+          {/* Niche Input with AI suggestions */}
+          <div className="field">
+            <span>Niche (Optional)</span>
+            
+            {/* Niche Suggestions Section */}
+            {values.businessType && values.businessType.trim().length >= 2 && (
+              <div className="niche-suggestions-section">
+                <div className="suggestions-header">
+                  <span className="suggestions-title">
+                    <Sparkles size={12} className="sparkle-icon" />
+                    AI Niche Suggestions
+                  </span>
+                  {isCustomSelected || !selectedTile ? (
+                    <button
+                      type="button"
+                      onClick={fetchNicheSuggestions}
+                      disabled={loadingSuggestions}
+                      className="suggestions-fetch-btn"
+                    >
+                      {loadingSuggestions ? 'Generating...' : 'Generate with AI'}
+                    </button>
+                  ) : null}
+                </div>
+
+                {loadingSuggestions && (
+                  <div className="suggestions-loading-dots">
+                    <span className="dot" />
+                    <span className="dot" />
+                    <span className="dot" />
+                    Generating modern niches...
+                  </div>
+                )}
+
+                {suggestionError && (
+                  <div className="suggestions-error">{suggestionError}</div>
+                )}
+
+                {nicheSuggestions.length > 0 && (
+                  <div className="suggestions-pills">
+                    {nicheSuggestions.map((suggestion, idx) => {
+                      const isSelected = values.niche === suggestion;
+                      return (
+                        <button
+                          key={idx}
+                          type="button"
+                          className={`suggestion-pill ${isSelected ? 'active' : ''}`}
+                          onClick={() => updateField('niche', suggestion)}
+                        >
+                          {suggestion}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+
+            <input
+              type="text"
+              value={values.niche}
+              onChange={(event) => updateField('niche', event.target.value)}
+              placeholder="Enter a custom niche (e.g. Specialty espresso, Vegan bakery)..."
+              maxLength={120}
+            />
+          </div>
         </div>
       </div>
 
-      {/* Niche Input with AI suggestions */}
-      <div className="field">
-        <span>Niche (Optional)</span>
-        
-        {/* Niche Suggestions Section */}
-        {values.businessType && values.businessType.trim().length >= 2 && (
-          <div className="niche-suggestions-section">
-            <div className="suggestions-header">
-              <span className="suggestions-title">
-                <Sparkles size={12} className="sparkle-icon" />
-                AI Niche Suggestions
-              </span>
-              {isCustomSelected || !selectedTile ? (
-                <button
-                  type="button"
-                  onClick={fetchNicheSuggestions}
-                  disabled={loadingSuggestions}
-                  className="suggestions-fetch-btn"
-                >
-                  {loadingSuggestions ? 'Generating...' : 'Generate with AI'}
-                </button>
-              ) : null}
-            </div>
-
-            {loadingSuggestions && (
-              <div className="suggestions-loading-dots">
-                <span className="dot" />
-                <span className="dot" />
-                <span className="dot" />
-                Generating modern niches...
-              </div>
-            )}
-
-            {suggestionError && (
-              <div className="suggestions-error">{suggestionError}</div>
-            )}
-
-            {nicheSuggestions.length > 0 && (
-              <div className="suggestions-pills">
-                {nicheSuggestions.map((suggestion, idx) => {
-                  const isSelected = values.niche === suggestion;
-                  return (
-                    <button
-                      key={idx}
-                      type="button"
-                      className={`suggestion-pill ${isSelected ? 'active' : ''}`}
-                      onClick={() => updateField('niche', suggestion)}
-                    >
-                      {suggestion}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        )}
-
-        <input
-          type="text"
-          value={values.niche}
-          onChange={(event) => updateField('niche', event.target.value)}
-          placeholder="Enter a custom niche (e.g. Specialty espresso, Vegan bakery)..."
-          maxLength={120}
-        />
-      </div>
-
-      <div className="form-row">
-        <label className="field">
-          <span>
-            <Radar size={16} aria-hidden="true" />
-            Radius
-          </span>
-          <select value={values.radius} onChange={(event) => updateField('radius', event.target.value)}>
-            <option value={1000}>1 km</option>
-            <option value={3000}>3 km</option>
-            <option value={5000}>5 km</option>
-            <option value={10000}>10 km</option>
-            <option value={25000}>25 km</option>
-          </select>
-        </label>
-
-        <label className="field">
-          <span>Competitors</span>
-          <input
-            type="number"
-            value={values.maxCompetitors}
-            onChange={(event) => updateField('maxCompetitors', event.target.value)}
-            min={1}
-            max={20}
-          />
-        </label>
-      </div>
-
-      <LiquidGlass
-        tagName="button"
+      {/* ── Full-Width Submit CTA ─────────────────────────────── */}
+      <button
         type="submit"
-        className="primary-button liquid-glass"
+        className="primary-button"
         disabled={loading || !values.location || !values.businessType}
-        depth={22}
-        blur={12}
-        tint={0.12}
-        tintColor="var(--accent-dim)"
-        glint={35}
-        hoverParams={{
-          depth: 32,
-          glint: 50,
-          tint: 0.18
-        }}
       >
         <Search size={18} aria-hidden="true" />
         {loading ? 'Analyzing' : 'Run analysis'}
-      </LiquidGlass>
+      </button>
 
       {/* Select Business Type Modal overlay */}
       {showMoreModal && (

@@ -19,6 +19,12 @@ function App() {
   const [provider, setProvider] = useState(() => localStorage.getItem('byok_provider') || 'mistral');
 
   useEffect(() => {
+    if (!localStorage.getItem('byok_provider')) {
+      localStorage.setItem('byok_provider', 'mistral');
+    }
+  }, []);
+
+  useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
@@ -86,19 +92,20 @@ function App() {
           depth={scrolled ? 35 : 45}
           blur={1}
           glint={scrolled ? 30 : 40}
-          tint={0.12}
-          tintColor="#ffffff"
+          tint={0.08}
+          tintColor="#F8F9FA"
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <NavLink to="/" className="brand" aria-label="MarketSense dashboard">
+            <NavLink to="/" id="nav-brand" className="brand" aria-label="MarketSense dashboard">
               <img src="/images/marketsense_logo.png" className="brand-logo-img" alt="MarketSense Logo" />
               <span>MarketSense</span>
             </NavLink>
           </div>
 
-          <nav className="primary-nav" aria-label="Primary navigation">
+          <nav className="primary-nav mobile-nav-compact" aria-label="Primary navigation">
             <NavLink
               to="/"
+              id="nav-analyze"
               className={`nav-link ${isAnalyzeActive ? 'active' : ''}`}
             >
               <span className="nav-link-title">
@@ -114,6 +121,7 @@ function App() {
 
             <NavLink
               to="/history"
+              id="nav-history"
               className={`nav-link ${isHistoryActive ? 'active' : ''}`}
             >
               <span className="nav-link-title">
@@ -130,6 +138,7 @@ function App() {
 
           <NavLink
             to="/chat"
+            id="mobile-nav-toggle"
             className={`nav-cta-btn ${isChatActive ? 'active' : ''}`}
             aria-label="AI Chat Assistant"
           >
