@@ -222,9 +222,9 @@ function CompetitorTable({ competitors = [], assessment = [] }) {
               <th>Name</th>
               <th>Rating</th>
               <th>Reviews</th>
-              <th>Threat</th>
+              <th className="center-col">Threat</th>
               <th>Price</th>
-              <th>Evidence</th>
+              <th className="center-col">Evidence</th>
               <th>Category</th>
               <th style={{ width: '130px' }}>Actions</th>
             </tr>
@@ -259,13 +259,13 @@ function CompetitorTable({ competitors = [], assessment = [] }) {
                       </span>
                     </td>
                     <td>{competitor.reviewCount ?? 0}</td>
-                    <td>
+                    <td className="center-col">
                       <span className={`threat-badge ${getThreatClass(threat)}`}>
                         {threat}
                       </span>
                     </td>
                     <td>{formatPrice(competitor.googleMetadata)}</td>
-                    <td>
+                    <td className="center-col">
                       <span className={competitor.evidence?.reviewsAvailable ? 'status ok' : 'status missing'}>
                         {competitor.evidence?.reviewsAvailable ? 'Reviews' : 'Missing reviews'}
                       </span>
