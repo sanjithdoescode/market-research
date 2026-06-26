@@ -215,6 +215,8 @@ function MapPicker({ value, onChange }) {
     // Configure Autocomplete Element
     autocomplete.placeholder = 'Search for a location or click on the map below...';
     autocomplete.value = inputValue || value || '';
+    autocomplete.setAttribute('no-input-icon', '');
+    autocomplete.setAttribute('no-clear-button', '');
 
     // Clear and append
     autocompleteContainerRef.current.innerHTML = '';
@@ -335,28 +337,33 @@ function MapPicker({ value, onChange }) {
   return (
     <div className="map-picker-wrapper">
       <div className="map-search-container">
-        <MapPin className="map-search-icon" size={16} aria-hidden="true" />
+        <div className="map-search-left-icon">
+          <MapPin size={16} aria-hidden="true" />
+        </div>
         {mapsLoaded ? (
           <div ref={autocompleteContainerRef} className="map-autocomplete-container" style={{ width: '100%' }} />
         ) : (
           <input
             type="text"
+            className="map-fallback-input"
             value={inputValue}
             disabled
             placeholder="Loading Google Maps..."
           />
         )}
-        <button
-          type="button"
-          className={`map-locate-btn ${isLocating ? 'locating' : ''}`}
-          onClick={() => detectLocation(true)}
-          title="Detect my current location"
-          aria-label="Detect my current location"
-          disabled={isLocating || !mapsLoaded}
-        >
-          <Locate size={16} />
-        </button>
-        <Search className="map-search-end-icon" size={16} aria-hidden="true" />
+        <div className="map-search-right-actions">
+          <button
+            type="button"
+            className={`map-locate-btn ${isLocating ? 'locating' : ''}`}
+            onClick={() => detectLocation(true)}
+            title="Detect my current location"
+            aria-label="Detect my current location"
+            disabled={isLocating || !mapsLoaded}
+          >
+            <Locate size={16} />
+          </button>
+          <Search className="map-search-end-icon" size={16} aria-hidden="true" />
+        </div>
       </div>
 
       <div className="map-container-outer">
