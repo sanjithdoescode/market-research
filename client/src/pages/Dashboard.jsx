@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 
-import LoadingSpinner from '../components/LoadingSpinner.jsx';
+import AnalysisProgressModal from '../components/AnalysisProgressModal.jsx';
 import SearchForm from '../components/SearchForm.jsx';
 import { useAnalysis } from '../hooks/useAnalysis.js';
 
@@ -24,11 +24,7 @@ function Dashboard() {
 
       <SearchForm onSubmit={handleSubmit} loading={state.loading} />
 
-      {state.loading && (
-        <div className="panel fade-in">
-          <LoadingSpinner label="Running market analysis" />
-        </div>
-      )}
+      <AnalysisProgressModal isOpen={state.loading} progress={state.progress} status={state.status} />
       {state.error && <div className="error-banner">{state.error}</div>}
     </div>
   );

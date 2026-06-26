@@ -167,7 +167,7 @@ async function searchCategory({ category, coordinates, radius }) {
  * @property {number} categoriesSearched
  * @property {number} categoriesWithResults  – categories with ≥1 valid institution
  */
-export async function gatherDemandSignals({ coordinates, audienceCategories, radius }) {
+export async function gatherDemandSignals({ coordinates, audienceCategories, radius }, onCategoryComplete = () => {}) {
   if (!audienceCategories || audienceCategories.length === 0) {
     return {
       signals: [],
@@ -182,15 +182,19 @@ export async function gatherDemandSignals({ coordinates, audienceCategories, rad
   const CONCURRENCY = 3;
   const signals = new Array(audienceCategories.length);
   let nextIndex = 0;
+  let completedCount = 0;
 
   async function worker() {
     while (nextIndex < audienceCategories.length) {
       const idx = nextIndex++;
+      const category = audienceCategories[idx];
       signals[idx] = await searchCategory({
-        category: audienceCategories[idx],
+        category,
         coordinates,
         radius
       });
+      completedCount++;
+      onCategoryComplete(completedCount, audienceCategories.length, category);
     }
   }
 

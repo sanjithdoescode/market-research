@@ -58,6 +58,11 @@ function MapPicker({ value, onChange }) {
   const markerRef = useRef(null);
   const hasAutoDetectedRef = useRef(false);
 
+  const onChangeRef = useRef(onChange);
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+
   // Reusable geolocation detection function
   const detectLocation = useCallback((force = false) => {
     if (!mapsLoaded || !mapInstanceRef.current) return;
@@ -114,7 +119,9 @@ function MapPicker({ value, onChange }) {
 
             setResolvedAddress(address);
             setInputValue(address);
-            onChange(address);
+            if (onChangeRef.current) {
+              onChangeRef.current(address);
+            }
 
             if (autocompleteInstanceRef.current) {
               autocompleteInstanceRef.current.value = address;
@@ -145,7 +152,7 @@ function MapPicker({ value, onChange }) {
       },
       { enableHighAccuracy: true, timeout: 8000 }
     );
-  }, [mapsLoaded, onChange]);
+  }, [mapsLoaded]);
 
   // Load API key and Map ID from server config
   useEffect(() => {
@@ -250,7 +257,9 @@ function MapPicker({ value, onChange }) {
       
       setResolvedAddress(addressName);
       setInputValue(addressName);
-      onChange(addressName);
+      if (onChangeRef.current) {
+        onChangeRef.current(addressName);
+      }
 
       autocomplete.value = addressName;
     };
@@ -332,7 +341,7 @@ function MapPicker({ value, onChange }) {
       }
       autocompleteInstanceRef.current = null;
     };
-  }, [mapsLoaded, value, detectLocation, mapId]);
+  }, [mapsLoaded, mapId, detectLocation]);
 
   return (
     <div className="map-picker-wrapper">

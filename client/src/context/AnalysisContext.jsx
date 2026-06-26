@@ -4,6 +4,8 @@ const initialState = {
   currentAnalysis: null,
   history: [],
   loading: false,
+  progress: 0,
+  status: '',
   error: null
 };
 
@@ -15,9 +17,11 @@ export const AnalysisContext = createContext({
 function reducer(state, action) {
   switch (action.type) {
     case 'REQUEST_START':
-      return { ...state, loading: true, error: null };
+      return { ...state, loading: true, error: null, progress: 0, status: 'Initializing AI market models...' };
     case 'REQUEST_FAILURE':
       return { ...state, loading: false, error: action.payload };
+    case 'UPDATE_PROGRESS':
+      return { ...state, progress: action.payload.progress, status: action.payload.status };
     case 'SET_ANALYSIS':
       return { ...state, loading: false, error: null, currentAnalysis: action.payload };
     case 'SET_HISTORY':

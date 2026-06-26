@@ -2,12 +2,52 @@ import { createMarketAnalysis } from '../services/analysisService.js';
 import { findAnalysisById } from '../repositories/analysisRepository.js';
 import { generateChatResponse, generateNicheSuggestions } from '../services/mistralService.js';
 import { AppError } from '../utils/AppError.js';
-import { sendSuccess } from '../utils/responseFormatter.js';
+import { sendSuccess, formatAnalysisDocument } from '../utils/responseFormatter.js';
+import { createJob, updateJob, getJob } from '../services/jobTracker.js';
 
 export async function createAnalysis(req, res, next) {
   try {
-    const analysis = await createMarketAnalysis(req.validatedBody);
-    return sendSuccess(res, analysis, 201);
+    const job = createJob();
+    
+    // Start background processing
+    createMarketAnalysis(req.validatedBody, job.id)
+      .then((result) => {
+        updateJob(job.id, { progress: 100, result });
+      })
+      .catch((error) => {
+        console.error('Analysis background job failed:', error);
+        updateJob(job.id, { progress: 100, error: error.message || 'Analysis failed.' });
+      });
+
+    return sendSuccess(res, {
+      id: job.id,
+      progress: job.progress,
+      status: job.status
+    }, 201);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function getAnalysisStatus(req, res, next) {
+  try {
+    const { id } = req.params;
+    const job = getJob(id);
+    if (!job) {
+      // Fallback: check if the analysis document exists in database (e.g. if job completed and cleaned up)
+      const analysis = await findAnalysisById(id);
+      if (analysis) {
+        return sendSuccess(res, {
+          id,
+          progress: 100,
+          status: 'Analysis complete!',
+          result: formatAnalysisDocument(analysis),
+          error: null
+        });
+      }
+      throw new AppError(404, 'Analysis job or record not found.');
+    }
+    return sendSuccess(res, job);
   } catch (error) {
     return next(error);
   }

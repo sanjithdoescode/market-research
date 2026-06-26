@@ -23,7 +23,8 @@ export async function saveAnalysisRecord({
   supplyScoreBreakdown = null,
   opportunityScore = null,
   opportunityTier = null,
-  analysisMetadata
+  analysisMetadata,
+  targetId
 }) {
   const searchDocument = await Search.create({
     ...search,
@@ -53,6 +54,7 @@ export async function saveAnalysisRecord({
     } = aiAnalysis;
 
     const analysisDocument = await Analysis.create({
+      _id: targetId || undefined,
       search: searchDocument._id,
       competitors: competitorDocuments.map((competitor) => competitor._id),
       input,

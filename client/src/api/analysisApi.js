@@ -101,4 +101,8 @@ export function getNicheSuggestions(businessType, location) {
   });
 }
 
+export function fetchAnalysisStatus(id) {
+  return request(`/analysis/status/${id}`);
+}
+
 

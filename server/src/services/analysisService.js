@@ -7,6 +7,7 @@ import { calculateSupplyScore } from '../utils/supplyScoreEngine.js';
 import { calculateOpportunityScore } from './opportunityEngine.js';
 import { generateMarketAnalysis } from './mistralService.js';
 import { formatAnalysisDocument } from '../utils/responseFormatter.js';
+import { updateJob } from './jobTracker.js';
 
 function buildEvidenceWarnings(competitors) {
   const warnings = [];
@@ -38,12 +39,21 @@ function buildEvidenceWarnings(competitors) {
  * 7. Send all signals to Mistral for interpretation
  * 8. Persist and return formatted result
  */
-export async function createMarketAnalysis(input) {
+export async function createMarketAnalysis(input, jobId) {
+  const onProgress = (progress, status) => {
+    if (jobId) {
+      updateJob(jobId, { progress, status });
+    }
+  };
+
+  onProgress(5, 'Geocoding location and searching competitors...');
+
   // ── Step 1: Supply-side discovery ─────────────────────────────────────────
-  const discovery = await discoverCompetitors(input);
+  const discovery = await discoverCompetitors(input, onProgress);
   const { competitors } = discovery;
 
   // ── Step 2: Audience Profile (cache or Mistral) ───────────────────────────
+  onProgress(50, 'Resolving target audience categories...');
   let audienceCategories = [];
   let audienceCacheHit = false;
 
@@ -71,11 +81,18 @@ export async function createMarketAnalysis(input) {
 
   if (audienceCategories.length > 0) {
     try {
-      demandProfile = await gatherDemandSignals({
-        coordinates: discovery.search.coordinates,
-        audienceCategories,
-        radius: input.radius
-      });
+      onProgress(60, 'Gathering local demand signals...');
+      demandProfile = await gatherDemandSignals(
+        {
+          coordinates: discovery.search.coordinates,
+          audienceCategories,
+          radius: input.radius
+        },
+        (current, total, categoryName) => {
+          const pct = 60 + Math.round((current / total) * 20); // 60% to 80%
+          onProgress(pct, `Gathering demand signals for: ${categoryName}...`);
+        }
+      );
     } catch (error) {
       console.warn(
         JSON.stringify({
@@ -87,6 +104,7 @@ export async function createMarketAnalysis(input) {
   }
 
   // ── Step 4: Demand Score ──────────────────────────────────────────────────
+  onProgress(82, 'Synthesizing market intelligence scores...');
   const {
     demandScore,
     audienceStrength,
@@ -105,6 +123,7 @@ export async function createMarketAnalysis(input) {
   });
 
   // ── Step 7: Mistral interpretation ───────────────────────────────────────
+  onProgress(85, 'Generating final AI market analysis report...');
   const aiResult = await generateMarketAnalysis({
     input,
     competitors,
@@ -117,6 +136,7 @@ export async function createMarketAnalysis(input) {
   });
 
   // ── Step 8: Persist ───────────────────────────────────────────────────────
+  onProgress(95, 'Finalizing location report and saving data...');
   const savedAnalysis = await saveAnalysisRecord({
     input,
     search: discovery.search,
@@ -139,8 +159,10 @@ export async function createMarketAnalysis(input) {
       google: discovery.discoveryMetadata,
       evidenceWarnings: buildEvidenceWarnings(competitors),
       audienceCacheHit
-    }
+    },
+    targetId: jobId
   });
 
+  onProgress(100, 'Analysis complete!');
   return formatAnalysisDocument(savedAnalysis);
 }

@@ -153,7 +153,8 @@ function normalizeCompetitor({ details, newPriceDetails, summary, detailsError }
   };
 }
 
-export async function discoverCompetitors(input) {
+export async function discoverCompetitors(input, onProgress = () => {}) {
+  onProgress(10, 'Geocoding location and searching competitors...');
   const geocode = await geocodeAddress(input.location);
   const nearby = await nearbySearch({
     coordinates: geocode.coordinates,
@@ -164,6 +165,36 @@ export async function discoverCompetitors(input) {
 
   const maxCompetitors = Math.min(input.maxCompetitors || googleConfig.maxCompetitors, googleConfig.maxCompetitors, 20);
   const summaries = nearby.results.filter((place) => place.place_id).slice(0, maxCompetitors);
+  const totalCount = summaries.length;
+
+  if (totalCount === 0) {
+    onProgress(45, 'No competitors found. Continuing analysis...');
+    return {
+      search: {
+        location: input.location,
+        normalizedLocation: geocode.formattedAddress,
+        businessType: input.businessType,
+        niche: input.niche,
+        radiusMeters: input.radius,
+        coordinates: geocode.coordinates,
+        completedAt: new Date(),
+        metadata: {
+          geocodePlaceId: geocode.placeId,
+          nearbyStatus: nearby.status,
+          nextPageAvailable: Boolean(nearby.nextPageToken)
+        }
+      },
+      competitors: [],
+      discoveryMetadata: {
+        searchedAt: new Date().toISOString(),
+        googleNearbyStatus: nearby.status,
+        resultCount: 0
+      }
+    };
+  }
+
+  onProgress(25, `Found ${totalCount} competitors. Enriching competitor details...`);
+  let completedCount = 0;
 
   const detailResults = await mapWithConcurrency(summaries, 4, async (summary) => {
     try {
@@ -171,7 +202,11 @@ export async function discoverCompetitors(input) {
         getPlaceDetails(summary.place_id),
         getPlacePriceDetails(summary.place_id)
       ]);
-      return normalizeCompetitor({ details: details.result, newPriceDetails, summary });
+      const normalized = normalizeCompetitor({ details: details.result, newPriceDetails, summary });
+      completedCount++;
+      const pct = 25 + Math.round((completedCount / totalCount) * 20); // 25% to 45%
+      onProgress(pct, `Enriched competitor ${completedCount} of ${totalCount}: ${normalized.name}...`);
+      return normalized;
     } catch (error) {
       console.warn(
         JSON.stringify({
@@ -180,6 +215,9 @@ export async function discoverCompetitors(input) {
           error: error.message
         })
       );
+      completedCount++;
+      const pct = 25 + Math.round((completedCount / totalCount) * 20); // 25% to 45%
+      onProgress(pct, `Enriched competitor ${completedCount} of ${totalCount}...`);
       return normalizeCompetitor({ summary, detailsError: error.message });
     }
   });

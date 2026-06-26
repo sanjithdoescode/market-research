@@ -1,6 +1,5 @@
 import { useCallback, useContext } from 'react';
-
-import { deleteHistoryItem, fetchHistory, fetchHistoryItem, submitAnalysis } from '../api/analysisApi.js';
+import { deleteHistoryItem, fetchHistory, fetchHistoryItem, submitAnalysis, fetchAnalysisStatus } from '../api/analysisApi.js';
 import { AnalysisContext } from '../context/AnalysisContext.jsx';
 
 export function useAnalysis() {
@@ -10,9 +9,35 @@ export function useAnalysis() {
     async (input) => {
       dispatch({ type: 'REQUEST_START' });
       try {
-        const analysis = await submitAnalysis(input);
-        dispatch({ type: 'SET_ANALYSIS', payload: analysis });
-        return analysis;
+        const job = await submitAnalysis(input);
+        const jobId = job.id;
+
+        let completed = false;
+        let finalResult = null;
+
+        while (!completed) {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          const jobStatus = await fetchAnalysisStatus(jobId);
+
+          dispatch({
+            type: 'UPDATE_PROGRESS',
+            payload: {
+              progress: jobStatus.progress,
+              status: jobStatus.status
+            }
+          });
+
+          if (jobStatus.progress === 100) {
+            completed = true;
+            if (jobStatus.error) {
+              throw new Error(jobStatus.error);
+            }
+            finalResult = jobStatus.result;
+          }
+        }
+
+        dispatch({ type: 'SET_ANALYSIS', payload: finalResult });
+        return finalResult;
       } catch (error) {
         dispatch({ type: 'REQUEST_FAILURE', payload: error.message });
         throw error;
