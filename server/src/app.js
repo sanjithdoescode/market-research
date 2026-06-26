@@ -28,8 +28,12 @@ app.use(
         return callback(null, true);
       }
 
-      // Allow Vercel preview deployments (e.g., https://marketsense-*.vercel.app)
-      const isVercelPreview = /^https:\/\/marketsense-[a-zA-Z0-9-]+\.vercel\.app$/.test(origin);
+      // Allow any marketsense Vercel deployment (production alias, branch, or commit-hash preview)
+      // Examples:
+      //   https://marketsense-blond.vercel.app                                (production alias)
+      //   https://marketsense-git-preview-sanjithdoescodes-projects.vercel.app (branch preview)
+      //   https://marketsense-jg59qehi2-sanjithdoescodes-projects.vercel.app  (commit preview)
+      const isVercelPreview = /^https:\/\/marketsense-[a-zA-Z0-9._-]+\.vercel\.app$/.test(origin);
       if (isVercelPreview) {
         return callback(null, true);
       }

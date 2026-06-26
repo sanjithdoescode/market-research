@@ -6,7 +6,7 @@ const getApiBaseUrl = () => {
     return envVal;
   }
 
-  // Runtime check for local development hostnames
+  // Use Vite proxy for local development (avoids CORS entirely)
   const isLocal = typeof window !== 'undefined' && (
     window.location.hostname === 'localhost' ||
     window.location.hostname === '127.0.0.1' ||
@@ -21,25 +21,8 @@ const getApiBaseUrl = () => {
     return '/api';
   }
 
-  // Dynamic check for Vercel preview deployments
-  if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname;
-    const isVercelPreview = hostname.endsWith('.vercel.app') &&
-      hostname !== 'marketsense-blond.vercel.app' &&
-      (hostname.includes('-sanjithdoescodes-projects') || hostname.includes('-git-'));
-
-    if (isVercelPreview) {
-      // Try to extract branch name from branch-specific Vercel URL
-      // Example: marketsense-git-preview-sanjithdoescodes-projects.vercel.app
-      const gitMatch = hostname.match(/^marketsense-git-([a-zA-Z0-9-]+)-sanjithdoescodes-projects\.vercel\.app$/i);
-      if (gitMatch) {
-        return `https://market-research-server-git-${gitMatch[1]}-sanjithdoescodes-projects.vercel.app/api`;
-      }
-      // Fallback for commit-specific preview URLs
-      return 'https://market-research-server-git-preview-sanjithdoescodes-projects.vercel.app/api';
-    }
-  }
-
+  // All Vercel deployments (production + previews) talk to the single production server.
+  // The server's CORS configuration allows all marketsense Vercel preview origins.
   return 'https://market-research-server.vercel.app/api';
 };
 
