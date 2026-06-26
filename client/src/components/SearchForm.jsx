@@ -592,60 +592,74 @@ function SearchForm({ onSubmit, loading }) {
 
             {/* Niche Suggestions Section */}
             {showSuggestions && values.businessType && values.businessType.trim().length >= 2 && (
-              <div className="niche-suggestions-section">
-                {/* Generate with AI button bubble */}
-                {(isCustomSelected || !selectedTile) && nicheSuggestions.length === 0 && !loadingSuggestions && !suggestionError && (
-                  <button
-                    type="button"
-                    onClick={fetchNicheSuggestions}
-                    className="suggestion-bubble generate-bubble"
-                  >
-                    <Sparkles size={14} className="sparkle-icon" />
-                    <span>Generate Niche Suggestions</span>
-                  </button>
-                )}
-
-                {/* Loading state bubble */}
-                {loadingSuggestions && (
-                  <div className="suggestion-bubble loading-bubble">
-                    <span className="dot" />
-                    <span className="dot" />
-                    <span className="dot" />
-                    <span>Generating suggestions...</span>
-                  </div>
-                )}
-
-                {/* Error bubble */}
-                {suggestionError && (
-                  <div className="suggestion-bubble error-bubble">
-                    <span>⚠️ {suggestionError}</span>
-                  </div>
-                )}
-
-                {/* Suggestion bubbles */}
-                {nicheSuggestions.length > 0 && (
-                  <div className="suggestion-bubble header-bubble">
-                    <Sparkles size={14} className="sparkle-icon" />
-                    <span>AI generated suggestions</span>
-                  </div>
-                )}
-                {nicheSuggestions.length > 0 && nicheSuggestions.map((suggestion, idx) => {
-                  const isSelected = values.niche === suggestion;
-                  return (
+              <>
+                <div className="suggestions-mobile-backdrop" onClick={() => setShowSuggestions(false)} />
+                <div className="niche-suggestions-section">
+                  {/* Generate with AI button bubble */}
+                  {(isCustomSelected || !selectedTile) && nicheSuggestions.length === 0 && !loadingSuggestions && !suggestionError && (
                     <button
-                      key={idx}
                       type="button"
-                      className={`suggestion-bubble ${isSelected ? 'active' : ''}`}
-                      onClick={() => {
-                        updateField('niche', suggestion);
-                        setShowSuggestions(false);
-                      }}
+                      onClick={fetchNicheSuggestions}
+                      className="suggestion-bubble generate-bubble"
                     >
-                      {suggestion}
+                      <Sparkles size={14} className="sparkle-icon" />
+                      <span>Generate Niche Suggestions</span>
                     </button>
-                  );
-                })}
-              </div>
+                  )}
+
+                  {/* Loading state bubble */}
+                  {loadingSuggestions && (
+                    <div className="suggestion-bubble loading-bubble">
+                      <span className="dot" />
+                      <span className="dot" />
+                      <span className="dot" />
+                      <span>Generating suggestions...</span>
+                    </div>
+                  )}
+
+                  {/* Error bubble */}
+                  {suggestionError && (
+                    <div className="suggestion-bubble error-bubble">
+                      <span>⚠️ {suggestionError}</span>
+                    </div>
+                  )}
+
+                  {/* Suggestion bubbles */}
+                  {nicheSuggestions.length > 0 && (
+                    <div className="suggestion-bubble header-bubble">
+                      <Sparkles size={14} className="sparkle-icon" />
+                      <span>AI generated suggestions</span>
+                      <button
+                        type="button"
+                        className="mobile-suggestions-close"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowSuggestions(false);
+                        }}
+                        title="Close suggestions"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  )}
+                  {nicheSuggestions.length > 0 && nicheSuggestions.map((suggestion, idx) => {
+                    const isSelected = values.niche === suggestion;
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        className={`suggestion-bubble ${isSelected ? 'active' : ''}`}
+                        onClick={() => {
+                          updateField('niche', suggestion);
+                          setShowSuggestions(false);
+                        }}
+                      >
+                        {suggestion}
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
             )}
           </div>
         </div>
