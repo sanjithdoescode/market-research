@@ -1,11 +1,11 @@
 const getApiBaseUrl = () => {
   const envVal = import.meta.env.VITE_API_BASE_URL;
-  
+
   // If the env variable is set to a full URL (not a relative path like '/api'), use it
   if (envVal && envVal.startsWith('http')) {
     return envVal;
   }
-  
+
   // Runtime check for local development hostnames
   const isLocal = typeof window !== 'undefined' && (
     window.location.hostname === 'localhost' ||
@@ -16,8 +16,8 @@ const getApiBaseUrl = () => {
     window.location.hostname.startsWith('172.') ||
     window.location.hostname.endsWith('.local')
   );
-  
-  return isLocal ? '/api' : 'https://market-research-server.vercel.app/api';
+
+  return isLocal ? '/api' : 'https://market-research-server-iokbyzkr4-sanjithdoescodes-projects.vercel.app/api';
 };
 
 const API_BASE_URL = getApiBaseUrl();
