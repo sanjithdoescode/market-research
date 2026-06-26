@@ -4,23 +4,40 @@ import { fetchConfig } from '../api/analysisApi.js';
 
 const loadGoogleMapsScript = (apiKey) => {
   return new Promise((resolve, reject) => {
-    if (window.google && window.google.maps) {
+    // If Map constructor is already loaded, resolve immediately
+    if (window.google && window.google.maps && window.google.maps.Map) {
       resolve(window.google.maps);
       return;
     }
+    
+    // Set up global callback
+    window.__googleMapsCallback__ = () => {
+      resolve(window.google.maps);
+    };
+
     const scriptId = 'google-maps-script';
     let script = document.getElementById(scriptId);
     if (!script) {
       script = document.createElement('script');
       script.id = scriptId;
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places,marker&loading=async`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places,marker&loading=async&callback=__googleMapsCallback__`;
       script.async = true;
       script.defer = true;
-      script.onload = () => resolve(window.google.maps);
       script.onerror = (err) => reject(err);
       document.head.appendChild(script);
     } else {
-      script.addEventListener('load', () => resolve(window.google.maps));
+      // If script is already loading, wrap/chain the callback
+      if (window.google && window.google.maps && window.google.maps.Map) {
+        resolve(window.google.maps);
+      } else {
+        const oldCallback = window.__googleMapsCallback__;
+        window.__googleMapsCallback__ = () => {
+          if (oldCallback) {
+            try { oldCallback(); } catch(e) {}
+          }
+          resolve(window.google.maps);
+        };
+      }
     }
   });
 };
@@ -89,7 +106,7 @@ function MapPicker({ value, onChange }) {
               markerRef.current = new window.google.maps.marker.AdvancedMarkerElement({
                 position: pos,
                 map,
-                content: pin.element
+                content: pin
               });
             }
             map.panTo(pos);
@@ -223,7 +240,7 @@ function MapPicker({ value, onChange }) {
         markerRef.current = new window.google.maps.marker.AdvancedMarkerElement({
           position,
           map,
-          content: pin.element
+          content: pin
         });
       }
       map.panTo(position);
@@ -293,7 +310,7 @@ function MapPicker({ value, onChange }) {
           markerRef.current = new window.google.maps.marker.AdvancedMarkerElement({
             position,
             map,
-            content: pin.element
+            content: pin
           });
         }
       });
