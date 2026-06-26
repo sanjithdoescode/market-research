@@ -357,6 +357,7 @@ function SearchForm({ onSubmit, loading }) {
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const [suggestionError, setSuggestionError] = useState(null);
   const [showMoreModal, setShowMoreModal] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(true);
 
   function updateField(field, value) {
     setValues((current) => ({
@@ -387,6 +388,7 @@ function SearchForm({ onSubmit, loading }) {
       const data = await getNicheSuggestions(values.businessType, values.location);
       if (Array.isArray(data)) {
         setNicheSuggestions(data);
+        setShowSuggestions(true);
       } else {
         setSuggestionError('Failed to fetch suggestions');
       }
@@ -444,7 +446,8 @@ function SearchForm({ onSubmit, loading }) {
   }
 
   return (
-    <form className="search-form panel" onSubmit={handleSubmit}>
+    <>
+      <form className="search-form panel" onSubmit={handleSubmit}>
       <div className="panel-heading">
         <div>
           <p className="eyebrow">New analysis</p>
@@ -517,12 +520,13 @@ function SearchForm({ onSubmit, loading }) {
                       setSelectedTile(tile.id);
                       updateField('businessType', tile.label);
                       setNicheSuggestions([]);
+                      setShowSuggestions(true);
                     }}
                     style={{ '--tile-bg': `url(${tile.image})` }}
                   >
                     <div className="business-tile-bg" />
                     <div className="business-tile-content">
-                      <IconComponent size={18} className="tile-icon" />
+                      <IconComponent size={16} className="tile-icon" />
                       <span className="tile-label">{tile.label}</span>
                     </div>
                   </button>
@@ -541,7 +545,7 @@ function SearchForm({ onSubmit, loading }) {
                 >
                   <div className="business-tile-bg" style={{ opacity: 0.35, filter: 'blur(0) brightness(0.5)', transform: 'scale(1.02)' }} />
                   <div className="business-tile-content">
-                    <nonCoreTile.icon size={18} className="tile-icon" />
+                    <nonCoreTile.icon size={16} className="tile-icon" />
                     <span className="tile-label">{nonCoreTile.label}</span>
                   </div>
                 </button>
@@ -554,7 +558,7 @@ function SearchForm({ onSubmit, loading }) {
                 onClick={() => setShowMoreModal(true)}
               >
                 <div className="business-tile-content">
-                  <MoreHorizontal size={18} className="tile-icon" />
+                  <MoreHorizontal size={16} className="tile-icon" />
                   <span className="tile-label">Show More</span>
                 </div>
               </button>
@@ -562,69 +566,87 @@ function SearchForm({ onSubmit, loading }) {
           </div>
 
           {/* Niche Input with AI suggestions */}
-          <div className="field">
+          <div className="field niche-field-container">
             <span>Niche (Optional)</span>
             
+            <div className="niche-input-wrapper">
+              <input
+                type="text"
+                value={values.niche}
+                onChange={(event) => updateField('niche', event.target.value)}
+                placeholder="Enter a custom niche (e.g. Specialty espresso, Vegan bakery)..."
+                maxLength={120}
+                className="niche-input"
+              />
+              {values.businessType && values.businessType.trim().length >= 2 && (
+                <button
+                  type="button"
+                  className={`suggestions-toggle-btn ${showSuggestions ? 'active' : ''}`}
+                  onClick={() => setShowSuggestions(!showSuggestions)}
+                  title="Toggle AI suggestions"
+                >
+                  <Sparkles size={16} />
+                </button>
+              )}
+            </div>
+
             {/* Niche Suggestions Section */}
-            {values.businessType && values.businessType.trim().length >= 2 && (
+            {showSuggestions && values.businessType && values.businessType.trim().length >= 2 && (
               <div className="niche-suggestions-section">
-                <div className="suggestions-header">
-                  <span className="suggestions-title">
-                    <Sparkles size={12} className="sparkle-icon" />
-                    AI Niche Suggestions
-                  </span>
-                  {isCustomSelected || !selectedTile ? (
-                    <button
-                      type="button"
-                      onClick={fetchNicheSuggestions}
-                      disabled={loadingSuggestions}
-                      className="suggestions-fetch-btn"
-                    >
-                      {loadingSuggestions ? 'Generating...' : 'Generate with AI'}
-                    </button>
-                  ) : null}
-                </div>
+                {/* Generate with AI button bubble */}
+                {(isCustomSelected || !selectedTile) && nicheSuggestions.length === 0 && !loadingSuggestions && !suggestionError && (
+                  <button
+                    type="button"
+                    onClick={fetchNicheSuggestions}
+                    className="suggestion-bubble generate-bubble"
+                  >
+                    <Sparkles size={14} className="sparkle-icon" />
+                    <span>Generate Niche Suggestions</span>
+                  </button>
+                )}
 
+                {/* Loading state bubble */}
                 {loadingSuggestions && (
-                  <div className="suggestions-loading-dots">
+                  <div className="suggestion-bubble loading-bubble">
                     <span className="dot" />
                     <span className="dot" />
                     <span className="dot" />
-                    Generating modern niches...
+                    <span>Generating suggestions...</span>
                   </div>
                 )}
 
+                {/* Error bubble */}
                 {suggestionError && (
-                  <div className="suggestions-error">{suggestionError}</div>
-                )}
-
-                {nicheSuggestions.length > 0 && (
-                  <div className="suggestions-pills">
-                    {nicheSuggestions.map((suggestion, idx) => {
-                      const isSelected = values.niche === suggestion;
-                      return (
-                        <button
-                          key={idx}
-                          type="button"
-                          className={`suggestion-pill ${isSelected ? 'active' : ''}`}
-                          onClick={() => updateField('niche', suggestion)}
-                        >
-                          {suggestion}
-                        </button>
-                      );
-                    })}
+                  <div className="suggestion-bubble error-bubble">
+                    <span>⚠️ {suggestionError}</span>
                   </div>
                 )}
+
+                {/* Suggestion bubbles */}
+                {nicheSuggestions.length > 0 && (
+                  <div className="suggestion-bubble header-bubble">
+                    <Sparkles size={14} className="sparkle-icon" />
+                    <span>AI generated suggestions</span>
+                  </div>
+                )}
+                {nicheSuggestions.length > 0 && nicheSuggestions.map((suggestion, idx) => {
+                  const isSelected = values.niche === suggestion;
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      className={`suggestion-bubble ${isSelected ? 'active' : ''}`}
+                      onClick={() => {
+                        updateField('niche', suggestion);
+                        setShowSuggestions(false);
+                      }}
+                    >
+                      {suggestion}
+                    </button>
+                  );
+                })}
               </div>
             )}
-
-            <input
-              type="text"
-              value={values.niche}
-              onChange={(event) => updateField('niche', event.target.value)}
-              placeholder="Enter a custom niche (e.g. Specialty espresso, Vegan bakery)..."
-              maxLength={120}
-            />
           </div>
         </div>
       </div>
@@ -638,24 +660,26 @@ function SearchForm({ onSubmit, loading }) {
         <Search size={18} aria-hidden="true" />
         {loading ? 'Analyzing' : 'Run analysis'}
       </button>
-
-      {/* Select Business Type Modal overlay */}
-      {showMoreModal && (
-        <SelectBusinessTypeModal
-          onClose={() => {
-            setShowMoreModal(false);
-          }}
-          onSelect={(label, id) => {
-            setSelectedTile(id);
-            updateField('businessType', label);
-            setNicheSuggestions([]);
-            setShowMoreModal(false);
-          }}
-          currentSelection={values.businessType}
-        />
-      )}
     </form>
-  );
+
+    {/* Select Business Type Modal overlay */}
+    {showMoreModal && (
+      <SelectBusinessTypeModal
+        onClose={() => {
+          setShowMoreModal(false);
+        }}
+        onSelect={(label, id) => {
+          setSelectedTile(id);
+          updateField('businessType', label);
+          setNicheSuggestions([]);
+          setShowSuggestions(true);
+          setShowMoreModal(false);
+        }}
+        currentSelection={values.businessType}
+      />
+    )}
+  </>
+);
 }
 
 function SelectBusinessTypeModal({ onClose, onSelect, currentSelection }) {

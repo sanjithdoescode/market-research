@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { History, MapPinned, Search, Zap, MessageSquare } from 'lucide-react';
+import { History, MapPinned, Search, MessageSquare } from 'lucide-react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 
 import AppRoutes from './routes/AppRoutes.jsx';
@@ -162,11 +162,6 @@ function App() {
       <main className="main-content">
         <AppRoutes />
       </main>
-
-      <footer className="app-footer">
-        <Zap size={12} aria-hidden="true" />
-        <span>Powered by AI market intelligence</span>
-      </footer>
     </div>
   );
 }
