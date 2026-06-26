@@ -1,15 +1,26 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (
-  (import.meta.env.DEV || (typeof window !== 'undefined' && (
+const getApiBaseUrl = () => {
+  const envVal = import.meta.env.VITE_API_BASE_URL;
+  
+  // If the env variable is set to a full URL (not a relative path like '/api'), use it
+  if (envVal && envVal.startsWith('http')) {
+    return envVal;
+  }
+  
+  // Runtime check for local development hostnames
+  const isLocal = typeof window !== 'undefined' && (
     window.location.hostname === 'localhost' ||
     window.location.hostname === '127.0.0.1' ||
     window.location.hostname === '0.0.0.0' ||
     window.location.hostname.startsWith('192.168.') ||
     window.location.hostname.startsWith('10.') ||
+    window.location.hostname.startsWith('172.') ||
     window.location.hostname.endsWith('.local')
-  )))
-    ? '/api'
-    : 'https://market-research-server.vercel.app/api'
-);
+  );
+  
+  return isLocal ? '/api' : 'https://market-research-server.vercel.app/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 async function request(path, options = {}) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     headers: {
