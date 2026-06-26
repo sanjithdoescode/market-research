@@ -6,7 +6,7 @@ const getApiBaseUrl = () => {
     return envVal;
   }
 
-  // Runtime check for local development hostnames
+  // Use Vite proxy for local development (avoids CORS entirely)
   const isLocal = typeof window !== 'undefined' && (
     window.location.hostname === 'localhost' ||
     window.location.hostname === '127.0.0.1' ||
@@ -17,7 +17,13 @@ const getApiBaseUrl = () => {
     window.location.hostname.endsWith('.local')
   );
 
-  return isLocal ? '/api' : 'https://market-research-server.vercel.app/api';
+  if (isLocal) {
+    return '/api';
+  }
+
+  // All Vercel deployments (production + previews) talk to the single production server.
+  // The server's CORS configuration allows all marketsense Vercel preview origins.
+  return 'https://market-research-server.vercel.app/api';
 };
 
 const API_BASE_URL = getApiBaseUrl();

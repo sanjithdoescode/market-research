@@ -17,7 +17,30 @@ const app = express();
 app.use(helmet());
 app.use(
   cors({
-    origin: env.clientOrigin,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, or server-to-server)
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      // Check if it matches the configured client origin
+      if (origin === env.clientOrigin) {
+        return callback(null, true);
+      }
+
+      // Allow any marketsense Vercel deployment (production alias, branch, or commit-hash preview)
+      // Examples:
+      //   https://marketsense-blond.vercel.app                                (production alias)
+      //   https://marketsense-git-preview-sanjithdoescodes-projects.vercel.app (branch preview)
+      //   https://marketsense-jg59qehi2-sanjithdoescodes-projects.vercel.app  (commit preview)
+      const isVercelPreview = /^https:\/\/marketsense-[a-zA-Z0-9._-]+\.vercel\.app$/.test(origin);
+      if (isVercelPreview) {
+        return callback(null, true);
+      }
+
+      // Disallow other origins (blocks CORS without throwing server-side errors)
+      callback(null, false);
+    },
     credentials: true
   })
 );
