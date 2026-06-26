@@ -2,7 +2,7 @@ import { Eye, Trash2 } from 'lucide-react';
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
-import LoadingSpinner from '../components/LoadingSpinner.jsx';
+import PageLoader from '../components/PageLoader.jsx';
 import { useAnalysis } from '../hooks/useAnalysis.js';
 
 function formatDate(value) {
@@ -33,7 +33,7 @@ function History() {
           </div>
         </div>
 
-        {state.loading && <LoadingSpinner label="Loading history" />}
+        {state.loading && <PageLoader label="Loading history" />}
         {state.error && <div className="error-banner">{state.error}</div>}
 
         <div className="history-list">

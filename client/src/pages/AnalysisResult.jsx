@@ -1,10 +1,10 @@
-import { ArrowLeft, MessageSquare } from 'lucide-react';
+import { ArrowLeft, MessageSquare, MapPin, Store } from 'lucide-react';
 import { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import CompetitorTable from '../components/CompetitorTable.jsx';
 import DemandSignalPanel from '../components/DemandSignalPanel.jsx';
-import LoadingSpinner from '../components/LoadingSpinner.jsx';
+import PageLoader from '../components/PageLoader.jsx';
 import RecommendationPanel from '../components/RecommendationPanel.jsx';
 import ScoreCard from '../components/ScoreCard.jsx';
 import StrategicPlaybookPanel from '../components/StrategicPlaybookPanel.jsx';
@@ -23,7 +23,7 @@ function AnalysisResult() {
   }, [analysisDocument, id, loadAnalysis]);
 
   if (state.loading && (!analysisDocument || analysisDocument.id !== id)) {
-    return <LoadingSpinner label="Loading analysis" />;
+    return <PageLoader label="Loading analysis" />;
   }
 
   if (state.error && (!analysisDocument || analysisDocument.id !== id)) {
@@ -49,7 +49,8 @@ function AnalysisResult() {
 
   return (
     <div className="result-page">
-      <div className="page-actions" style={{ justifyContent: 'space-between', display: 'flex', width: '100%', gap: '16px' }}>
+      {/* ── Top action bar ───────────────────────────────────────────── */}
+      <div className="page-actions result-page-actions">
         <LiquidGlass
           tagName={Link}
           to="/"
@@ -59,45 +60,41 @@ function AnalysisResult() {
           tint={0.06}
           tintColor="#ffffff"
           glint={20}
-          hoverParams={{
-            depth: 22,
-            glint: 35,
-            tint: 0.1
-          }}
+          hoverParams={{ depth: 22, glint: 35, tint: 0.1 }}
         >
           <ArrowLeft size={16} aria-hidden="true" />
           New analysis
         </LiquidGlass>
-        <LiquidGlass
-          tagName={Link}
+
+        {/* Solid amber CTA — always visible, high contrast */}
+        <Link
           to={`/chat?analysisId=${id}`}
-          className="primary-button liquid-glass"
-          style={{ minHeight: '40px', padding: '8px 16px', fontSize: '0.88rem' }}
-          depth={20}
-          blur={10}
-          tint={0.12}
-          tintColor="var(--accent-dim)"
-          glint={30}
-          hoverParams={{
-            depth: 28,
-            glint: 45,
-            tint: 0.18
-          }}
+          className="cta-ai-button"
+          aria-label="Discuss this report with AI"
         >
           <MessageSquare size={16} aria-hidden="true" />
           Discuss report with AI
-        </LiquidGlass>
+        </Link>
       </div>
 
-      <section className="result-header">
-        <div>
-          <p className="eyebrow">{input.businessType}</p>
-          <h1>{input.location}</h1>
-          {input.niche && <p>{input.niche}</p>}
+      {/* ── Page hero header ─────────────────────────────────────────── */}
+      <section className="result-header-hero" aria-label="Analysis subject">
+        <div className="result-header-meta">
+          <span className="result-business-badge">
+            <Store size={13} aria-hidden="true" />
+            {input.businessType}
+          </span>
+          {input.niche && (
+            <span className="result-niche-tag">{input.niche}</span>
+          )}
         </div>
+        <h1 className="result-location-title">
+          <MapPin size={22} className="result-location-pin" aria-hidden="true" />
+          {input.location}
+        </h1>
       </section>
 
-      {/* Score cards — now includes demand, supply, opportunity */}
+      {/* ── Score cards — demand, supply, opportunity ─────────────────── */}
       <ScoreCard
         analysis={analysis}
         demandScore={demandScore}
@@ -106,7 +103,7 @@ function AnalysisResult() {
         opportunityTier={opportunityTier}
       />
 
-      {/* Evidence warnings */}
+      {/* ── Evidence warnings ─────────────────────────────────────────── */}
       {metadata?.evidenceWarnings?.length > 0 && (
         <section className="evidence-strip" aria-label="Evidence warnings">
           {metadata.evidenceWarnings.map((warning) => (
@@ -115,14 +112,14 @@ function AnalysisResult() {
         </section>
       )}
 
-      {/* Demand Signal map */}
+      {/* ── Demand Signal map ─────────────────────────────────────────── */}
       <DemandSignalPanel
         audienceCategories={audienceCategories}
         demandSignals={demandSignals}
         demandScore={demandScore}
       />
 
-      {/* Recommendation + AI interpretations */}
+      {/* ── Recommendation + AI interpretations ──────────────────────── */}
       <RecommendationPanel
         recommendation={analysis.recommendation}
         summary={analysis.summary}
@@ -135,7 +132,7 @@ function AnalysisResult() {
         pricingAnalysis={analysis.pricingAnalysis}
       />
 
-      {/* Premium Strategic Business Playbook */}
+      {/* ── Strategic Business Playbook ───────────────────────────────── */}
       <StrategicPlaybookPanel
         swotAnalysis={analysis.swotAnalysis}
         financialProjections={analysis.financialProjections}
@@ -144,7 +141,7 @@ function AnalysisResult() {
         implementationRoadmap={analysis.implementationRoadmap}
       />
 
-      {/* Competitor table */}
+      {/* ── Competitor table ──────────────────────────────────────────── */}
       <CompetitorTable competitors={competitors} assessment={analysis.competitorAssessment} />
     </div>
   );

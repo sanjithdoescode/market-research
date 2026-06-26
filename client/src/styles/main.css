@@ -520,6 +520,109 @@ h1, h2, h3, p {
   gap: 20px;
 }
 
+/* ── Result Page Actions Bar ───────────────────────────────────── */
+.result-page-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+}
+
+/* ── AI Chat CTA Button — always high-contrast amber ───────────── */
+.cta-ai-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  min-height: 40px;
+  background: linear-gradient(135deg, #D97706 0%, #B45309 100%);
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 700;
+  border-radius: var(--radius);
+  border: 1px solid rgba(217,119,6,0.25);
+  box-shadow: 0 4px 16px rgba(217,119,6,0.28), inset 0 1px 0 rgba(255,255,255,0.15);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform var(--duration) var(--ease-out),
+              box-shadow var(--duration) var(--ease-out),
+              background var(--duration) var(--ease-out);
+}
+
+.cta-ai-button:hover {
+  background: linear-gradient(135deg, #B45309 0%, #92400E 100%);
+  box-shadow: 0 6px 22px rgba(217,119,6,0.38);
+  transform: translateY(-1.5px);
+}
+
+.cta-ai-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(217,119,6,0.2);
+}
+
+/* ── Result Header Hero ─────────────────────────────────────────── */
+.result-header-hero {
+  padding: 8px 4px;
+  animation: fadeInUp 0.5s var(--ease-out) 0.05s both;
+}
+
+.result-header-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.result-business-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+  border-radius: var(--radius-pill);
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.result-niche-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  background: color-mix(in srgb, var(--teal) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--teal) 18%, transparent);
+  border-radius: var(--radius-pill);
+  color: var(--teal);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.result-location-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.8vw, 2.4rem);
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--ink);
+  margin: 0;
+}
+
+.result-location-pin {
+  color: var(--accent-dim);
+  flex-shrink: 0;
+  margin-top: 4px;
+  opacity: 0.75;
+}
+
 
 /* ── Panels (Glassmorphism) ────────────────────────────────────── */
 .panel,
@@ -1605,38 +1708,13 @@ gmp-place-autocomplete::part(prediction-item):hover {
 }
 
 
-/* ── Loading State ─────────────────────────────────────────────── */
+/* ── Loading State (legacy — kept for any other references) ──────── */
 .loading-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 16px;
   padding: 24px;
-}
-
-.loading-orb {
-  position: relative;
-  width: 48px;
-  height: 48px;
-}
-
-.loading-orb::before,
-.loading-orb::after {
-  content: '';
-  position: absolute;
-  border-radius: 50%;
-}
-
-.loading-orb::before {
-  inset: 0;
-  background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
-  animation: orb-pulse 2s var(--ease-out) infinite;
-}
-
-.loading-orb::after {
-  inset: 8px;
-  background: var(--bg);
-  border-radius: 50%;
 }
 
 .loading-text {
@@ -1646,6 +1724,7 @@ gmp-place-autocomplete::part(prediction-item):hover {
   animation: text-pulse 2s ease-in-out infinite;
 }
 
+/* Legacy shimmer bar utility */
 .loading-bar {
   width: 120px;
   height: 3px;
@@ -1667,6 +1746,85 @@ gmp-place-autocomplete::part(prediction-item):hover {
 @keyframes shimmer-bar {
   0%   { transform: translateX(-100%); }
   100% { transform: translateX(350%); }
+}
+
+/* ── PageLoader — matches AnalysisProgressModal visual language ──── */
+.page-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  width: 100%;
+  padding: 40px 20px;
+}
+
+.page-loader-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+  max-width: 340px;
+}
+
+/* Icon pill — same style as progress modal icon */
+.page-loader-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-dim) 30%, transparent);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.page-loader-icon {
+  color: var(--accent);
+  animation: spin 2.5s linear infinite;
+}
+
+/* Shimmer bar track — identical to .progress-bar-container */
+.page-loader-bar-track {
+  width: 100%;
+  height: 8px;
+  background: var(--surface-3);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border-input);
+  position: relative;
+}
+
+/* Animated shimmer fill — looks like an indeterminate progress bar */
+.page-loader-bar-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--accent-dim) 60%, transparent) 30%,
+    var(--accent) 50%,
+    color-mix(in srgb, var(--accent-dim) 60%, transparent) 70%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: bar-shimmer-sweep 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+@keyframes bar-shimmer-sweep {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Status label — same typography as .progress-status-text */
+.page-loader-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+  animation: text-pulse 2s ease-in-out infinite;
 }
 
 .spinner {
@@ -1754,6 +1912,77 @@ gmp-place-autocomplete::part(prediction-item):hover {
   grid-column: span 2;
 }
 
+/* Radial-ring hero widget */
+.metric-widget--radial {
+  align-items: flex-start;
+}
+
+.metric-widget-body--hero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 0;
+}
+
+/* Radial ring SVG */
+.radial-ring-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.radial-ring-svg {
+  display: block;
+}
+
+.radial-ring-fill {
+  transition: stroke-dashoffset 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.radial-ring-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+}
+
+.radial-value {
+  font-family: var(--font-body);
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.radial-unit {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Tier card */
+.metric-widget--tier {
+  border-width: 1px;
+  transition: transform var(--duration) var(--ease-out),
+              box-shadow var(--duration) var(--ease-out);
+}
+
+.tier-sub-indicator {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  opacity: 0.8;
+  margin-top: 2px;
+}
+
 .metric-widget-header {
   display: flex;
   align-items: center;
@@ -1811,19 +2040,19 @@ gmp-place-autocomplete::part(prediction-item):hover {
 
 /* ── Horizontal Progress Bar ───────────────────────────────────── */
 .metric-progress-track {
-  height: 4px;
+  height: 8px;
   background: var(--surface-3);
-  border-radius: 2px;
+  border-radius: var(--radius-pill);
   overflow: hidden;
   width: 100%;
 }
 
 .metric-progress-fill {
   height: 100%;
-  border-radius: 2px;
+  border-radius: var(--radius-pill);
   transform-origin: left;
   animation: bar-grow 0.8s var(--ease-out) 0.3s both;
-  min-width: 2px;
+  min-width: 4px;
 }
 
 /* ── Opportunity Tier ──────────────────────────────────────────── */
@@ -2122,35 +2351,127 @@ gmp-place-autocomplete::part(prediction-item):hover {
 }
 
 
-/* ── AI Insights Grid ──────────────────────────────────────────── */
+/* ── AI Insights Heading ──────────────────────────────────────── */
+.ai-insights-heading {
+  align-items: center;
+}
+
+.insights-title {
+  font-size: 1.3rem;
+}
+
+.insights-heading-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: color-mix(in srgb, var(--amber) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--amber) 22%, transparent);
+  border-radius: var(--radius-pill);
+  color: var(--amber);
+  font-size: 0.74rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ── Insight Cards Grid ─────────────────────────────────────────── */
 .insights-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 18px;
   margin-top: 4px;
 }
 
+/* ── Insight Card (replaces old analysis-block) ─────────────────── */
+.insight-card {
+  position: relative;
+  padding: 20px;
+  background: var(--surface-card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+  transition: transform var(--duration) var(--ease-out),
+              box-shadow var(--duration) var(--ease-out),
+              border-color var(--duration) var(--ease-out);
+}
+
+.insight-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: color-mix(in srgb, var(--card-accent, var(--accent-dim)) 35%, transparent);
+}
+
+/* Gradient top accent bar */
+.insight-card-top-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  opacity: 0.85;
+}
+
+.insight-card-header {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.insight-icon-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.insight-card-label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  line-height: 1.2;
+}
+
+.insight-body-text {
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  line-height: 1.78;
+  margin: 0;
+  flex: 1;
+}
+
+.read-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+  margin: 0;
+  background: none;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: opacity var(--duration) var(--ease-out);
+}
+
+.read-more-btn:hover {
+  opacity: 0.75;
+}
+
+/* Keep old analysis-block for legacy compat (not actively rendered) */
 .analysis-block {
   padding: 18px;
   background: var(--surface-1);
   border-radius: var(--radius);
   border: 1px solid var(--border);
   border-left: 3px solid var(--accent-dim);
-  transition: border-color var(--duration) var(--ease-out),
-              background var(--duration) var(--ease-out);
-}
-
-.analysis-block:hover {
-  background: var(--surface-2);
-  border-color: var(--border-hover);
-}
-
-.analysis-block h3 {
-  margin-bottom: 8px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
 .analysis-text {
@@ -2832,8 +3153,14 @@ gmp-place-autocomplete::part(prediction-item):hover {
   /* Force all elements to stack on tablet width */
   .form-row,
   .score-grid,
-  .history-row {
+  .history-row,
+  .insights-grid,
+  .swot-matrix-2x2 {
     grid-template-columns: 1fr;
+  }
+
+  .metric-widget--hero {
+    grid-column: span 1;
   }
 }
 
@@ -3977,6 +4304,33 @@ gmp-place-autocomplete::part(prediction-item):hover {
   gap: 24px;
 }
 
+/* Panel heading override for playbook */
+.playbook-panel-heading {
+  align-items: center;
+}
+
+.playbook-title {
+  font-size: 1.35rem;
+}
+
+/* Premium badge — gold glow */
+.premium-badge-v2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.25);
+  border-radius: var(--radius-pill);
+  padding: 5px 12px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  color: var(--amber);
+  animation: pulse-glow 3s infinite var(--ease-out);
+  white-space: nowrap;
+}
+
+/* Legacy badge */
 .premium-badge {
   display: inline-flex;
   align-items: center;
@@ -3992,6 +4346,47 @@ gmp-place-autocomplete::part(prediction-item):hover {
   animation: pulse-glow 3s infinite var(--ease-out);
 }
 
+/* ── Pill Tab Bar ───────────────────────────────────────────── */
+.playbook-tab-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.playbook-pill-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 7px 16px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--duration) var(--ease-out);
+}
+
+.playbook-pill-tab:hover {
+  color: var(--ink);
+  background: var(--surface-2);
+  border-color: var(--border-hover);
+  transform: translateY(-1px);
+}
+
+.playbook-pill-tab.active {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  border-color: color-mix(in srgb, var(--accent-dim) 40%, transparent);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 12%, transparent);
+  font-weight: 700;
+}
+
+/* Legacy tab styles (keep for compat) */
 .playbook-tabs {
   display: flex;
   flex-wrap: wrap;
@@ -4006,7 +4401,7 @@ gmp-place-autocomplete::part(prediction-item):hover {
   gap: 8px;
   background: var(--surface-1);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-pill);
   padding: 8px 16px;
   font-family: var(--font-body);
   font-weight: 600;
@@ -4034,30 +4429,88 @@ gmp-place-autocomplete::part(prediction-item):hover {
   min-height: 200px;
 }
 
-/* SWOT Matrix Layout */
-.swot-grid {
+/* ── SWOT 2×2 Matrix ───────────────────────────────────────────── */
+.swot-matrix-2x2 {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
 
 .swot-box {
-  background: var(--panel-soft);
-  border: 1px solid var(--panel-border);
+  background: var(--swot-bg, var(--panel-soft));
+  border: 1px solid var(--swot-border, var(--panel-border));
   border-radius: var(--radius);
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
   transition: transform var(--duration) var(--ease-out),
-              box-shadow var(--duration) var(--ease-out),
-              border-color var(--duration) var(--ease-out);
+              box-shadow var(--duration) var(--ease-out);
 }
 
 .swot-box:hover {
   transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+
+.swot-box-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.swot-letter-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
 }
 
 .swot-box h3 {
-  font-size: 1.05rem;
-  margin-bottom: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.swot-items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.swot-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.swot-bullet {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 6px;
+  opacity: 0.75;
+}
+
+/* Legacy SWOT grid */
+.swot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
 }
 
 .swot-indicator {
@@ -4072,70 +4525,21 @@ gmp-place-autocomplete::part(prediction-item):hover {
   margin-right: 6px;
 }
 
-.swot-box ul {
-  margin: 0;
-  padding: 0 0 0 18px;
-}
-
-.swot-box li {
-  margin-bottom: 10px;
-  font-size: 0.88rem;
-  color: var(--text-secondary);
-  line-height: 1.5;
-}
-
-.swot-box li:last-child {
-  margin-bottom: 0;
-}
-
 /* SWOT color variants */
-.swot-strengths {
-  border-left: 4px solid var(--green);
-}
-.swot-strengths:hover {
-  border-color: var(--green);
-  box-shadow: 0 8px 24px rgba(46, 125, 50, 0.05);
-}
-.swot-strengths .swot-indicator {
-  background: rgba(46, 125, 50, 0.1);
-  color: var(--green);
-}
+.swot-strengths    { border-left: 3px solid var(--green); }
+.swot-weaknesses   { border-left: 3px solid var(--red); }
+.swot-opportunities{ border-left: 3px solid var(--blue); }
+.swot-threats      { border-left: 3px solid var(--orange); }
 
-.swot-weaknesses {
-  border-left: 4px solid var(--red);
-}
-.swot-weaknesses:hover {
-  border-color: var(--red);
-  box-shadow: 0 8px 24px rgba(248, 113, 113, 0.05);
-}
-.swot-weaknesses .swot-indicator {
-  background: rgba(248, 113, 113, 0.15);
-  color: var(--red);
-}
+.swot-strengths:hover     { box-shadow: 0 8px 24px rgba(46,125,50,0.07); }
+.swot-weaknesses:hover    { box-shadow: 0 8px 24px rgba(198,40,40,0.07); }
+.swot-opportunities:hover { box-shadow: 0 8px 24px rgba(37,99,235,0.07); }
+.swot-threats:hover       { box-shadow: 0 8px 24px rgba(234,88,12,0.07); }
 
-.swot-opportunities {
-  border-left: 4px solid var(--blue);
-}
-.swot-opportunities:hover {
-  border-color: var(--blue);
-  box-shadow: 0 8px 24px rgba(96, 165, 250, 0.05);
-}
-.swot-opportunities .swot-indicator {
-  background: rgba(96, 165, 250, 0.15);
-  color: var(--blue);
-}
-
-.swot-threats {
-  border-left: 4px solid var(--orange);
-}
-.swot-threats:hover {
-  border-color: var(--orange);
-  box-shadow: 0 8px 24px rgba(251, 146, 60, 0.05);
-}
-.swot-threats .swot-indicator {
-  background: rgba(251, 146, 60, 0.15);
-  color: var(--orange);
-}
+.swot-strengths .swot-indicator    { background: rgba(46,125,50,0.1);  color: var(--green); }
+.swot-weaknesses .swot-indicator   { background: rgba(198,40,40,0.12); color: var(--red); }
+.swot-opportunities .swot-indicator{ background: rgba(37,99,235,0.1);  color: var(--blue); }
+.swot-threats .swot-indicator      { background: rgba(234,88,12,0.1);  color: var(--orange); }
 
 /* Roadmap Flow */
 .roadmap-flow {
@@ -4243,6 +4647,7 @@ gmp-place-autocomplete::part(prediction-item):hover {
   flex-shrink: 0;
 }
 
+/* ── Premium Financial Cards ───────────────────────────────────────── */
 /* Financials view */
 .financials-view {
   display: flex;
@@ -4250,6 +4655,79 @@ gmp-place-autocomplete::part(prediction-item):hover {
   gap: 20px;
 }
 
+.fin-cards-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+}
+
+.fin-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px 20px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--duration) var(--ease-out),
+              box-shadow var(--duration) var(--ease-out);
+}
+
+.fin-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+}
+
+.fin-card--capex::before    { background: linear-gradient(90deg, var(--teal), #67e8f9); }
+.fin-card--opex::before     { background: linear-gradient(90deg, var(--purple), #a78bfa); }
+.fin-card--breakeven::before{ background: linear-gradient(90deg, var(--amber), #fbbf24); }
+
+.fin-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+.fin-card-top {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.fin-card-icon {
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.fin-card-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.fin-card-amount {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 2vw, 1.8rem);
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.1;
+}
+
+.fin-card-note {
+  font-size: 0.74rem;
+  color: var(--text-subtle);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Legacy cost cards (kept for compat) */
 .cost-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
@@ -4294,15 +4772,9 @@ gmp-place-autocomplete::part(prediction-item):hover {
   margin: 0;
 }
 
-.cost-card.capex {
-  border-top: 3px solid var(--teal);
-}
-.cost-card.opex {
-  border-top: 3px solid var(--purple);
-}
-.cost-card.breakeven {
-  border-top: 3px solid var(--amber);
-}
+.cost-card.capex    { border-top: 3px solid var(--teal); }
+.cost-card.opex     { border-top: 3px solid var(--purple); }
+.cost-card.breakeven{ border-top: 3px solid var(--amber); }
 
 .financials-rationale {
   background: var(--panel-soft);
@@ -4312,8 +4784,10 @@ gmp-place-autocomplete::part(prediction-item):hover {
 }
 
 .financials-rationale h5 {
+  display: flex;
+  align-items: center;
   margin: 0 0 8px;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 700;
   color: var(--ink);
 }
@@ -4325,110 +4799,151 @@ gmp-place-autocomplete::part(prediction-item):hover {
   line-height: 1.6;
 }
 
-/* Risks view */
+/* ── Redesigned Risk Items ─────────────────────────────────────────── */
 .risks-view {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
-.risks-list {
+.risks-list-v2 {
   display: grid;
-  gap: 16px;
+  gap: 12px;
 }
 
-.risk-item {
-  background: var(--panel-soft);
-  border: 1px solid var(--panel-border);
+.risk-item-v2 {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 20px;
-  transition: border-color var(--duration) var(--ease-out);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color var(--duration) var(--ease-out),
+              box-shadow var(--duration) var(--ease-out);
 }
 
-.risk-item:hover {
-  border-color: rgba(248, 113, 113, 0.2);
+.risk-item-v2:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow);
 }
 
-.risk-header {
+.risk-item-header-v2 {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-.risk-header h4 {
+.risk-item-left {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.risk-item-left h4 {
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--ink);
 }
 
-.risk-warning-icon {
-  color: var(--red);
-  opacity: 0.85;
-}
-
-.risk-desc {
-  margin: 0 0 14px;
-  font-size: 0.88rem;
-  color: var(--text-secondary);
-  line-height: 1.5;
-}
-
-.risk-mitigation {
-  background: rgba(30, 58, 95, 0.03);
-  border: 1px dashed rgba(30, 58, 95, 0.12);
-  border-radius: var(--radius-sm);
-  padding: 12px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.mitigation-badge {
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: var(--green);
+.risk-severity-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  white-space: nowrap;
 }
 
-.mitigation-text {
+.risk-desc-v2 {
   margin: 0;
   font-size: 0.88rem;
   color: var(--text-secondary);
-  line-height: 1.4;
+  line-height: 1.6;
 }
 
-/* Marketing Playbook view */
+.risk-expand-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: opacity var(--duration) var(--ease-out);
+  align-self: flex-start;
+}
+
+.risk-expand-btn:hover {
+  opacity: 0.7;
+}
+
+.risk-mitigation-v2 {
+  background: color-mix(in srgb, var(--green) 6%, transparent);
+  border: 1px solid color-mix(in srgb, var(--green) 20%, transparent);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+}
+
+.risk-mitigation-v2 .mitigation-text {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+/* Legacy risk styles */
+.risks-list   { display: grid; gap: 16px; }
+.risk-item    { background: var(--panel-soft); border: 1px solid var(--panel-border); border-radius: var(--radius); padding: 20px; }
+.risk-header  { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.risk-header h4{ margin: 0; font-size: 1rem; font-weight: 700; color: var(--ink); }
+.risk-warning-icon { color: var(--red); opacity: 0.85; }
+.risk-desc    { margin: 0 0 14px; font-size: 0.88rem; color: var(--text-secondary); line-height: 1.5; }
+.risk-mitigation { background: rgba(30,58,95,0.03); border: 1px dashed rgba(30,58,95,0.12); border-radius: var(--radius-sm); padding: 12px 16px; display: flex; flex-direction: column; gap: 4px; }
+.mitigation-badge { font-size: 0.68rem; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.05em; }
+.mitigation-text  { margin: 0; font-size: 0.88rem; color: var(--text-secondary); line-height: 1.4; }
+
+/* ── Redesigned Marketing Cards ──────────────────────────────────────── */
 .marketing-view {
   display: flex;
   flex-direction: column;
 }
 
-.marketing-grid {
+.marketing-grid-v2 {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 16px;
 }
 
-.marketing-card {
-  background: var(--panel-soft);
-  border: 1px solid var(--panel-border);
+.marketing-card-v2 {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 20px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  transition: all var(--duration) var(--ease-out);
+  transition: transform var(--duration) var(--ease-out),
+              box-shadow var(--duration) var(--ease-out),
+              border-color var(--duration) var(--ease-out);
 }
 
-.marketing-card:hover {
+.marketing-card-v2:hover {
   transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
   border-color: var(--border-hover);
 }
 
-.marketing-card-header {
+.marketing-card-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -4436,43 +4951,47 @@ gmp-place-autocomplete::part(prediction-item):hover {
   flex-wrap: wrap;
 }
 
-.audience-tag {
-  background: rgba(96, 165, 250, 0.1);
-  color: var(--blue);
-  border: 1px solid rgba(96, 165, 250, 0.2);
-  border-radius: 4px;
-  padding: 2px 8px;
-  font-size: 0.72rem;
-  font-weight: 600;
-}
-
-.channel-badge {
+.mkt-audience-badge {
   display: inline-flex;
   align-items: center;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 2px 8px;
+  padding: 4px 10px;
+  background: color-mix(in srgb, var(--blue) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--blue) 22%, transparent);
+  border-radius: var(--radius-pill);
+  color: var(--blue);
   font-size: 0.72rem;
-  color: var(--text-secondary);
-  font-weight: 600;
-}
-
-.marketing-card h5 {
-  margin: 0;
-  font-size: 0.9rem;
   font-weight: 700;
-  color: var(--ink);
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 8px;
 }
 
-.marketing-card p {
+.mkt-channel-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: color-mix(in srgb, var(--purple) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--purple) 22%, transparent);
+  border-radius: var(--radius-pill);
+  color: var(--purple);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.mkt-tactic-text {
   margin: 0;
   font-size: 0.88rem;
   color: var(--text-secondary);
-  line-height: 1.5;
+  line-height: 1.65;
 }
+
+/* Legacy marketing styles */
+.marketing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+.marketing-card { background: var(--panel-soft); border: 1px solid var(--panel-border); border-radius: var(--radius); padding: 20px; display: flex; flex-direction: column; gap: 12px; transition: all var(--duration) var(--ease-out); }
+.marketing-card:hover { transform: translateY(-2px); border-color: var(--border-hover); }
+.marketing-card-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.audience-tag { background: rgba(96,165,250,0.1); color: var(--blue); border: 1px solid rgba(96,165,250,0.2); border-radius: 4px; padding: 2px 8px; font-size: 0.72rem; font-weight: 600; }
+.channel-badge { display: inline-flex; align-items: center; background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-size: 0.72rem; color: var(--text-secondary); font-weight: 600; }
+.marketing-card h5 { margin: 0; font-size: 0.9rem; font-weight: 700; color: var(--ink); border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+.marketing-card p  { margin: 0; font-size: 0.88rem; color: var(--text-secondary); line-height: 1.5; }
 
 /* ── Modal Overlay (Select Business Type) ──────────────────────── */
 .modal-overlay {
