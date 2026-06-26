@@ -22,6 +22,7 @@ export const env = Object.freeze({
   mongoUri: process.env.MONGO_URI || process.env.MONGODB_URI,
   googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
   googleMapsClientApiKey: process.env.GOOGLE_MAPS_CLIENT_API_KEY || process.env.VITE_GOOGLE_MAPS_API_KEY,
+  googleMapsMapId: process.env.GOOGLE_MAPS_MAP_ID || 'DEMO_MAP_ID',
   googleApiTimeoutMs: parseInteger(process.env.GOOGLE_API_TIMEOUT_MS, 12000),
   googlePlacesMaxCompetitors: parseInteger(process.env.GOOGLE_PLACES_MAX_COMPETITORS, 10),
   mistralApiKey: process.env.MISTRAL_API_KEY,
