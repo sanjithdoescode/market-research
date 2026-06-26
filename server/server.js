@@ -40,4 +40,5 @@ if (process.env.VERCEL) {
   });
 }
 
+export const maxDuration = 60;
 export default app;

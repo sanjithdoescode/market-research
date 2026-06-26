@@ -1,43 +1,47 @@
+import Job from '../models/Job.js';
 import mongoose from 'mongoose';
 
-const activeJobs = new Map();
-
-// Automatically clean up jobs older than 10 minutes to prevent memory leaks
-setInterval(() => {
-  const now = Date.now();
-  for (const [jobId, job] of activeJobs.entries()) {
-    if (job.createdAt && now - job.createdAt > 10 * 60 * 1000) {
-      activeJobs.delete(jobId);
-    }
-  }
-}, 60 * 1000);
-
-export function createJob() {
-  const jobId = new mongoose.Types.ObjectId().toString();
-  const job = {
-    id: jobId,
+export async function createJob() {
+  const job = await Job.create({
     progress: 0,
     status: 'Initializing AI market models...',
     result: null,
-    error: null,
-    createdAt: Date.now()
+    error: null
+  });
+  return {
+    id: job._id.toString(),
+    progress: job.progress,
+    status: job.status,
+    result: job.result,
+    error: job.error
   };
-  activeJobs.set(jobId, job);
-  return job;
 }
 
-export function updateJob(jobId, updates) {
-  const job = activeJobs.get(jobId);
-  if (job) {
-    Object.assign(job, updates);
-    activeJobs.set(jobId, job);
+export async function updateJob(jobId, updates) {
+  if (!mongoose.Types.ObjectId.isValid(jobId)) {
+    return;
+  }
+  await Job.findByIdAndUpdate(jobId, updates, { new: true });
+}
+
+export async function getJob(jobId) {
+  if (!mongoose.Types.ObjectId.isValid(jobId)) {
+    return null;
+  }
+  const job = await Job.findById(jobId);
+  if (!job) return null;
+  return {
+    id: job._id.toString(),
+    progress: job.progress,
+    status: job.status,
+    result: job.result,
+    error: job.error
+  };
+}
+
+export async function deleteJob(jobId) {
+  if (mongoose.Types.ObjectId.isValid(jobId)) {
+    await Job.findByIdAndDelete(jobId);
   }
 }
 
-export function getJob(jobId) {
-  return activeJobs.get(jobId) || null;
-}
-
-export function deleteJob(jobId) {
-  activeJobs.delete(jobId);
-}

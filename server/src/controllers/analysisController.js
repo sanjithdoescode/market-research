@@ -7,17 +7,25 @@ import { createJob, updateJob, getJob } from '../services/jobTracker.js';
 
 export async function createAnalysis(req, res, next) {
   try {
-    const job = createJob();
+    const job = await createJob();
     
-    // Start background processing
-    createMarketAnalysis(req.validatedBody, job.id)
-      .then((result) => {
-        updateJob(job.id, { progress: 100, result });
-      })
-      .catch((error) => {
+    const runAnalysis = async () => {
+      try {
+        const result = await createMarketAnalysis(req.validatedBody, job.id);
+        await updateJob(job.id, { progress: 100, result });
+      } catch (error) {
         console.error('Analysis background job failed:', error);
-        updateJob(job.id, { progress: 100, error: error.message || 'Analysis failed.' });
-      });
+        await updateJob(job.id, { progress: 100, error: error.message || 'Analysis failed.' });
+      }
+    };
+
+    const isVercel = process.env.VERCEL === '1' || process.env.NOW_REGION !== undefined;
+    if (isVercel) {
+      const { waitUntil } = await import('@vercel/functions');
+      waitUntil(runAnalysis());
+    } else {
+      runAnalysis(); // Fire and forget in standard Node.js
+    }
 
     return sendSuccess(res, {
       id: job.id,
@@ -32,7 +40,7 @@ export async function createAnalysis(req, res, next) {
 export async function getAnalysisStatus(req, res, next) {
   try {
     const { id } = req.params;
-    const job = getJob(id);
+    const job = await getJob(id);
     if (!job) {
       // Fallback: check if the analysis document exists in database (e.g. if job completed and cleaned up)
       const analysis = await findAnalysisById(id);
