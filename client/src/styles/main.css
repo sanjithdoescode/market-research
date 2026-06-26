@@ -758,6 +758,26 @@ h3 {
   transition: all var(--duration) var(--ease-out);
 }
 
+.business-tile-bg {
+  position: absolute;
+  inset: 0;
+  background-image: var(--tile-bg);
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  filter: blur(4px) brightness(0.35);
+  transform: scale(1.12);
+  transition: all var(--duration-slow) var(--ease-out);
+  pointer-events: none;
+}
+
+.business-tile:hover .business-tile-bg,
+.business-tile:focus .business-tile-bg {
+  opacity: 0.35;
+  filter: blur(0) brightness(0.5);
+  transform: scale(1.02);
+}
+
 .business-tile-content {
   position: relative;
   z-index: 10;

@@ -518,7 +518,9 @@ function SearchForm({ onSubmit, loading }) {
                       updateField('businessType', tile.label);
                       setNicheSuggestions([]);
                     }}
+                    style={{ '--tile-bg': `url(${tile.image})` }}
                   >
+                    <div className="business-tile-bg" />
                     <div className="business-tile-content">
                       <IconComponent size={18} className="tile-icon" />
                       <span className="tile-label">{tile.label}</span>
@@ -535,7 +537,9 @@ function SearchForm({ onSubmit, loading }) {
                   onClick={() => {
                     // Clicking does nothing as it's already active
                   }}
+                  style={{ '--tile-bg': `url(${nonCoreTile.image})` }}
                 >
+                  <div className="business-tile-bg" style={{ opacity: 0.35, filter: 'blur(0) brightness(0.5)', transform: 'scale(1.02)' }} />
                   <div className="business-tile-content">
                     <nonCoreTile.icon size={18} className="tile-icon" />
                     <span className="tile-label">{nonCoreTile.label}</span>
