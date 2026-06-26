@@ -357,7 +357,7 @@ function SearchForm({ onSubmit, loading }) {
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const [suggestionError, setSuggestionError] = useState(null);
   const [showMoreModal, setShowMoreModal] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(true);
+  const [showSuggestionsModal, setShowSuggestionsModal] = useState(false);
 
   function updateField(field, value) {
     setValues((current) => ({
@@ -388,7 +388,7 @@ function SearchForm({ onSubmit, loading }) {
       const data = await getNicheSuggestions(values.businessType, values.location);
       if (Array.isArray(data)) {
         setNicheSuggestions(data);
-        setShowSuggestions(true);
+        setShowSuggestionsModal(true);
       } else {
         setSuggestionError('Failed to fetch suggestions');
       }
@@ -520,7 +520,7 @@ function SearchForm({ onSubmit, loading }) {
                       setSelectedTile(tile.id);
                       updateField('businessType', tile.label);
                       setNicheSuggestions([]);
-                      setShowSuggestions(true);
+                      setShowSuggestionsModal(true);
                     }}
                     style={{ '--tile-bg': `url(${tile.image})` }}
                   >
@@ -581,86 +581,19 @@ function SearchForm({ onSubmit, loading }) {
               {values.businessType && values.businessType.trim().length >= 2 && (
                 <button
                   type="button"
-                  className={`suggestions-toggle-btn ${showSuggestions ? 'active' : ''}`}
-                  onClick={() => setShowSuggestions(!showSuggestions)}
-                  title="Toggle AI suggestions"
+                  className={`suggestions-toggle-btn ${nicheSuggestions.length > 0 ? 'active' : ''}`}
+                  onClick={() => {
+                    setShowSuggestionsModal(true);
+                    if (nicheSuggestions.length === 0 && !loadingSuggestions) {
+                      fetchNicheSuggestions();
+                    }
+                  }}
+                  title="AI suggestions"
                 >
                   <Sparkles size={16} />
                 </button>
               )}
             </div>
-
-            {/* Niche Suggestions Section */}
-            {showSuggestions && values.businessType && values.businessType.trim().length >= 2 && (
-              <>
-                <div className="suggestions-mobile-backdrop" onClick={() => setShowSuggestions(false)} />
-                <div className="niche-suggestions-section">
-                  {/* Generate with AI button bubble */}
-                  {(isCustomSelected || !selectedTile) && nicheSuggestions.length === 0 && !loadingSuggestions && !suggestionError && (
-                    <button
-                      type="button"
-                      onClick={fetchNicheSuggestions}
-                      className="suggestion-bubble generate-bubble"
-                    >
-                      <Sparkles size={14} className="sparkle-icon" />
-                      <span>Generate Niche Suggestions</span>
-                    </button>
-                  )}
-
-                  {/* Loading state bubble */}
-                  {loadingSuggestions && (
-                    <div className="suggestion-bubble loading-bubble">
-                      <span className="dot" />
-                      <span className="dot" />
-                      <span className="dot" />
-                      <span>Generating suggestions...</span>
-                    </div>
-                  )}
-
-                  {/* Error bubble */}
-                  {suggestionError && (
-                    <div className="suggestion-bubble error-bubble">
-                      <span>⚠️ {suggestionError}</span>
-                    </div>
-                  )}
-
-                  {/* Suggestion bubbles */}
-                  {nicheSuggestions.length > 0 && (
-                    <div className="suggestion-bubble header-bubble">
-                      <Sparkles size={14} className="sparkle-icon" />
-                      <span>AI generated suggestions</span>
-                      <button
-                        type="button"
-                        className="mobile-suggestions-close"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowSuggestions(false);
-                        }}
-                        title="Close suggestions"
-                      >
-                        <X size={14} />
-                      </button>
-                    </div>
-                  )}
-                  {nicheSuggestions.length > 0 && nicheSuggestions.map((suggestion, idx) => {
-                    const isSelected = values.niche === suggestion;
-                    return (
-                      <button
-                        key={idx}
-                        type="button"
-                        className={`suggestion-bubble ${isSelected ? 'active' : ''}`}
-                        onClick={() => {
-                          updateField('niche', suggestion);
-                          setShowSuggestions(false);
-                        }}
-                      >
-                        {suggestion}
-                      </button>
-                    );
-                  })}
-                </div>
-              </>
-            )}
           </div>
         </div>
       </div>
@@ -686,10 +619,27 @@ function SearchForm({ onSubmit, loading }) {
           setSelectedTile(id);
           updateField('businessType', label);
           setNicheSuggestions([]);
-          setShowSuggestions(true);
+          setShowSuggestionsModal(true);
           setShowMoreModal(false);
         }}
         currentSelection={values.businessType}
+      />
+    )}
+
+    {/* Select Niche Suggestions Modal overlay */}
+    {showSuggestionsModal && (
+      <SelectNicheModal
+        onClose={() => setShowSuggestionsModal(false)}
+        suggestions={nicheSuggestions}
+        loading={loadingSuggestions}
+        error={suggestionError}
+        onSelect={(suggestion) => {
+          updateField('niche', suggestion);
+          setShowSuggestionsModal(false);
+        }}
+        currentSelection={values.niche}
+        onGenerate={fetchNicheSuggestions}
+        businessType={values.businessType}
       />
     )}
   </>
@@ -809,6 +759,83 @@ function SelectBusinessTypeModal({ onClose, onSelect, currentSelection }) {
               </div>
             )}
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SelectNicheModal({ onClose, onSelect, suggestions, loading, error, currentSelection, onGenerate, businessType }) {
+  // Handle clicking on overlay background to close
+  function handleOverlayClick(e) {
+    if (e.target.classList.contains('modal-overlay')) {
+      onClose();
+    }
+  }
+
+  return (
+    <div className="modal-overlay" onClick={handleOverlayClick}>
+      <div className="modal-container niche-modal-container">
+        <div className="modal-header">
+          <div className="niche-modal-header-title">
+            <Sparkles size={18} className="sparkle-icon" />
+            <h2>AI Generated Suggestions</h2>
+          </div>
+          <button type="button" className="modal-close-btn" onClick={onClose} aria-label="Close">
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="modal-body">
+          {loading && (
+            <div className="niche-modal-loading">
+              <div className="suggestion-bubble loading-bubble">
+                <span className="dot" />
+                <span className="dot" />
+                <span className="dot" />
+                <span>Generating suggestions for "{businessType}"...</span>
+              </div>
+            </div>
+          )}
+
+          {error && (
+            <div className="niche-modal-error">
+              <div className="suggestion-bubble error-bubble">
+                <span>⚠️ {error}</span>
+              </div>
+              <button type="button" className="secondary-button retry-btn" onClick={onGenerate}>
+                Retry
+              </button>
+            </div>
+          )}
+
+          {!loading && !error && suggestions.length === 0 && (
+            <div className="niche-modal-empty">
+              <p>No suggestions generated for "{businessType || 'this business type'}" yet.</p>
+              <button type="button" className="primary-button generate-btn" onClick={onGenerate}>
+                <Sparkles size={16} />
+                Generate suggestions
+              </button>
+            </div>
+          )}
+
+          {!loading && !error && suggestions.length > 0 && (
+            <div className="niche-modal-list">
+              {suggestions.map((suggestion, idx) => {
+                const isSelected = currentSelection === suggestion;
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    className={`suggestion-bubble ${isSelected ? 'active' : ''}`}
+                    onClick={() => onSelect(suggestion)}
+                  >
+                    {suggestion}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>
