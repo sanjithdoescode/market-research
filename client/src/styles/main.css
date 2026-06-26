@@ -1063,6 +1063,69 @@ h3 {
   padding-right: 70px !important;
 }
 
+/* Custom styling for Google PlaceAutocompleteElement */
+gmp-place-autocomplete {
+  width: 100%;
+}
+
+gmp-place-autocomplete::part(input) {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--border-input);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  background: var(--surface-1);
+  color: var(--ink);
+  outline: none;
+  font-size: 0.92rem;
+  font-family: var(--font-body);
+  transition: border-color var(--duration) var(--ease-out),
+              box-shadow var(--duration) var(--ease-out),
+              background var(--duration) var(--ease-out);
+}
+
+.map-search-container gmp-place-autocomplete::part(input) {
+  padding-left: 40px !important;
+  padding-right: 70px !important;
+}
+
+gmp-place-autocomplete::part(input):hover {
+  border-color: var(--border-hover);
+  background: var(--surface-2);
+}
+
+gmp-place-autocomplete::part(input):focus {
+  border-color: var(--accent-dim);
+  background: var(--surface-2);
+  box-shadow: 0 0 0 3px var(--accent-glow),
+              0 0 16px rgba(30, 58, 95, 0.06);
+}
+
+/* Prediction List Overrides to match theme */
+gmp-place-autocomplete::part(prediction-list) {
+  background-color: #ffffff !important;
+  border: 1px solid var(--border-hover) !important;
+  border-radius: var(--radius-sm) !important;
+  box-shadow: var(--shadow-lg) !important;
+  font-family: var(--font-body) !important;
+  margin-top: 4px !important;
+}
+
+gmp-place-autocomplete::part(prediction-item) {
+  border-top: 1px solid rgba(0, 0, 0, 0.05) !important;
+  padding: 10px 14px !important;
+  color: var(--text-secondary) !important;
+  font-size: 0.9rem !important;
+  cursor: pointer;
+  line-height: 1.5 !important;
+  transition: background-color var(--duration) var(--ease-out);
+}
+
+gmp-place-autocomplete::part(prediction-item):hover {
+  background-color: var(--surface-3) !important;
+  color: var(--ink) !important;
+}
+
 .map-locate-btn {
   position: absolute;
   right: 40px;

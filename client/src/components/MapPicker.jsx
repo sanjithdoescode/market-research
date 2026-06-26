@@ -34,7 +34,8 @@ function MapPicker({ value, onChange }) {
   const [locationError, setLocationError] = useState(null);
 
   const mapRef = useRef(null);
-  const inputRef = useRef(null);
+  const autocompleteInstanceRef = useRef(null);
+  const autocompleteContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markerRef = useRef(null);
   const hasAutoDetectedRef = useRef(false);
@@ -53,7 +54,7 @@ function MapPicker({ value, onChange }) {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         // If not forced and user has already typed something in the input while we were waiting, don't overwrite it
-        if (!force && inputRef.current && inputRef.current.value) {
+        if (!force && autocompleteInstanceRef.current && autocompleteInstanceRef.current.value) {
           setIsLocating(false);
           return;
         }
@@ -70,7 +71,7 @@ function MapPicker({ value, onChange }) {
             const address = results[0].formatted_address;
             
             // Double check that the user didn't type something during the geocoding request if not forced
-            if (!force && inputRef.current && inputRef.current.value) {
+            if (!force && autocompleteInstanceRef.current && autocompleteInstanceRef.current.value) {
               return;
             }
 
@@ -101,6 +102,10 @@ function MapPicker({ value, onChange }) {
             setResolvedAddress(address);
             setInputValue(address);
             onChange(address);
+
+            if (autocompleteInstanceRef.current) {
+              autocompleteInstanceRef.current.value = address;
+            }
           } else {
             console.error('Geocoder failed:', status);
             setLocationError('Could not resolve your coordinates to an address.');
@@ -153,6 +158,9 @@ function MapPicker({ value, onChange }) {
     if (value !== resolvedAddress) {
       setInputValue(value || '');
       setResolvedAddress(value || '');
+      if (autocompleteInstanceRef.current) {
+        autocompleteInstanceRef.current.value = value || '';
+      }
     }
   }, [value, resolvedAddress]);
 
@@ -166,7 +174,7 @@ function MapPicker({ value, onChange }) {
 
   // Initialize Map and Place Autocomplete
   useEffect(() => {
-    if (!mapsLoaded || !mapRef.current || !inputRef.current) return;
+    if (!mapsLoaded || !mapRef.current || !autocompleteContainerRef.current) return;
 
     // Default center (Downtown Austin, TX)
     const defaultCenter = { lat: 30.2672, lng: -97.7431 };
@@ -191,12 +199,24 @@ function MapPicker({ value, onChange }) {
       anchor: new window.google.maps.Point(12, 22)
     };
 
-    // Initialize Autocomplete
-    const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
-      fields: ['geometry', 'formatted_address', 'name']
+    // Initialize Autocomplete Web Component
+    const autocomplete = new window.google.maps.places.PlaceAutocompleteElement({
+      locationBias: map.getBounds()
     });
 
-    autocomplete.bindTo('bounds', map);
+    // Configure Autocomplete Element
+    autocomplete.placeholder = 'Search for a location or click on the map below...';
+    autocomplete.value = inputValue || value || '';
+
+    // Clear and append
+    autocompleteContainerRef.current.innerHTML = '';
+    autocompleteContainerRef.current.appendChild(autocomplete);
+    autocompleteInstanceRef.current = autocomplete;
+
+    // Keep locationBias updated with map bounds
+    const boundsListener = map.addListener('bounds_changed', () => {
+      autocomplete.locationBias = map.getBounds();
+    });
 
     // Marker helper
     const updateMarker = (position, addressName) => {
@@ -216,22 +236,36 @@ function MapPicker({ value, onChange }) {
       setResolvedAddress(addressName);
       setInputValue(addressName);
       onChange(addressName);
+
+      autocomplete.value = addressName;
     };
 
-    // Autocomplete Selection Change Event
-    autocomplete.addListener('place_changed', () => {
-      const place = autocomplete.getPlace();
-      if (!place.geometry || !place.geometry.location) {
-        return;
+    // Autocomplete Selection Change Event using 'gmp-select'
+    const handleSelect = async (event) => {
+      const placePrediction = event.placePrediction;
+      if (!placePrediction) return;
+
+      const place = placePrediction.toPlace();
+      try {
+        await place.fetchFields({
+          fields: ['location', 'formattedAddress', 'displayName']
+        });
+
+        if (!place.location) return;
+
+        setLocationError(null);
+        const position = place.location;
+        const address = place.formattedAddress || place.displayName;
+        updateMarker(position, address);
+      } catch (err) {
+        console.error('Error fetching place details:', err);
       }
-      setLocationError(null);
-      const position = place.geometry.location;
-      const address = place.formatted_address || place.name;
-      updateMarker(position, address);
-    });
+    };
+
+    autocomplete.addEventListener('gmp-select', handleSelect);
 
     // Map Click Event to pinpoint spot
-    map.addListener('click', (event) => {
+    const clickListener = map.addListener('click', (event) => {
       const position = event.latLng;
       const geocoder = new window.google.maps.Geocoder();
       setLocationError(null);
@@ -267,25 +301,31 @@ function MapPicker({ value, onChange }) {
         detectLocation(false);
       }
     }
+
+    return () => {
+      autocomplete.removeEventListener('gmp-select', handleSelect);
+      if (window.google && window.google.maps) {
+        window.google.maps.event.removeListener(boundsListener);
+        window.google.maps.event.removeListener(clickListener);
+      }
+      autocompleteInstanceRef.current = null;
+    };
   }, [mapsLoaded, value, detectLocation]);
 
   return (
     <div className="map-picker-wrapper">
       <div className="map-search-container">
         <MapPin className="map-search-icon" size={16} aria-hidden="true" />
-        <input
-          ref={inputRef}
-          type="text"
-          value={inputValue}
-          onChange={(e) => {
-            setInputValue(e.target.value);
-            setLocationError(null);
-          }}
-          placeholder="Search for a location or click on the map below..."
-          required
-          minLength={2}
-          maxLength={180}
-        />
+        {mapsLoaded ? (
+          <div ref={autocompleteContainerRef} className="map-autocomplete-container" style={{ width: '100%' }} />
+        ) : (
+          <input
+            type="text"
+            value={inputValue}
+            disabled
+            placeholder="Loading Google Maps..."
+          />
+        )}
         <button
           type="button"
           className={`map-locate-btn ${isLocating ? 'locating' : ''}`}
