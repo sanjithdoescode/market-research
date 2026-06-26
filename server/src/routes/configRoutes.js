@@ -6,7 +6,8 @@ const router = Router();
 
 router.get('/', (req, res) => {
   return sendSuccess(res, {
-    googleMapsApiKey: env.googleMapsClientApiKey || env.googleMapsApiKey
+    googleMapsApiKey: env.googleMapsClientApiKey || env.googleMapsApiKey,
+    googleMapsMapId: env.googleMapsMapId
   });
 });
 

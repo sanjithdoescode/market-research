@@ -13,7 +13,7 @@ const loadGoogleMapsScript = (apiKey) => {
     if (!script) {
       script = document.createElement('script');
       script.id = scriptId;
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places,marker&loading=async`;
       script.async = true;
       script.defer = true;
       script.onload = () => resolve(window.google.maps);
@@ -27,6 +27,7 @@ const loadGoogleMapsScript = (apiKey) => {
 
 function MapPicker({ value, onChange }) {
   const [apiKey, setApiKey] = useState(null);
+  const [mapId, setMapId] = useState('DEMO_MAP_ID');
   const [mapsLoaded, setMapsLoaded] = useState(false);
   const [inputValue, setInputValue] = useState(value || '');
   const [resolvedAddress, setResolvedAddress] = useState(value || '');
@@ -75,25 +76,20 @@ function MapPicker({ value, onChange }) {
               return;
             }
 
-            const emeraldPin = {
-              path: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z',
-              fillColor: '#34d399',
-              fillOpacity: 1,
-              strokeColor: '#ffffff',
-              strokeWeight: 2,
-              scale: 1.5,
-              anchor: new window.google.maps.Point(12, 22)
-            };
-
             const map = mapInstanceRef.current;
             if (markerRef.current) {
-              markerRef.current.setPosition(pos);
+              markerRef.current.position = pos;
             } else {
-              markerRef.current = new window.google.maps.Marker({
+              const pin = new window.google.maps.marker.PinElement({
+                background: '#10b981',
+                borderColor: '#ffffff',
+                glyphColor: '#ffffff',
+                scale: 1.2
+              });
+              markerRef.current = new window.google.maps.marker.AdvancedMarkerElement({
                 position: pos,
                 map,
-                icon: emeraldPin,
-                animation: window.google.maps.Animation.DROP
+                content: pin.element
               });
             }
             map.panTo(pos);
@@ -134,14 +130,19 @@ function MapPicker({ value, onChange }) {
     );
   }, [mapsLoaded, onChange]);
 
-  // Load API key from server config
+  // Load API key and Map ID from server config
   useEffect(() => {
     let active = true;
     async function loadConfig() {
       try {
         const data = await fetchConfig();
-        if (active && data?.googleMapsApiKey) {
-          setApiKey(data.googleMapsApiKey);
+        if (active) {
+          if (data?.googleMapsApiKey) {
+            setApiKey(data.googleMapsApiKey);
+          }
+          if (data?.googleMapsMapId) {
+            setMapId(data.googleMapsMapId);
+          }
         }
       } catch (err) {
         console.error('Error fetching google maps config:', err);
@@ -183,21 +184,11 @@ function MapPicker({ value, onChange }) {
       center: defaultCenter,
       zoom: 12,
       disableDefaultUI: true,
-      zoomControl: true
+      zoomControl: true,
+      mapId: mapId
     });
 
     mapInstanceRef.current = map;
-
-    // Custom Emerald green Pin icon
-    const emeraldPin = {
-      path: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z',
-      fillColor: '#34d399',
-      fillOpacity: 1,
-      strokeColor: '#ffffff',
-      strokeWeight: 2,
-      scale: 1.5,
-      anchor: new window.google.maps.Point(12, 22)
-    };
 
     // Initialize Autocomplete Web Component
     const autocomplete = new window.google.maps.places.PlaceAutocompleteElement({
@@ -221,13 +212,18 @@ function MapPicker({ value, onChange }) {
     // Marker helper
     const updateMarker = (position, addressName) => {
       if (markerRef.current) {
-        markerRef.current.setPosition(position);
+        markerRef.current.position = position;
       } else {
-        markerRef.current = new window.google.maps.Marker({
+        const pin = new window.google.maps.marker.PinElement({
+          background: '#10b981',
+          borderColor: '#ffffff',
+          glyphColor: '#ffffff',
+          scale: 1.2
+        });
+        markerRef.current = new window.google.maps.marker.AdvancedMarkerElement({
           position,
           map,
-          icon: emeraldPin,
-          animation: window.google.maps.Animation.DROP
+          content: pin.element
         });
       }
       map.panTo(position);
@@ -287,10 +283,17 @@ function MapPicker({ value, onChange }) {
         if (status === 'OK' && results[0]?.geometry?.location) {
           const position = results[0].geometry.location;
           map.setCenter(position);
-          markerRef.current = new window.google.maps.Marker({
+          
+          const pin = new window.google.maps.marker.PinElement({
+            background: '#10b981',
+            borderColor: '#ffffff',
+            glyphColor: '#ffffff',
+            scale: 1.2
+          });
+          markerRef.current = new window.google.maps.marker.AdvancedMarkerElement({
             position,
             map,
-            icon: emeraldPin
+            content: pin.element
           });
         }
       });
@@ -310,7 +313,7 @@ function MapPicker({ value, onChange }) {
       }
       autocompleteInstanceRef.current = null;
     };
-  }, [mapsLoaded, value, detectLocation]);
+  }, [mapsLoaded, value, detectLocation, mapId]);
 
   return (
     <div className="map-picker-wrapper">
