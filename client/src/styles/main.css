@@ -520,6 +520,11 @@ h1, h2, h3, p {
   gap: 20px;
 }
 
+.result-page > *,
+.history-page > * {
+  min-width: 0;
+}
+
 /* ── Result Page Actions Bar ───────────────────────────────────── */
 .result-page-actions {
   display: flex;
@@ -2224,6 +2229,10 @@ gmp-place-autocomplete::part(prediction-item):hover {
   animation: fadeInUp 0.5s var(--ease-out) 0.25s both;
 }
 
+.recommendation-layout > * {
+  min-width: 0;
+}
+
 .ai-insights-panel {
   grid-column: 1 / -1;
 }
@@ -2342,6 +2351,10 @@ gmp-place-autocomplete::part(prediction-item):hover {
   margin-top: 4px;
 }
 
+.insights-grid > * {
+  min-width: 0;
+}
+
 /* ── Insight Card (replaces old analysis-block) ─────────────────── */
 .insight-card {
   position: relative;
@@ -2444,6 +2457,8 @@ gmp-place-autocomplete::part(prediction-item):hover {
 
 /* ── Competitor Table ──────────────────────────────────────────── */
 .table-wrap {
+  width: 100%;
+  max-width: 100%;
   overflow-x: auto;
   animation: fadeInUp 0.5s var(--ease-out) 0.3s both;
 }
@@ -3203,6 +3218,20 @@ gmp-place-autocomplete::part(prediction-item):hover {
 
   .row-actions {
     justify-content: flex-start;
+  }
+
+  /* Stack actions bar buttons on mobile */
+  .result-page-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .result-page-actions .cta-ai-button,
+  .result-page-actions .secondary-button.liquid-glass {
+    width: 100%;
+    justify-content: center;
+    box-sizing: border-box;
   }
 
   .demand-signal-row,
@@ -4399,6 +4428,10 @@ gmp-place-autocomplete::part(prediction-item):hover {
   gap: 16px;
 }
 
+.swot-matrix-2x2 > * {
+  min-width: 0;
+}
+
 .swot-box {
   background: var(--swot-bg, var(--panel-soft));
   border: 1px solid var(--swot-border, var(--panel-border));
@@ -4472,7 +4505,7 @@ gmp-place-autocomplete::part(prediction-item):hover {
 /* Legacy SWOT grid */
 .swot-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
   gap: 16px;
 }
 
@@ -4620,7 +4653,7 @@ gmp-place-autocomplete::part(prediction-item):hover {
 
 .fin-cards-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
   gap: 16px;
 }
 
@@ -4693,7 +4726,7 @@ gmp-place-autocomplete::part(prediction-item):hover {
 /* Legacy cost cards (kept for compat) */
 .cost-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr));
   gap: 16px;
 }
 
@@ -4883,7 +4916,7 @@ gmp-place-autocomplete::part(prediction-item):hover {
 
 .marketing-grid-v2 {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
   gap: 16px;
 }
 
@@ -4947,7 +4980,7 @@ gmp-place-autocomplete::part(prediction-item):hover {
 }
 
 /* Legacy marketing styles */
-.marketing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+.marketing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: 16px; }
 .marketing-card { background: var(--panel-soft); border: 1px solid var(--panel-border); border-radius: var(--radius); padding: 20px; display: flex; flex-direction: column; gap: 12px; transition: all var(--duration) var(--ease-out); }
 .marketing-card:hover { transform: translateY(-2px); border-color: var(--border-hover); }
 .marketing-card-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
@@ -5370,6 +5403,99 @@ gmp-place-autocomplete::part(prediction-item):hover {
   text-align: center;
   font-style: italic;
   line-height: 1.5;
+}
+
+/* ── Mobile UI Overrides (<= 500px) ────────────────────────────── */
+@media (max-width: 500px) {
+  .demand-signal-header {
+    display: none;
+  }
+
+  .demand-signal-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    grid-template-areas:
+      "label count distance"
+      "bar bar bar";
+    gap: 6px 12px;
+    align-items: center;
+    padding: 12px 0;
+  }
+
+  .signal-label {
+    grid-area: label;
+    font-size: 0.88rem;
+    white-space: normal;
+  }
+
+  .signal-bar-wrap {
+    grid-area: bar;
+    width: 100%;
+    margin-top: 2px;
+  }
+
+  .signal-count {
+    grid-area: count;
+    text-align: right;
+  }
+
+  .signal-distance {
+    grid-area: distance;
+    text-align: right;
+  }
+}
+
+/* ── Mobile UI Optimizations for SWOT Matrix & Competitor Table (<= 640px) ── */
+@media (max-width: 640px) {
+  /* SWOT Matrix Stacking */
+  .swot-matrix-2x2 {
+    grid-template-columns: 1fr;
+  }
+
+  /* Competitor Table: List competitor names only, hide other columns on mobile */
+  .competitor-table thead {
+    display: none;
+  }
+  
+  .competitor-table td:not(:first-child) {
+    display: none;
+  }
+
+  .competitor-table td:first-child {
+    display: block;
+    width: 100%;
+    padding: 14px 10px;
+    border-bottom: 1px solid var(--border-input) !important;
+    box-sizing: border-box;
+  }
+
+  .competitor-table tr:last-child td:first-child {
+    border-bottom: none !important;
+  }
+
+  .competitor-table tr {
+    display: block;
+    width: 100%;
+  }
+
+  .competitor-table td:first-child strong {
+    font-size: 1.02rem;
+    color: var(--ink);
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  .competitor-table td:first-child span {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+    display: block;
+  }
+  
+  /* Reset table min-width to prevent overflow */
+  .competitor-table {
+    min-width: 0 !important;
+  }
 }
 
 
