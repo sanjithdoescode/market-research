@@ -4319,12 +4319,22 @@ gmp-place-autocomplete::part(prediction-item-nonmatch) {
 
 /* Responsiveness for new shell */
 @media (max-width: 768px) {
-  .chat-shell {
+  .chat-shell,
+  .chat-shell.sidebar-collapsed,
+  .chat-shell.sidebar-locked {
     grid-template-columns: 1fr;
     height: calc(100vh - 100px);
   }
+  .app-shell--chat .chat-shell,
+  .app-shell--chat .chat-shell.sidebar-collapsed,
+  .app-shell--chat .chat-shell.sidebar-locked {
+    height: 100%;
+  }
   .chat-sidebar-v2 {
-    display: none;
+    display: none !important;
+  }
+  .chat-shell .chat-main-v2 {
+    grid-column: 1 !important;
   }
   .chat-footer-v2 {
     padding: 12px 16px 12px;
