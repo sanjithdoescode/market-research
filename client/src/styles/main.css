@@ -520,6 +520,11 @@ h1, h2, h3, p {
   gap: 20px;
 }
 
+.result-page > *,
+.history-page > * {
+  min-width: 0;
+}
+
 /* ── Result Page Actions Bar ───────────────────────────────────── */
 .result-page-actions {
   display: flex;
@@ -734,7 +739,7 @@ h3 {
 .search-form {
   display: grid;
   gap: 14px;
-  animation: fadeInUp 0.6s var(--ease-out) 0.1s both;
+  animation: fadeIn 0.4s var(--ease-out) 0.1s both;
 }
 
 .search-form.panel {
@@ -1360,6 +1365,8 @@ gmp-place-autocomplete::part(input) {
               background var(--duration) var(--ease-out);
 }
 
+
+
 gmp-place-autocomplete::part(input):hover {
   border-color: var(--border-hover) !important;
   background-color: var(--surface-2) !important;
@@ -1371,6 +1378,7 @@ gmp-place-autocomplete::part(input):focus {
   box-shadow: 0 0 0 3px var(--accent-glow),
               0 0 16px rgba(30, 58, 95, 0.06) !important;
 }
+
 
 .map-fallback-input {
   width: 100%;
@@ -1387,40 +1395,87 @@ gmp-place-autocomplete::part(input):focus {
 
 /* Prediction List Overrides to match theme */
 gmp-place-autocomplete::part(prediction-list) {
-  background-color: #ffffff !important;
-  border: 1px solid var(--border-hover) !important;
-  border-radius: var(--radius-sm) !important;
-  box-shadow: var(--shadow-lg) !important;
-  font-family: var(--font-body) !important;
-  margin-top: 4px !important;
+  background-color: #ffffff !important; /* Explicit white - no CSS var - ensures it is always opaque over the map */
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.14), 0 1px 4px rgba(0, 0, 0, 0.08) !important;
+  font-family: var(--font-body, system-ui) !important;
+  margin-top: 6px !important;
+  padding: 6px 0 !important;
   width: 100% !important;
   max-width: 100% !important;
   box-sizing: border-box !important;
+  z-index: 99999 !important;
 }
 
 gmp-place-autocomplete::part(prediction-item) {
-  border-top: 1px solid rgba(0, 0, 0, 0.05) !important;
-  padding: 10px 14px !important;
-  color: var(--text-secondary) !important;
-  font-size: 0.9rem !important;
+  border-top: none !important;
+  border-bottom: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.04)) !important;
+  padding: 12px 16px 12px 46px !important;
+  color: var(--text-secondary, #64748b) !important;
+  font-size: 0.875rem !important;
   cursor: pointer;
-  line-height: 1.5 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  position: relative !important;
+  height: auto !important;
+  min-height: 56px !important;
+  line-height: 1.4 !important;
   white-space: normal !important;
   word-break: break-word !important;
-  transition: background-color var(--duration) var(--ease-out);
+  box-sizing: border-box !important;
+  transition: background-color var(--duration, 0.2s) var(--ease-out, ease);
+}
+
+gmp-place-autocomplete::part(prediction-item):last-child {
+  border-bottom: none !important;
+}
+
+gmp-place-autocomplete::part(prediction-item):hover,
+gmp-place-autocomplete::part(prediction-item):active,
+gmp-place-autocomplete::part(prediction-item-selected) {
+  background-color: var(--surface-3, #f1f5f9) !important;
+}
+
+gmp-place-autocomplete::part(prediction-item-icon) {
+  position: absolute !important;
+  left: 14px !important;
+  top: 16px !important;
+  margin: 0 !important;
+  width: 18px !important;
+  height: 18px !important;
+  flex-shrink: 0 !important;
+  opacity: 0.65 !important;
 }
 
 gmp-place-autocomplete::part(prediction-item-main-text) {
+  display: block !important;
+  color: var(--ink, #0f172a) !important;
+  font-size: 0.95rem !important;
+  font-weight: 500 !important;
+  line-height: 1.4 !important;
+  margin: 0 !important;
+  padding: 0 !important;
   white-space: normal !important;
   word-break: break-word !important;
 }
 
 gmp-place-autocomplete::part(prediction-item-secondary-text) {
+  display: block !important;
+  color: var(--text-secondary, #64748b) !important;
+  font-size: 0.85rem !important;
+  line-height: 1.4 !important;
+  margin: 4px 0 0 0 !important;
+  padding: 0 !important;
   white-space: normal !important;
   word-break: break-word !important;
 }
 
 gmp-place-autocomplete::part(prediction-item-match) {
+  color: var(--accent, #3b82f6) !important;
+  font-weight: 600 !important;
   white-space: normal !important;
   word-break: break-word !important;
 }
@@ -1428,11 +1483,6 @@ gmp-place-autocomplete::part(prediction-item-match) {
 gmp-place-autocomplete::part(prediction-item-nonmatch) {
   white-space: normal !important;
   word-break: break-word !important;
-}
-
-gmp-place-autocomplete::part(prediction-item):hover {
-  background-color: var(--surface-3) !important;
-  color: var(--ink) !important;
 }
 
 .map-locate-btn {
@@ -1544,42 +1594,87 @@ gmp-place-autocomplete::part(prediction-item):hover {
 
 /* Light-Theme Overrides for Google Places Autocomplete dropdown */
 .pac-container {
-  background-color: #ffffff !important;
-  border: 1px solid var(--border-hover) !important;
-  border-radius: var(--radius-sm) !important;
-  box-shadow: var(--shadow-lg) !important;
-  font-family: var(--font-body) !important;
-  margin-top: 4px !important;
+  background-color: var(--surface-1, #ffffff) !important;
+  border: 1px solid var(--border-hover, #e2e8f0) !important;
+  border-radius: var(--radius-md, 12px) !important;
+  box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1)) !important;
+  font-family: var(--font-body, system-ui) !important;
+  margin-top: 6px !important;
   z-index: 99999 !important;
+  padding: 6px 0 !important;
+  max-width: 100vw !important;
+  box-sizing: border-box !important;
 }
 
 .pac-item {
-  border-top: 1px solid rgba(0, 0, 0, 0.05) !important;
-  padding: 10px 14px !important;
-  color: var(--text-secondary) !important;
-  font-size: 0.9rem !important;
+  border-top: none !important;
+  border-bottom: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.04)) !important;
+  padding: 12px 16px 12px 42px !important;
+  color: var(--text-secondary, #64748b) !important;
+  font-size: 0.875rem !important;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  line-height: 1.5 !important;
+  display: block !important; /* Block layout so query and secondary address wrap naturally as block elements */
+  position: relative !important;
+  height: auto !important;
+  min-height: 48px !important; /* Touch target size */
+  line-height: 1.4 !important;
+  white-space: normal !important; /* Crucial: allow text wrapping on mobile */
+  transition: background-color var(--duration, 0.2s) var(--ease-out, ease);
 }
 
-.pac-item:hover {
-  background-color: var(--surface-3) !important;
+.pac-item:last-child {
+  border-bottom: none !important;
+}
+
+.pac-item:hover, .pac-item:active {
+  background-color: var(--surface-3, #f1f5f9) !important;
 }
 
 .pac-item-query {
-  color: var(--ink) !important;
+  display: block !important; /* Main query gets its own line */
+  color: var(--ink, #0f172a) !important;
   font-size: 0.95rem !important;
-  padding-right: 8px;
+  font-weight: 500 !important;
+  padding-right: 0 !important;
+  margin-bottom: 2px !important;
 }
 
 .pac-matched {
-  color: var(--accent) !important;
+  color: var(--accent, #3b82f6) !important;
+  font-weight: 600 !important;
 }
 
 .pac-icon {
-  filter: invert(1) brightness(0.8);
+  position: absolute !important;
+  left: 14px !important;
+  top: 14px !important;
+  margin: 0 !important;
+  transform: scale(1.1) !important;
+  opacity: 0.55 !important;
+}
+
+/* Responsive mobile adjustments */
+@media (max-width: 768px) {
+  .pac-container {
+    left: 12px !important;
+    right: 12px !important;
+    width: auto !important; /* Let it stretch automatically between left and right */
+    box-sizing: border-box !important;
+  }
+  
+  .pac-item {
+    padding: 14px 16px 14px 44px !important; /* Slightly larger tap targets on mobile */
+    font-size: 0.85rem !important;
+  }
+
+  .pac-item-query {
+    font-size: 0.9rem !important;
+  }
+
+  .pac-icon {
+    left: 14px !important;
+    top: 16px !important;
+  }
 }
 
 .icon-button {
@@ -2224,6 +2319,10 @@ gmp-place-autocomplete::part(prediction-item):hover {
   animation: fadeInUp 0.5s var(--ease-out) 0.25s both;
 }
 
+.recommendation-layout > * {
+  min-width: 0;
+}
+
 .ai-insights-panel {
   grid-column: 1 / -1;
 }
@@ -2342,6 +2441,10 @@ gmp-place-autocomplete::part(prediction-item):hover {
   margin-top: 4px;
 }
 
+.insights-grid > * {
+  min-width: 0;
+}
+
 /* ── Insight Card (replaces old analysis-block) ─────────────────── */
 .insight-card {
   position: relative;
@@ -2444,6 +2547,8 @@ gmp-place-autocomplete::part(prediction-item):hover {
 
 /* ── Competitor Table ──────────────────────────────────────────── */
 .table-wrap {
+  width: 100%;
+  max-width: 100%;
   overflow-x: auto;
   animation: fadeInUp 0.5s var(--ease-out) 0.3s both;
 }
@@ -3108,6 +3213,12 @@ gmp-place-autocomplete::part(prediction-item):hover {
 }
 
 @media (max-width: 768px) {
+  /* Disable backdrop-filter on search form to prevent creating a containing block for fixed-position mobile overlay */
+  .search-form.panel {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
   /* Contain map viewport on tablet/mobile */
   .map-container-outer {
     height: 260px;
@@ -3203,6 +3314,20 @@ gmp-place-autocomplete::part(prediction-item):hover {
 
   .row-actions {
     justify-content: flex-start;
+  }
+
+  /* Stack actions bar buttons on mobile */
+  .result-page-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .result-page-actions .cta-ai-button,
+  .result-page-actions .secondary-button.liquid-glass {
+    width: 100%;
+    justify-content: center;
+    box-sizing: border-box;
   }
 
   .demand-signal-row,
@@ -4399,6 +4524,10 @@ gmp-place-autocomplete::part(prediction-item):hover {
   gap: 16px;
 }
 
+.swot-matrix-2x2 > * {
+  min-width: 0;
+}
+
 .swot-box {
   background: var(--swot-bg, var(--panel-soft));
   border: 1px solid var(--swot-border, var(--panel-border));
@@ -4472,7 +4601,7 @@ gmp-place-autocomplete::part(prediction-item):hover {
 /* Legacy SWOT grid */
 .swot-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
   gap: 16px;
 }
 
@@ -4620,7 +4749,7 @@ gmp-place-autocomplete::part(prediction-item):hover {
 
 .fin-cards-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
   gap: 16px;
 }
 
@@ -4693,7 +4822,7 @@ gmp-place-autocomplete::part(prediction-item):hover {
 /* Legacy cost cards (kept for compat) */
 .cost-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr));
   gap: 16px;
 }
 
@@ -4883,7 +5012,7 @@ gmp-place-autocomplete::part(prediction-item):hover {
 
 .marketing-grid-v2 {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
   gap: 16px;
 }
 
@@ -4947,7 +5076,7 @@ gmp-place-autocomplete::part(prediction-item):hover {
 }
 
 /* Legacy marketing styles */
-.marketing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+.marketing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: 16px; }
 .marketing-card { background: var(--panel-soft); border: 1px solid var(--panel-border); border-radius: var(--radius); padding: 20px; display: flex; flex-direction: column; gap: 12px; transition: all var(--duration) var(--ease-out); }
 .marketing-card:hover { transform: translateY(-2px); border-color: var(--border-hover); }
 .marketing-card-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
@@ -5370,6 +5499,99 @@ gmp-place-autocomplete::part(prediction-item):hover {
   text-align: center;
   font-style: italic;
   line-height: 1.5;
+}
+
+/* ── Mobile UI Overrides (<= 500px) ────────────────────────────── */
+@media (max-width: 500px) {
+  .demand-signal-header {
+    display: none;
+  }
+
+  .demand-signal-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    grid-template-areas:
+      "label count distance"
+      "bar bar bar";
+    gap: 6px 12px;
+    align-items: center;
+    padding: 12px 0;
+  }
+
+  .signal-label {
+    grid-area: label;
+    font-size: 0.88rem;
+    white-space: normal;
+  }
+
+  .signal-bar-wrap {
+    grid-area: bar;
+    width: 100%;
+    margin-top: 2px;
+  }
+
+  .signal-count {
+    grid-area: count;
+    text-align: right;
+  }
+
+  .signal-distance {
+    grid-area: distance;
+    text-align: right;
+  }
+}
+
+/* ── Mobile UI Optimizations for SWOT Matrix & Competitor Table (<= 640px) ── */
+@media (max-width: 640px) {
+  /* SWOT Matrix Stacking */
+  .swot-matrix-2x2 {
+    grid-template-columns: 1fr;
+  }
+
+  /* Competitor Table: List competitor names only, hide other columns on mobile */
+  .competitor-table thead {
+    display: none;
+  }
+  
+  .competitor-table td:not(:first-child) {
+    display: none;
+  }
+
+  .competitor-table td:first-child {
+    display: block;
+    width: 100%;
+    padding: 14px 10px;
+    border-bottom: 1px solid var(--border-input) !important;
+    box-sizing: border-box;
+  }
+
+  .competitor-table tr:last-child td:first-child {
+    border-bottom: none !important;
+  }
+
+  .competitor-table tr {
+    display: block;
+    width: 100%;
+  }
+
+  .competitor-table td:first-child strong {
+    font-size: 1.02rem;
+    color: var(--ink);
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  .competitor-table td:first-child span {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+    display: block;
+  }
+  
+  /* Reset table min-width to prevent overflow */
+  .competitor-table {
+    min-width: 0 !important;
+  }
 }
 
 

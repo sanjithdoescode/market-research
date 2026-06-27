@@ -2,6 +2,47 @@ import { MapPin, Search, Locate } from 'lucide-react';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { fetchConfig } from '../api/analysisApi.js';
 
+// Monkeypatch attachShadow to style elements inside the closed shadow DOM of gmp-place-autocomplete on mobile.
+if (typeof window !== 'undefined' && typeof Element !== 'undefined' && !Element.prototype.__attachShadow) {
+  Element.prototype.__attachShadow = Element.prototype.attachShadow;
+  Element.prototype.attachShadow = function (init) {
+    const shadow = this.__attachShadow(init);
+    if (this.localName === 'gmp-place-autocomplete') {
+      const style = document.createElement('style');
+      style.textContent = `
+        @media (max-width: 768px) {
+          /* Style the input ONLY inside the mobile overlay dialog */
+          dialog input, .dialog input, [open] input {
+            margin-top: 24px !important;
+            width: calc(100% - 92px) !important;
+            max-width: calc(100% - 92px) !important;
+            margin-left: 8px !important;
+            margin-right: 12px !important;
+            padding-left: 12px !important;
+            padding-right: 32px !important;
+            border-radius: 8px !important;
+            height: 40px !important;
+            min-height: 40px !important;
+          }
+          
+          /* Style the back button ONLY inside the mobile overlay dialog */
+          dialog button, dialog .back-button, dialog [aria-label="Back"], [open] button, [open] [aria-label="Back"] {
+            margin-top: 24px !important;
+            top: 24px !important;
+          }
+          
+          /* Style the list ONLY inside the mobile overlay dialog to prevent overlap */
+          dialog .prediction-list, dialog [part="prediction-list"], dialog ul, dialog [role="listbox"], [open] ul {
+            margin-top: 24px !important;
+          }
+        }
+      `;
+      shadow.appendChild(style);
+    }
+    return shadow;
+  };
+}
+
 const loadGoogleMapsScript = (apiKey) => {
   return new Promise((resolve, reject) => {
     // If Map constructor is already loaded, resolve immediately

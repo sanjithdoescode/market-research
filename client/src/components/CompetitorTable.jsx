@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { MapPin, MessageSquare, Eye, Globe, Phone, ExternalLink, X, ThumbsUp, ThumbsDown, Minus } from 'lucide-react';
 
 function formatRating(value) {
@@ -42,6 +43,20 @@ function StarRating({ rating }) {
 function CompetitorDetailsModal({ competitor, threat, onClose }) {
   const mapsUrl = competitor.googleMetadata?.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(competitor.name + ' ' + (competitor.address || ''))}`;
   const reviewsUrl = `https://www.google.com/search?q=${encodeURIComponent(competitor.name + ' ' + (competitor.address || '') + ' reviews')}`;
+
+  // Prevent background scrolling while modal is open
+  useEffect(() => {
+    const originalBodyOverflow = document.body.style.overflow;
+    const originalHtmlOverflow = document.documentElement.style.overflow;
+
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = originalBodyOverflow;
+      document.documentElement.style.overflow = originalHtmlOverflow;
+    };
+  }, []);
 
   function handleOverlayClick(e) {
     if (e.target.classList.contains('modal-overlay')) {
@@ -309,12 +324,13 @@ function CompetitorTable({ competitors = [], assessment = [] }) {
         </table>
       </div>
 
-      {selectedCompetitor && (
+      {selectedCompetitor && createPortal(
         <CompetitorDetailsModal 
           competitor={selectedCompetitor} 
           threat={threatByName.get(selectedCompetitor.name) || 'Not assessed'}
           onClose={() => setSelectedCompetitor(null)} 
-        />
+        />,
+        document.body
       )}
     </section>
   );
