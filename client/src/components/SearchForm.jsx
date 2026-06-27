@@ -725,21 +725,23 @@ function SelectBusinessTypeModal({ onClose, onSelect, currentSelection }) {
           {/* Text box at the end for search & custom selection */}
           <div className="modal-footer-search-container">
             <span className="modal-footer-search-label">
-              <Search size={14} />
               Search types or type a custom business:
             </span>
             
             <form onSubmit={handleCustomSelect} className="modal-footer-input-row">
-              <input
-                type="text"
-                placeholder="Type to search or enter custom type..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="modal-footer-input"
-                minLength={2}
-                maxLength={100}
-                autoFocus
-              />
+              <div className="modal-search-wrapper">
+                <Search className="modal-search-icon" size={16} />
+                <input
+                  type="text"
+                  placeholder="Type to search or enter custom type..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="modal-search-input"
+                  minLength={2}
+                  maxLength={100}
+                  autoFocus
+                />
+              </div>
             </form>
 
             {/* Custom type action recommendation */}
