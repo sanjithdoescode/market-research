@@ -357,6 +357,8 @@ function Chat() {
   const [isSidebarHovered, setIsSidebarHovered] = useState(false);
   const isSidebarExpanded = isSidebarLocked || isSidebarHovered;
 
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
+
   // Sync temp state when modal opens
   useEffect(() => {
     if (showSettings) {
@@ -564,7 +566,51 @@ function Chat() {
 
       {/* ── Main Panel ── */}
       <main className="chat-main-v2">
+        {/* Mobile History Toggle Button */}
+        <button 
+          className="mobile-history-toggle-btn" 
+          onClick={() => setIsMobileDrawerOpen(true)}
+          title="Recent Analyses"
+        >
+          <History size={16} />
+        </button>
 
+        {/* Mobile History Drawer Overlay */}
+        {isMobileDrawerOpen && (
+          <div className="mobile-history-drawer-overlay" onClick={() => setIsMobileDrawerOpen(false)}>
+            <div className="mobile-history-drawer" onClick={(e) => e.stopPropagation()}>
+              <header className="mobile-drawer-header">
+                <h3>Recent Analyses</h3>
+                <button className="mobile-drawer-close-btn" onClick={() => setIsMobileDrawerOpen(false)} title="Close menu">
+                  <X size={18} />
+                </button>
+              </header>
+              <div className="mobile-drawer-content">
+                {state.history.length === 0 ? (
+                  <span className="sidebar-empty-msg">No analyses yet</span>
+                ) : (
+                  state.history.map((item) => (
+                    <button
+                      key={item.id}
+                      className={`sidebar-item-v2 ${analysisId === item.id ? 'is-active' : ''}`}
+                      onClick={() => {
+                        loadContext(item.id);
+                        setIsMobileDrawerOpen(false);
+                      }}
+                    >
+                      <MessageSquare size={16} className="sidebar-icon" />
+                      <div className="sidebar-item-text-v2">
+                        <span className="item-title">{item.businessType}</span>
+                        <span className="item-loc">{item.location}</span>
+                      </div>
+                      <ChevronRight size={12} className="item-chevron" />
+                    </button>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Messages area */}
         <div className="chat-messages-v2" ref={messagesAreaRef}>
