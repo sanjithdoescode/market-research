@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { History, MapPinned, Search, MessageSquare } from 'lucide-react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
 
 import AppRoutes from './routes/AppRoutes.jsx';
 import LiquidGlass from './components/LiquidGlass.jsx';
@@ -136,26 +137,37 @@ function App() {
             </NavLink>
           </nav>
 
-          <NavLink
-            to="/chat"
-            id="mobile-nav-toggle"
-            className={`nav-cta-btn ${isChatActive ? 'active' : ''}`}
-            aria-label="AI Chat Assistant"
-          >
-            <img
-              src={
-                provider === 'openai' ? '/images/openai.png' :
-                provider === 'anthropic' ? '/images/anthropic-light.png' :
-                provider === 'gemini' ? '/images/gemini-color-light.png' :
-                '/images/mistral.png'
-              }
-              alt=""
-              className="nav-logo-img"
-              draggable="false"
-              style={{ objectFit: 'contain' }}
-            />
-            <span>AI Chat</span>
-          </NavLink>
+          <div className="topbar-actions">
+            <NavLink
+              to="/chat"
+              id="mobile-nav-toggle"
+              className={`nav-cta-btn ${isChatActive ? 'active' : ''}`}
+              aria-label="AI Chat Assistant"
+            >
+              <img
+                src={
+                  provider === 'openai' ? '/images/openai.png' :
+                  provider === 'anthropic' ? '/images/anthropic-light.png' :
+                  provider === 'gemini' ? '/images/gemini-color-light.png' :
+                  '/images/mistral.png'
+                }
+                alt=""
+                className="nav-logo-img"
+                draggable="false"
+                style={{ objectFit: 'contain' }}
+              />
+              <span>AI Chat</span>
+            </NavLink>
+
+            <SignedOut>
+              <SignInButton mode="modal">
+                <button className="nav-auth-btn">Sign In</button>
+              </SignInButton>
+            </SignedOut>
+            <SignedIn>
+              <UserButton afterSignOutUrl="/" />
+            </SignedIn>
+          </div>
         </LiquidGlass>
       </header>
 
