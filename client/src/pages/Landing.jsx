@@ -122,7 +122,7 @@ function Landing() {
 
   function handleAnalyze(e) {
     e.preventDefault();
-    navigate('/');
+    navigate('/dashboard');
   }
 
   return (
@@ -149,7 +149,7 @@ function Landing() {
 
           <button
             className="landing-nav-cta"
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/dashboard')}
           >
             Launch App
             <ArrowRight size={14} />
@@ -432,7 +432,7 @@ function Landing() {
         </p>
         <button
           className="cta-primary-button"
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/dashboard')}
         >
           <Target size={18} />
           <span>Run Free Site Analysis</span>

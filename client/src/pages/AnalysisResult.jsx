@@ -53,7 +53,7 @@ function AnalysisResult() {
       <div className="page-actions result-page-actions">
         <LiquidGlass
           tagName={Link}
-          to="/"
+          to="/dashboard"
           className="secondary-button liquid-glass"
           depth={15}
           blur={8}

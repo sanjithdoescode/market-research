@@ -9,8 +9,8 @@ import Landing from '../pages/Landing.jsx';
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Dashboard />} />
-      <Route path="/landing" element={<Landing />} />
+      <Route path="/" element={<Landing />} />
+      <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/analysis/:id" element={<AnalysisResult />} />
       <Route path="/history" element={<History />} />
       <Route path="/chat" element={<Chat />} />

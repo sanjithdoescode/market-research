@@ -9,9 +9,9 @@ function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const isChatPage = location.pathname === '/chat';
-  const isLandingPage = location.pathname === '/landing';
+  const isLandingPage = location.pathname === '/';
 
-  const isAnalyzeActive = location.pathname === '/';
+  const isAnalyzeActive = location.pathname === '/dashboard';
   const isHistoryActive = location.pathname === '/history';
   const isChatActive = location.pathname === '/chat';
 
@@ -56,7 +56,7 @@ function App() {
 
         if (code === 'KeyA' || key === 'a') {
           e.preventDefault();
-          navigate('/');
+          navigate('/dashboard');
         } else if (code === 'KeyH' || key === 'h') {
           e.preventDefault();
           navigate('/history');
@@ -96,7 +96,7 @@ function App() {
           tintColor="#F8F9FA"
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <NavLink to="/" id="nav-brand" className="brand" aria-label="MarketSense dashboard">
+            <NavLink to="/dashboard" id="nav-brand" className="brand" aria-label="MarketSense dashboard">
               <img src="/images/marketsense_logo.png" className="brand-logo-img" alt="MarketSense Logo" />
               <span>MarketSense</span>
             </NavLink>
@@ -104,7 +104,7 @@ function App() {
 
           <nav className="primary-nav mobile-nav-compact" aria-label="Primary navigation">
             <NavLink
-              to="/"
+              to="/dashboard"
               id="nav-analyze"
               className={`nav-link ${isAnalyzeActive ? 'active' : ''}`}
             >
