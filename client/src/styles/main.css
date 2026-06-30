@@ -5937,6 +5937,53 @@ gmp-place-autocomplete::part(prediction-item-nonmatch) {
   }
 }
 
+/* ── Clerk Authentication UI Controls ───────────────────────────── */
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-auth-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 38px;
+  padding: 0 16px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: #ffffff;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  transition: all var(--duration) var(--ease-spring);
+  cursor: pointer;
+}
+
+.nav-auth-btn:hover {
+  background: var(--accent-dim);
+  border-color: var(--accent-dim);
+  transform: translate3d(0, -1px, 0) scale(1.02);
+  box-shadow: 0 4px 14px rgba(30, 58, 95, 0.15);
+}
+
+.nav-auth-btn:active {
+  transform: translate3d(0, 0, 0) scale(0.98);
+}
+
+@media (max-width: 640px) {
+  .topbar-actions {
+    gap: 8px;
+  }
+  .nav-auth-btn {
+    height: 30px;
+    padding: 0 10px;
+    font-size: 0.78rem;
+  }
+}
+
 
 
 
