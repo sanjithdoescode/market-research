@@ -24,7 +24,8 @@ export async function saveAnalysisRecord({
   opportunityScore = null,
   opportunityTier = null,
   analysisMetadata,
-  targetId
+  targetId,
+  userId
 }) {
   const searchDocument = await Search.create({
     ...search,
@@ -56,6 +57,7 @@ export async function saveAnalysisRecord({
     const analysisDocument = await Analysis.create({
       _id: targetId || undefined,
       search: searchDocument._id,
+      userId,
       competitors: competitorDocuments.map((competitor) => competitor._id),
       input,
       // Core AI fields (overallScore, grade, confidence, summary, etc.)

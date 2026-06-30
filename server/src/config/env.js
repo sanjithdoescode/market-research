@@ -28,7 +28,8 @@ export const env = Object.freeze({
   mistralApiKey: process.env.MISTRAL_API_KEY,
   mistralApiUrl: process.env.MISTRAL_API_URL || 'https://api.mistral.ai/v1/chat/completions',
   mistralModel: process.env.MISTRAL_MODEL || 'mistral-large-latest',
-  mistralTimeoutMs: parseInteger(process.env.MISTRAL_TIMEOUT_MS, 120000)
+  mistralTimeoutMs: parseInteger(process.env.MISTRAL_TIMEOUT_MS, 120000),
+  firebaseProjectId: process.env.FIREBASE_PROJECT_ID
 });
 
 export function requireEnv(name, value) {

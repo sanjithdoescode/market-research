@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { History, MapPinned, Search, MessageSquare } from 'lucide-react';
+import { History, MapPinned, Search, MessageSquare, LogOut } from 'lucide-react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 
 import AppRoutes from './routes/AppRoutes.jsx';
 import LiquidGlass from './components/LiquidGlass.jsx';
+import { useAuth } from './context/AuthContext.jsx';
 
 function App() {
   const navigate = useNavigate();
@@ -17,6 +18,17 @@ function App() {
 
   const [scrolled, setScrolled] = useState(false);
   const [provider, setProvider] = useState(() => localStorage.getItem('byok_provider') || 'mistral');
+  
+  const { user, signOut, signInWithGoogle } = useAuth();
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
+
+  useEffect(() => {
+    if (!showUserDropdown) return;
+    const handleClose = () => setShowUserDropdown(false);
+    window.addEventListener('click', handleClose);
+    return () => window.removeEventListener('click', handleClose);
+  }, [showUserDropdown]);
+
 
   useEffect(() => {
     if (!localStorage.getItem('byok_provider')) {
@@ -156,6 +168,47 @@ function App() {
             />
             <span>AI Chat</span>
           </NavLink>
+
+          {user && (
+            <div className="user-profile-container">
+              <button
+                className="user-profile-trigger"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowUserDropdown((prev) => !prev);
+                }}
+                aria-label="User menu"
+              >
+                {user.photoURL ? (
+                  <img src={user.photoURL} alt={user.displayName || 'User'} className="user-avatar-img" />
+                ) : (
+                  <div className="user-avatar-placeholder">
+                    {user.displayName ? user.displayName[0] : (user.email ? user.email[0] : 'U')}
+                  </div>
+                )}
+              </button>
+              
+              {showUserDropdown && (
+                <div className="user-profile-dropdown" onClick={(e) => e.stopPropagation()}>
+                  <div className="user-dropdown-header">
+                    <div className="user-dropdown-name">{user.displayName || 'MarketSense User'}</div>
+                    <div className="user-dropdown-email">{user.email}</div>
+                  </div>
+                  <div className="user-dropdown-divider" />
+                  <button
+                    onClick={() => {
+                      signOut();
+                      setShowUserDropdown(false);
+                    }}
+                    className="user-dropdown-item btn-sign-out"
+                  >
+                    <LogOut size={14} />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </LiquidGlass>
       </header>
 

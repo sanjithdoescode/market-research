@@ -5,7 +5,10 @@ import { analysisLimiter, chatLimiter } from '../middleware/rateLimiter.js';
 import { validateRequest } from '../middleware/validateRequest.js';
 import { analysisRequestSchema, chatRequestSchema, nicheSuggestionsRequestSchema } from '../validators/analysisValidator.js';
 
+import { requireAuth } from '../middleware/auth.js';
+
 const router = Router();
+router.use(requireAuth);
 
 router.post('/', analysisLimiter, validateRequest(analysisRequestSchema), createAnalysis);
 router.get('/status/:id', getAnalysisStatus);

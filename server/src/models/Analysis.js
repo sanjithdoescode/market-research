@@ -34,6 +34,7 @@ const recommendationSchema = new mongoose.Schema(
 const analysisSchema = new mongoose.Schema(
   {
     search: { type: mongoose.Schema.Types.ObjectId, ref: 'Search', required: true, index: true },
+    userId: { type: String, index: true },
     competitors: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Competitor' }],
     input: {
       location: { type: String, required: true },

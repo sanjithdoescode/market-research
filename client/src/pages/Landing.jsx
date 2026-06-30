@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext.jsx';
 import {
   MapPinned,
   Search,
@@ -120,9 +121,24 @@ function Landing() {
   const [heroRef, heroVisible] = useInView();
   const [ctaRef, ctaVisible] = useInView();
 
-  function handleAnalyze(e) {
+  const { user, signInWithGoogle } = useAuth();
+
+  async function handleLaunchApp() {
+    if (user) {
+      navigate('/dashboard');
+    } else {
+      try {
+        await signInWithGoogle();
+        navigate('/dashboard');
+      } catch (error) {
+        console.error('Google Sign-in failed:', error);
+      }
+    }
+  }
+
+  async function handleAnalyze(e) {
     e.preventDefault();
-    navigate('/dashboard');
+    await handleLaunchApp();
   }
 
   return (
@@ -149,9 +165,9 @@ function Landing() {
 
           <button
             className="landing-nav-cta"
-            onClick={() => navigate('/dashboard')}
+            onClick={handleLaunchApp}
           >
-            Launch App
+            {user ? 'Go to Dashboard' : 'Launch App'}
             <ArrowRight size={14} />
           </button>
         </div>
@@ -432,10 +448,10 @@ function Landing() {
         </p>
         <button
           className="cta-primary-button"
-          onClick={() => navigate('/dashboard')}
+          onClick={handleLaunchApp}
         >
           <Target size={18} />
-          <span>Run Free Site Analysis</span>
+          <span>{user ? 'Go to Dashboard' : 'Run Free Site Analysis'}</span>
           <ArrowRight size={16} />
           <div className="cta-btn-glow" aria-hidden="true" />
         </button>

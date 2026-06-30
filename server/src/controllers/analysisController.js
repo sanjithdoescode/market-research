@@ -7,11 +7,12 @@ import { createJob, updateJob, getJob } from '../services/jobTracker.js';
 
 export async function createAnalysis(req, res, next) {
   try {
-    const job = await createJob();
+    const userId = req.auth.userId;
+    const job = await createJob({ userId });
     
     const runAnalysis = async () => {
       try {
-        const result = await createMarketAnalysis(req.validatedBody, job.id);
+        const result = await createMarketAnalysis({ ...req.validatedBody, userId }, job.id);
         await updateJob(job.id, { progress: 100, result });
       } catch (error) {
         console.error('Analysis background job failed:', error);
@@ -40,22 +41,31 @@ export async function createAnalysis(req, res, next) {
 export async function getAnalysisStatus(req, res, next) {
   try {
     const { id } = req.params;
+    const userId = req.auth.userId;
     const job = await getJob(id);
-    if (!job) {
-      // Fallback: check if the analysis document exists in database (e.g. if job completed and cleaned up)
-      const analysis = await findAnalysisById(id);
-      if (analysis) {
-        return sendSuccess(res, {
-          id,
-          progress: 100,
-          status: 'Analysis complete!',
-          result: formatAnalysisDocument(analysis),
-          error: null
-        });
+    
+    if (job) {
+      if (job.userId && job.userId !== userId) {
+        throw new AppError(403, 'You do not have permission to access this analysis job.');
       }
-      throw new AppError(404, 'Analysis job or record not found.');
+      return sendSuccess(res, job);
     }
-    return sendSuccess(res, job);
+    
+    // Fallback: check if the analysis document exists in database (e.g. if job completed and cleaned up)
+    const analysis = await findAnalysisById(id);
+    if (analysis) {
+      if (analysis.userId && analysis.userId !== userId) {
+        throw new AppError(403, 'You do not have permission to access this analysis.');
+      }
+      return sendSuccess(res, {
+        id,
+        progress: 100,
+        status: 'Analysis complete!',
+        result: formatAnalysisDocument(analysis),
+        error: null
+      });
+    }
+    throw new AppError(404, 'Analysis job or record not found.');
   } catch (error) {
     return next(error);
   }
@@ -64,11 +74,16 @@ export async function getAnalysisStatus(req, res, next) {
 export async function chatWithAnalysis(req, res, next) {
   try {
     const { id } = req.params;
+    const userId = req.auth.userId;
     const { messages, provider, apiKey, model } = req.validatedBody;
 
     const analysis = await findAnalysisById(id);
     if (!analysis) {
       throw new AppError(404, 'Analysis record not found.');
+    }
+
+    if (analysis.userId && analysis.userId !== userId) {
+      throw new AppError(403, 'You do not have permission to access this analysis.');
     }
 
     const chatResponse = await generateChatResponse({ analysis, messages, provider, apiKey, model });

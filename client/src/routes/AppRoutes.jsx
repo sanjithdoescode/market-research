@@ -5,15 +5,16 @@ import Dashboard from '../pages/Dashboard.jsx';
 import History from '../pages/History.jsx';
 import Chat from '../pages/Chat.jsx';
 import Landing from '../pages/Landing.jsx';
+import ProtectedRoute from '../components/ProtectedRoute.jsx';
 
 function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/analysis/:id" element={<AnalysisResult />} />
-      <Route path="/history" element={<History />} />
-      <Route path="/chat" element={<Chat />} />
+      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      <Route path="/analysis/:id" element={<ProtectedRoute><AnalysisResult /></ProtectedRoute>} />
+      <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
+      <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

@@ -26,15 +26,35 @@ const getApiBaseUrl = () => {
   return 'https://market-research-server.vercel.app/api';
 };
 
+let tokenGetter = null;
+
+export function setTokenGetter(getter) {
+  tokenGetter = getter;
+}
+
 const API_BASE_URL = getApiBaseUrl();
 async function request(path, options = {}) {
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(options.headers || {})
+  };
+
+  if (tokenGetter) {
+    try {
+      const token = await tokenGetter();
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+    } catch (error) {
+      console.error('Error fetching authentication token:', error);
+    }
+  }
+
   const response = await fetch(`${API_BASE_URL}${path}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options.headers || {})
-    },
+    headers,
     ...options
   });
+
 
   const payload = await response.json().catch(() => null);
 
