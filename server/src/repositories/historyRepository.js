@@ -3,6 +3,9 @@ import Competitor from '../models/Competitor.js';
 import Search from '../models/Search.js';
 
 export async function findHistory({ clerkId, limit = 25 } = {}) {
+  if (!clerkId || typeof clerkId !== 'string' || clerkId.trim() === '') {
+    return [];
+  }
   return Analysis.find({ clerkId })
     .sort({ createdAt: -1 })
     .limit(limit)

@@ -13,7 +13,11 @@ function assertObjectId(id) {
 export async function getHistory(req, res, next) {
   try {
     const limit = Math.min(Math.max(Number.parseInt(req.query.limit, 10) || 25, 1), 100);
-    const clerkId = req.auth.userId;
+    const clerkId = req.auth?.userId;
+    if (!clerkId || typeof clerkId !== 'string' || clerkId.trim() === '') {
+      return res.status(401).json({ error: "Unauthorized: Invalid or missing account context" });
+    }
+    console.log("[SECURITY GUARD] Querying records strictly for Clerk ID:", clerkId);
     const history = await findHistory({ clerkId, limit });
     return sendSuccess(res, history.map(formatHistoryItem));
   } catch (error) {
@@ -24,7 +28,11 @@ export async function getHistory(req, res, next) {
 export async function getHistoryById(req, res, next) {
   try {
     assertObjectId(req.params.id);
-    const clerkId = req.auth.userId;
+    const clerkId = req.auth?.userId;
+    if (!clerkId || typeof clerkId !== 'string' || clerkId.trim() === '') {
+      return res.status(401).json({ error: "Unauthorized: Invalid or missing account context" });
+    }
+    console.log("[SECURITY GUARD] Querying records strictly for Clerk ID:", clerkId);
     const analysis = await findHistoryById(req.params.id);
 
     if (!analysis) {
@@ -44,7 +52,11 @@ export async function getHistoryById(req, res, next) {
 export async function deleteHistory(req, res, next) {
   try {
     assertObjectId(req.params.id);
-    const clerkId = req.auth.userId;
+    const clerkId = req.auth?.userId;
+    if (!clerkId || typeof clerkId !== 'string' || clerkId.trim() === '') {
+      return res.status(401).json({ error: "Unauthorized: Invalid or missing account context" });
+    }
+    console.log("[SECURITY GUARD] Querying records strictly for Clerk ID:", clerkId);
     const analysis = await findHistoryById(req.params.id);
 
     if (!analysis) {
