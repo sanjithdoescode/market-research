@@ -1,19 +1,21 @@
 import Job from '../models/Job.js';
 import mongoose from 'mongoose';
 
-export async function createJob() {
+export async function createJob(clerkId) {
   const job = await Job.create({
     progress: 0,
     status: 'Initializing AI market models...',
     result: null,
-    error: null
+    error: null,
+    clerkId
   });
   return {
     id: job._id.toString(),
     progress: job.progress,
     status: job.status,
     result: job.result,
-    error: job.error
+    error: job.error,
+    clerkId: job.clerkId
   };
 }
 
@@ -35,7 +37,8 @@ export async function getJob(jobId) {
     progress: job.progress,
     status: job.status,
     result: job.result,
-    error: job.error
+    error: job.error,
+    clerkId: job.clerkId
   };
 }
 

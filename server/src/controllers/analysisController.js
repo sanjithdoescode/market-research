@@ -7,11 +7,12 @@ import { createJob, updateJob, getJob } from '../services/jobTracker.js';
 
 export async function createAnalysis(req, res, next) {
   try {
-    const job = await createJob();
+    const clerkId = req.auth.userId;
+    const job = await createJob(clerkId);
     
     const runAnalysis = async () => {
       try {
-        const result = await createMarketAnalysis(req.validatedBody, job.id);
+        const result = await createMarketAnalysis(req.validatedBody, job.id, clerkId);
         await updateJob(job.id, { progress: 100, result });
       } catch (error) {
         console.error('Analysis background job failed:', error);
@@ -40,11 +41,15 @@ export async function createAnalysis(req, res, next) {
 export async function getAnalysisStatus(req, res, next) {
   try {
     const { id } = req.params;
+    const clerkId = req.auth.userId;
     const job = await getJob(id);
     if (!job) {
       // Fallback: check if the analysis document exists in database (e.g. if job completed and cleaned up)
       const analysis = await findAnalysisById(id);
       if (analysis) {
+        if (String(analysis.clerkId) !== String(clerkId)) {
+          throw new AppError(403, 'You are not authorized to view this analysis status.');
+        }
         return sendSuccess(res, {
           id,
           progress: 100,
@@ -54,6 +59,9 @@ export async function getAnalysisStatus(req, res, next) {
         });
       }
       throw new AppError(404, 'Analysis job or record not found.');
+    }
+    if (String(job.clerkId) !== String(clerkId)) {
+      throw new AppError(403, 'You are not authorized to view this analysis status.');
     }
     return sendSuccess(res, job);
   } catch (error) {
@@ -65,10 +73,15 @@ export async function chatWithAnalysis(req, res, next) {
   try {
     const { id } = req.params;
     const { messages, provider, apiKey, model } = req.validatedBody;
+    const clerkId = req.auth.userId;
 
     const analysis = await findAnalysisById(id);
     if (!analysis) {
       throw new AppError(404, 'Analysis record not found.');
+    }
+
+    if (analysis.clerkId !== clerkId) {
+      throw new AppError(403, 'You are not authorized to access this analysis.');
     }
 
     const chatResponse = await generateChatResponse({ analysis, messages, provider, apiKey, model });

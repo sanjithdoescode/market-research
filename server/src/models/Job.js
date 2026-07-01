@@ -6,12 +6,10 @@ const jobSchema = new mongoose.Schema(
     status: { type: String, default: 'Initializing AI market models...' },
     result: { type: mongoose.Schema.Types.Mixed, default: null },
     error: { type: String, default: null },
+    clerkId: { type: String, required: true },
     createdAt: { type: Date, default: Date.now, expires: 600 } // TTL: delete job documents after 10 mins
   },
   { timestamps: true }
 );
-
-// Add index on createdAt to enable the TTL index
-jobSchema.index({ createdAt: 1 });
 
 export default mongoose.model('Job', jobSchema);

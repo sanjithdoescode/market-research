@@ -2,8 +2,8 @@ import Analysis from '../models/Analysis.js';
 import Competitor from '../models/Competitor.js';
 import Search from '../models/Search.js';
 
-export async function findHistory({ limit = 25 } = {}) {
-  return Analysis.find()
+export async function findHistory({ clerkId, limit = 25 } = {}) {
+  return Analysis.find({ clerkId })
     .sort({ createdAt: -1 })
     .limit(limit)
     .populate('search')

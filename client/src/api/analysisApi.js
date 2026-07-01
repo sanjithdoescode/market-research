@@ -28,12 +28,18 @@ const getApiBaseUrl = () => {
 
 const API_BASE_URL = getApiBaseUrl();
 async function request(path, options = {}) {
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(options.headers || {})
+  };
+
+  if (options.token) {
+    headers['Authorization'] = `Bearer ${options.token}`;
+  }
+
   const response = await fetch(`${API_BASE_URL}${path}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options.headers || {})
-    },
-    ...options
+    ...options,
+    headers
   });
 
   const payload = await response.json().catch(() => null);
@@ -48,28 +54,30 @@ async function request(path, options = {}) {
   return payload.data;
 }
 
-export function submitAnalysis(input) {
+export function submitAnalysis(input, token) {
   return request('/analysis', {
     method: 'POST',
-    body: JSON.stringify(input)
+    body: JSON.stringify(input),
+    token
   });
 }
 
-export function fetchHistory(limit = 25) {
-  return request(`/history?limit=${limit}`);
+export function fetchHistory(limit = 25, token) {
+  return request(`/history?limit=${limit}`, { token });
 }
 
-export function fetchHistoryItem(id) {
-  return request(`/history/${id}`);
+export function fetchHistoryItem(id, token) {
+  return request(`/history/${id}`, { token });
 }
 
-export function deleteHistoryItem(id) {
+export function deleteHistoryItem(id, token) {
   return request(`/history/${id}`, {
-    method: 'DELETE'
+    method: 'DELETE',
+    token
   });
 }
 
-export function sendChatMessage(id, messages, byokSettings = {}) {
+export function sendChatMessage(id, messages, byokSettings = {}, token) {
   return request(`/analysis/${id}/chat`, {
     method: 'POST',
     body: JSON.stringify({
@@ -77,11 +85,12 @@ export function sendChatMessage(id, messages, byokSettings = {}) {
       provider: byokSettings.provider,
       apiKey: byokSettings.apiKey,
       model: byokSettings.model
-    })
+    }),
+    token
   });
 }
 
-export function sendGeneralChatMessage(messages, byokSettings = {}) {
+export function sendGeneralChatMessage(messages, byokSettings = {}, token) {
   return request('/analysis/chat', {
     method: 'POST',
     body: JSON.stringify({
@@ -89,7 +98,8 @@ export function sendGeneralChatMessage(messages, byokSettings = {}) {
       provider: byokSettings.provider,
       apiKey: byokSettings.apiKey,
       model: byokSettings.model
-    })
+    }),
+    token
   });
 }
 
@@ -97,18 +107,19 @@ export function fetchConfig() {
   return request('/config');
 }
 
-export function getNicheSuggestions(businessType, location) {
+export function getNicheSuggestions(businessType, location, token) {
   return request('/analysis/niche-suggestions', {
     method: 'POST',
     body: JSON.stringify({
       businessType,
       location: location || undefined
-    })
+    }),
+    token
   });
 }
 
-export function fetchAnalysisStatus(id) {
-  return request(`/analysis/status/${id}`);
+export function fetchAnalysisStatus(id, token) {
+  return request(`/analysis/status/${id}`, { token });
 }
 
 
