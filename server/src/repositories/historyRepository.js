@@ -14,9 +14,18 @@ export async function findHistory({ clerkId, limit = 25 } = {}) {
     .exec();
 }
 
-export async function findHistoryById(id) {
-  return Analysis.findById(id).populate('search').populate('competitors').exec();
+export async function findHistoryById(id, clerkId) {
+  if (!clerkId || typeof clerkId !== 'string' || clerkId.trim() === '') {
+    // Never do an unscoped lookup — throw immediately so the controller
+    // surfaces a 401/500 rather than fetching an arbitrary document.
+    throw new Error('[historyRepository] findHistoryById called without a valid clerkId — refusing unscoped lookup.');
+  }
+  // Ownership is enforced at the database level: the query only succeeds if
+  // the document's clerkId matches. Returns null (→ 404) if the id exists but
+  // belongs to another user, preventing data-existence timing attacks.
+  return Analysis.findOne({ _id: id, clerkId }).populate('search').populate('competitors').exec();
 }
+
 
 export async function deleteHistoryById(id) {
   const analysis = await Analysis.findById(id).exec();

@@ -33,14 +33,10 @@ export async function getHistoryById(req, res, next) {
       return res.status(401).json({ error: "Unauthorized: Invalid or missing account context" });
     }
     console.log("[SECURITY GUARD] Querying records strictly for Clerk ID:", clerkId);
-    const analysis = await findHistoryById(req.params.id);
+    const analysis = await findHistoryById(req.params.id, clerkId);
 
     if (!analysis) {
       throw new AppError(404, 'Analysis history entry not found.');
-    }
-
-    if (analysis.clerkId !== clerkId) {
-      throw new AppError(403, 'You are not authorized to view this analysis.');
     }
 
     return sendSuccess(res, formatAnalysisDocument(analysis));
@@ -57,14 +53,10 @@ export async function deleteHistory(req, res, next) {
       return res.status(401).json({ error: "Unauthorized: Invalid or missing account context" });
     }
     console.log("[SECURITY GUARD] Querying records strictly for Clerk ID:", clerkId);
-    const analysis = await findHistoryById(req.params.id);
+    const analysis = await findHistoryById(req.params.id, clerkId);
 
     if (!analysis) {
       throw new AppError(404, 'Analysis history entry not found.');
-    }
-
-    if (analysis.clerkId !== clerkId) {
-      throw new AppError(403, 'You are not authorized to delete this analysis.');
     }
 
     const deleted = await deleteHistoryById(req.params.id);

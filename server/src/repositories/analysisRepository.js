@@ -54,7 +54,7 @@ export async function saveAnalysisRecord({
       ...coreAiAnalysis
     } = aiAnalysis;
 
-    const analysisDocument = await Analysis.create({
+    const finalPayload = {
       _id: targetId || undefined,
       search: searchDocument._id,
       competitors: competitorDocuments.map((competitor) => competitor._id),
@@ -82,7 +82,28 @@ export async function saveAnalysisRecord({
       opportunityTier,
       rawAiResponse,
       analysisMetadata
+    };
+
+    // ── Hard boundary guard ─────────────────────────────────────────────────────
+    // If clerkId is missing at this point something has broken in the call chain
+    // above. Throw immediately instead of writing an ownerless document to Atlas.
+    if (!finalPayload.clerkId || typeof finalPayload.clerkId !== 'string' || finalPayload.clerkId.trim() === '') {
+      throw new Error(
+        `[analysisRepository] saveAnalysisRecord() called with an invalid clerkId: ${JSON.stringify(finalPayload.clerkId)}. ` +
+        'Refusing to persist ownerless document to Atlas.'
+      );
+    }
+
+    // ── Pre-persist audit log ────────────────────────────────────────────────────
+    // Verifies in server/Vercel logs that the correct owner ID is being written.
+    console.log('=== PERSISTING TO ATLAS WITH OWNER ID ===', {
+      clerkId: finalPayload.clerkId,
+      targetId: finalPayload._id,
+      location: finalPayload.input?.location,
+      businessType: finalPayload.input?.businessType
     });
+
+    const analysisDocument = await Analysis.create(finalPayload);
 
     return findAnalysisById(analysisDocument._id);
   } catch (error) {
