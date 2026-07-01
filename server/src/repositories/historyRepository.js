@@ -27,8 +27,12 @@ export async function findHistoryById(id, clerkId) {
 }
 
 
-export async function deleteHistoryById(id) {
-  const analysis = await Analysis.findById(id).exec();
+export async function deleteHistoryById(id, clerkId) {
+  if (!clerkId || typeof clerkId !== 'string' || clerkId.trim() === '') {
+    throw new Error('[historyRepository] deleteHistoryById called without a valid clerkId — refusing unscoped deletion.');
+  }
+
+  const analysis = await Analysis.findOne({ _id: id, clerkId }).exec();
 
   if (!analysis) {
     return null;

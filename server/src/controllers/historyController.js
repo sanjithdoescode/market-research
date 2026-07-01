@@ -59,7 +59,7 @@ export async function deleteHistory(req, res, next) {
       throw new AppError(404, 'Analysis history entry not found.');
     }
 
-    const deleted = await deleteHistoryById(req.params.id);
+    const deleted = await deleteHistoryById(req.params.id, clerkId);
     return sendSuccess(res, { id: req.params.id, deleted: true });
   } catch (error) {
     return next(error);
